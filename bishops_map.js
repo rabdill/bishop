@@ -1,4 +1,5 @@
 function initialize() {
+	document.getElementById("gameName").innerHTML = game["title"];
 	newPrompt="";
 	newDescription="";
 	moveRooms(rooms["lobby"]);

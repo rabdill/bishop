@@ -16,3 +16,7 @@ rooms={
 		}
 	}
 }
+
+game={
+	"title" : "Autumn Quest"
+}

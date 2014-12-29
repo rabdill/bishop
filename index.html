@@ -2,19 +2,36 @@
 <head>
 	<script type="text/javascript" src="gamedata.js"></script>
 	<script type="text/javascript" src="bishops_map.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.0/css/foundation.css">
 </head>
 <body onload="initialize();">
-	<h1>Bishop's Map</h1>
-	<p id="description">Testinggg</p>
-	<form action="#">
-		<p>
-			<span id="prompt">What to do?</span>
-			<input type="text" id="command" value="go west">
-			<span id="error" style="color: red;"></p>
-		</p>
-		<input type="submit" id="submit" onclick="process()">
-	</form>
+	<div class="small-12 columns">
+		<h3>Bishop's Map</h3>
+		<h1 id="gameName">Your Custom Game</h1>
+	</div>
+	<div class="row">
+		<div class="large-4 medium-8 columns">
+			<p id="description">Testinggg</p>
+		</div>
+		<div class="medium-4 columns end">
+			<p id="directions"></p>
+		</div>
 
-	<p id="directions"></p>
+	</div>
+
+	<form action="#">
+		<div class="row">
+			<div class="small-6 columns">
+				<span id="prompt">What to do?</span>
+				<input type="text" id="command" value="go west">
+			</div>
+			<div class="small-6 columns end">
+				<p id="error" style="color: red;"></p>
+			</div>
+		</div>
+		<div class="row">
+			<input type="submit" id="submit" onclick="process()">
+		</div>
+	</form>
 </body>
 </html>
