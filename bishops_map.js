@@ -1,29 +1,37 @@
 function initialize() {
-	currentMenu="room";
+	current = rooms["lobby"];
 	newPrompt="";
 	newDescription="";
 }
 
 function process() {
-	if (currentMenu == "room") {
+	// reset any errors displayed from the last command
+	throwError("");
+
+	if (current["type"] == "room") {
 		command = document.getElementById("command").value.split(" ");
-		result = rooms[command[1]];
-		printer(result);
+		if (command[0] ==  "go") {
+			if (current["directions"][command[1]] != undefined) {
+				result = rooms[current["directions"][command[1]]];
+				moveRooms(result); // takes an object, like a room
+			}
+			else throwError("You can't go in that direction.");
+		}
 	}
 }
 
-function printer(subject) {
+function moveRooms(subject) {
 	try {
 		if (subject["type"] == "room") {
 			newDescription = subject["description"];
 			newPrompt = subject["prompt"];
 
 			// Noting that we are moving into a room:
-			currentMenu="room";
+			current=subject;
 		}
 
 		// if it's not a room:
-		else toPrint = "La de fuckin da";
+		else newDescription = "La de da";
 	}
 
 	catch(err) {
@@ -35,4 +43,9 @@ function printer(subject) {
 		document.getElementById("prompt").innerHTML = newPrompt;
 	}
 	document.getElementById("description").innerHTML = newDescription;
+}
+
+
+function throwError(text) {
+	document.getElementById("error").innerHTML = text;
 }
