@@ -52,7 +52,7 @@ function moveRooms(subject) {
 function printDirections(room) {
 	result = "<ul>";
 	for (var direction in room["directions"]) {
-		result += "<li>To the " + direction + " is " + room["directions"][direction];
+		result += "<li>To the " + direction + " is " + rooms[room["directions"][direction]]["name"] + ".";
 	}
 
 	document.getElementById("directions").innerHTML = result;
