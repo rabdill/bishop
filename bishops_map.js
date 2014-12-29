@@ -1,8 +1,9 @@
 function initialize() {
-	current = rooms["lobby"];
 	newPrompt="";
 	newDescription="";
+	moveRooms(rooms["lobby"]);
 }
+
 
 function process() {
 	// reset any errors displayed from the last command
@@ -19,6 +20,7 @@ function process() {
 		}
 	}
 }
+
 
 function moveRooms(subject) {
 	try {
@@ -43,8 +45,18 @@ function moveRooms(subject) {
 		document.getElementById("prompt").innerHTML = newPrompt;
 	}
 	document.getElementById("description").innerHTML = newDescription;
+	printDirections(subject);
 }
 
+
+function printDirections(room) {
+	result = "<ul>";
+	for (var direction in room["directions"]) {
+		result += "<li>To the " + direction + " is " + room["directions"][direction];
+	}
+
+	document.getElementById("directions").innerHTML = result;
+}
 
 function throwError(text) {
 	document.getElementById("error").innerHTML = text;
