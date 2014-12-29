@@ -46,6 +46,8 @@ function moveRooms(subject) {
 	}
 	document.getElementById("description").innerHTML = newDescription;
 	printDirections(subject);
+	document.getElementById("command").value = "";
+	document.getElementById("command").focus();
 }
 
 
