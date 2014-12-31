@@ -3,11 +3,13 @@
 	<script type="text/javascript" src="gamedata.js"></script>
 	<script type="text/javascript" src="bishops_map.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.0/css/foundation.css">
+	<link rel="stylesheet" href="css/main.css">
+	<title>Bishop's Map</title>
 </head>
 <body onload="initialize();">
 	<div class="small-12 columns">
 		<h3>Bishop's Map</h3>
-		<h1 id="gameName">Your Custom Game</h1>
+		<h1 id="gameName" class="padded-bottom">Your Custom Game</h1>
 	</div>
 	<div class="row">
 		<div class="large-4 medium-8 columns">
@@ -20,17 +22,19 @@
 	</div>
 
 	<form action="#">
-		<div class="row">
+		<div class="row padded-top">
 			<div class="small-6 columns">
 				<span id="prompt">What to do?</span>
 				<input type="text" id="command" value="go west">
 			</div>
-			<div class="small-6 columns end">
-				<p id="error" style="color: red;"></p>
-			</div>
 		</div>
 		<div class="row">
-			<input type="submit" id="submit" onclick="process()" class="round button">
+			<div class="small-2 columns">
+				<input type="submit" id="submit" onclick="process()" class="round button">
+			</div>
+			<div class="small-6 columns end">
+				<p id="error"></p>
+			</div>
 		</div>
 	</form>
 </body>

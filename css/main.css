@@ -1,0 +1,16 @@
+#description #directions {
+	position: absolute;
+}
+
+#error {
+	color: red;
+	margin-top: 12px;
+}
+
+.padded-top {
+	padding-top: 65px;
+}
+
+.padded-bottom {
+	padding-bottom: 65px;
+}
