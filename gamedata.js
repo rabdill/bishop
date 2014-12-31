@@ -1,4 +1,8 @@
-currentRoom="lobby"
+currentRoom="lobby";
+
+player={
+	"inventory" : {}
+}
 
 rooms={
 	"lobby" : {
@@ -23,7 +27,24 @@ rooms={
 		"directions" : {
 			"west" : "town square"
 		},
-		"entrance text" : "You push open the heavy wooden door and walk into the armory. The walls are lined with weapons: Hammers, maces and archery accoutrements for the most part, but several large swords glisten behind the counter, overseen by the armorer."
+		"entrance text" : "You push open the heavy wooden door and walk into the armory. The walls are lined with weapons: bludgeoning tools and some archery tools, for the most part, but several large swords glisten behind the counter, overseen by the armorer.",
+		"items" : {
+			"hammer" : {
+				"name" : "battle hammer",
+				"status" : "default",
+				"states" : {
+					"default" : {
+						"descriptor" : "A battle hammer is hanging on a hook here."
+					},
+					"take" : {
+						"descriptor" : "",
+						"from" : {
+							"default" : "When the armorer turns to adjust some insanely sharp implement behind him, you slip the battle hammer into your cloak."
+						}
+					}
+				}
+			}
+		}
 	}
 }
 

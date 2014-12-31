@@ -4,23 +4,49 @@ function initialize() {
 	newDescription="";
 	// to to wherever the gamedata says to start:
 	moveRooms(rooms[currentRoom]);
+
+	// either do the tests or start the game
+	//	(defined in testing.js)
 	proceed();
 }
 
 
 function process() {
 	// reset any errors displayed from the last command
-	throwError("");
+	error("");
+	if (current["type"] == "room") processRoom();
+}
 
-	if (current["type"] == "room") {
-		command = document.getElementById("command").value.split(" ");
-		if (command[0] ==  "go") {
-			if (current["directions"][command[1]] != undefined) {
-				result = rooms[current["directions"][command[1]]];
-				moveRooms(result); // takes an object, like a room
-			}
-			else throwError("You are unable to travel " + command[1]+".");
+
+function processRoom() {
+	command = document.getElementById("command").value.split(" ");
+	
+	// if you're trying to travel
+	if (command[0] ==  "go") {
+		if (current["directions"][command[1]] != undefined) {
+			result = rooms[current["directions"][command[1]]];
+			moveRooms(result); // takes an object, like a room
 		}
+		else error("You are unable to travel " + command[1]+".");
+	}
+
+	// if there are items in the room
+	else if ("items" in current) {
+		if (command[1] in current["items"]) { // and the direct object is one of them
+			// if the action can be taken against that item:
+			if (command[0] in current["items"][command[1]]["states"]) {
+				//if the item can be put into the proposed state from its current state, do it:
+                if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
+					message(current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]]);
+					current["items"][command[1]]["status"] = command[0];
+
+					// also, if it's "take," add it to inventory:
+					if (command[0] == "take") {
+						inventory_add(current["items"][command[1]]["name"], 1)
+					}
+				}
+			}
+		} 
 	}
 }
 
@@ -63,6 +89,26 @@ function printDirections(room) {
 	document.getElementById("directions").innerHTML = result;
 }
 
-function throwError(text) {
+
+function error(text) {
+	//clear the message field:
+	message("");
+
+	//print the error:
 	document.getElementById("error").innerHTML = text;
+}
+function message(message) {
+	document.getElementById("message").innerHTML = message;
+}
+
+
+function inventory_add(item, qty) {
+	if (item in player["inventory"]) {
+		player["inventory"][item]++;
+		console.log("Adding 1 to inventory for " + item + ".")
+	}
+	else {
+		player["inventory"][item] = qty;
+		console.log("Adding " + item + " to player inventory.")
+	}
 }
