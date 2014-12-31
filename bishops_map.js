@@ -61,7 +61,10 @@ function processRoom() {
 function moveRooms(subject) {
 	try {
 		if (subject["type"] == "room") {
-			newDescription = subject["entrance text"];
+			if (subject["title"] != undefined) {
+				newDescription = "<strong>" + subject["title"] + "</strong><br>" + subject["entrance text"];
+			}
+			else newDescription = subject["entrance text"];
 			newPrompt = subject["prompt"];
 
 			// Noting that we are moving into a room:
