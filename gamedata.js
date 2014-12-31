@@ -8,6 +8,7 @@ rooms={
 	"lobby" : {
 		"type" : "room",
 		"name" : "the lobby",
+		"title" : "Lobby time!",
 		"directions" : {
 			"south" : "town square"
 		},

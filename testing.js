@@ -3,17 +3,17 @@ function proceed() {
 	debugMode = true;
 
 	if (debugMode) {
-		console.log("Entering debug mode");
+		console.log("DEBUG MODE: Sending simulated actions.");
 		commands = [
 		// Enter the commands to be entered sequentially here:
 			"go south",
-			"go east",
-			"take hammer"
+			"go east"
 		];
 		for (var i = 0; i < commands.length; i++) {
-			console.log("Sending command \"" + commands[i] + "\"");
+			console.log("DEBUG MODE: Sending command \"" + commands[i] + "\"");
 			document.getElementById("command").value = commands[i];
 			document.getElementById("submit").click();
 		}
+		console.log("DEBUG MODE: Simulated actions complete.")
 	}
 }
