@@ -65,9 +65,18 @@ function moveRooms(subject) {
 				newDescription = "<strong>" + subject["title"] + "</strong><br>" + subject["entrance text"];
 			}
 			else newDescription = subject["entrance text"];
+
+			// adding the descriptors of any objects in the room:
+			for (var item in subject["items"]) {
+				if (subject["items"][item]["states"][subject["items"][item]["status"]]["descriptor"] != "") {
+					newDescription += "<br>" + subject["items"][item]["states"][subject["items"][item]["status"]]["descriptor"];
+				}
+			}
+
 			newPrompt = subject["prompt"];
 
-			// Noting that we are moving into a room:
+			// Setting the room that we're dealing with going forward
+			// to the one we are moving into right now:
 			current=subject;
 		}
 

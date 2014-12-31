@@ -8,7 +8,7 @@ rooms={
 	"lobby" : {
 		"type" : "room",
 		"name" : "the lobby",
-		"title" : "Lobby time!",
+		"title" : "Welcome to the game!",
 		"directions" : {
 			"south" : "town square"
 		},
@@ -28,7 +28,7 @@ rooms={
 		"directions" : {
 			"west" : "town square"
 		},
-		"entrance text" : "You push open the heavy wooden door and walk into the armory. The walls are lined with weapons: bludgeoning tools and some archery tools, for the most part, but several large swords glisten behind the counter, overseen by the armorer.",
+		"entrance text" : "You push open the heavy wooden door and walk into the armory. The walls are lined with weapons: bludgeoning tools and some archery implements, for the most part, but several large swords glisten behind the counter, overseen by the armorer.",
 		"items" : {
 			"hammer" : {
 				"name" : "battle hammer",
@@ -41,6 +41,21 @@ rooms={
 						"descriptor" : "",
 						"from" : {
 							"default" : "When the armorer turns to adjust some insanely sharp implement behind him, you slip the battle hammer into your cloak."
+						}
+					}
+				}
+			},
+			"axe" : {
+				"name" : "swift axe",
+				"status" : "default",
+				"states" : {
+					"default" : {
+						"descriptor" : "A sleek, lightweight axe sits on a nearby shelf."
+					},
+					"take" : {
+						"descriptor" : "",
+						"from" : {
+							"default" : "You quietly slide the axe off of the shelf and stow it in your cloak. The armorer doesn't seem to be paying very close attention."
 						}
 					}
 				}
