@@ -1,3 +1,5 @@
+currentRoom="lobby"
+
 rooms={
 	"lobby":{
 		"type" : "room",

@@ -2,8 +2,8 @@ function initialize() {
 	document.getElementById("gameName").innerHTML = game["title"];
 	newPrompt="";
 	newDescription="";
-	// start in the lobby:
-	moveRooms(rooms["lobby"]);
+	// to to wherever the gamedata says to start:
+	moveRooms(rooms[currentRoom]);
 }
 
 
