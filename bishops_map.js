@@ -18,18 +18,9 @@ function process() {
 
 function processRoom() {
 	command = document.getElementById("command").value.split(" ");
-	
-	// if you're trying to travel
-	if (command[0] ==  "go") {
-		if (current["directions"][command[1]] != undefined) {
-			result = rooms[current["directions"][command[1]]];
-			moveRooms(result); // takes an object, like a room
-		}
-		else error("You are unable to travel to the " + command[1]+".");
-	}
 
 	// if there are items in the room and the direct object is one of them
-	else if ("items" in current && command[1] in current["items"]) {
+	if ("items" in current && command[1] in current["items"]) {
 		// if the action can be taken against that item:
 		if (command[0] in current["items"][command[1]]["states"]) {
 			//if the item can be put into the proposed state from its current state, do it:
@@ -50,7 +41,15 @@ function processRoom() {
 			error("You can't " + command[0] + " the " + command[1] + ".");
 		}
 	}
-
+	
+	// if you're trying to travel
+	else if (command[0] ==  "go") {
+		if (current["directions"][command[1]] != undefined) {
+			result = rooms[current["directions"][command[1]]];
+			moveRooms(result); // takes an object, like a room
+		}
+		else error("You are unable to travel to the " + command[1]+".");
+	}
 	else if (command[0] == "view") {
 		if (command[1] == "inventory") {
 			print_inventory();
