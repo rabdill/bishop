@@ -13,7 +13,7 @@ function initialize() {
 
 function process() {
 	// reset any errors displayed from the last command
-	error("");
+	message("");
 	if (current["type"] == "room") processRoom();
 }
 
@@ -27,7 +27,7 @@ function processRoom() {
 			result = rooms[current["directions"][command[1]]];
 			moveRooms(result); // takes an object, like a room
 		}
-		else error("You are unable to travel " + command[1]+".");
+		else message("You are unable to travel " + command[1]+".");
 	}
 
 	// if there are items in the room
@@ -77,6 +77,9 @@ function moveRooms(subject) {
 	printDirections(subject);
 	document.getElementById("command").value = "";
 	document.getElementById("command").focus();
+
+	//clear the other box
+	message("");
 }
 
 
@@ -90,13 +93,11 @@ function printDirections(room) {
 }
 
 
-function error(text) {
-	//clear the message field:
-	message("");
+/*function message(text) {
 
 	//print the error:
 	document.getElementById("error").innerHTML = text;
-}
+}*/
 function message(message) {
 	document.getElementById("message").innerHTML = message;
 }
