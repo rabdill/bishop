@@ -2,6 +2,7 @@ function initialize() {
 	document.getElementById("gameName").innerHTML = game["title"];
 	newPrompt="";
 	newDescription="";
+	// start in the lobby:
 	moveRooms(rooms["lobby"]);
 }
 
@@ -17,7 +18,7 @@ function process() {
 				result = rooms[current["directions"][command[1]]];
 				moveRooms(result); // takes an object, like a room
 			}
-			else throwError("You can't go in that direction.");
+			else throwError("You are unable to travel " + command[1]+".");
 		}
 	}
 }
