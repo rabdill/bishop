@@ -25,26 +25,36 @@ function processRoom() {
 			result = rooms[current["directions"][command[1]]];
 			moveRooms(result); // takes an object, like a room
 		}
-		else error("You are unable to travel " + command[1]+".");
+		else error("You are unable to travel to the " + command[1]+".");
 	}
 
-	// if there are items in the room
-	else if ("items" in current) {
-		if (command[1] in current["items"]) { // and the direct object is one of them
-			// if the action can be taken against that item:
-			if (command[0] in current["items"][command[1]]["states"]) {
-				//if the item can be put into the proposed state from its current state, do it:
-                if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
-					message(current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]]);
-					current["items"][command[1]]["status"] = command[0];
+	// if there are items in the room and the direct object is one of them
+	else if ("items" in current && command[1] in current["items"]) {
+		// if the action can be taken against that item:
+		if (command[0] in current["items"][command[1]]["states"]) {
+			//if the item can be put into the proposed state from its current state, do it:
+            if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
+				message(current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]]);
+				current["items"][command[1]]["status"] = command[0];
 
-					// also, if it's "take," add it to inventory:
-					if (command[0] == "take") {
-						inventory_add(current["items"][command[1]]["name"], 1)
-					}
+				// also, if it's "take," add it to inventory:
+				if (command[0] == "take") {
+					inventory_add(current["items"][command[1]]["name"], 1);
 				}
 			}
-		} 
+			else {
+				error("You can't " + command[0] + " that after you " + current["items"][command[1]]["status"] + " it.");
+			}
+		}
+		else {
+			error("You can't " + command[0] + " the " + command[1] + ".");
+		}
+	}
+
+	else if (command[0] == "view") {
+		if (command[1] == "inventory") {
+			print_inventory();
+		}
 	}
 }
 
@@ -73,8 +83,7 @@ function moveRooms(subject) {
 	}
 	document.getElementById("description").innerHTML = newDescription;
 	printDirections(subject);
-	document.getElementById("command").value = "";
-	document.getElementById("command").focus();
+	clearCommand();
 
 	//clear the error box:
 	error("");
@@ -93,12 +102,19 @@ function printDirections(room) {
 
 function error(text) {
 	document.getElementById("error").innerHTML = text;
+	clearCommand();
 }
 function message(message) {
 	error("");
 	document.getElementById("description").innerHTML = message;
+	clearCommand();
 }
 
+
+function clearCommand() {
+	document.getElementById("command").value = "";
+	document.getElementById("command").focus();
+}
 
 function inventory_add(item, qty) {
 	if (item in player["inventory"]) {
@@ -108,5 +124,27 @@ function inventory_add(item, qty) {
 	else {
 		player["inventory"][item] = qty;
 		console.log("Adding " + item + " to player inventory.")
+	}
+}
+
+
+function print_inventory() {
+	toPrint="<strong>Inventory</strong><br>";
+	hasItems = false;
+
+	for (var item in player["inventory"]) {
+		//if you have at least one of the thing:
+		if (player["inventory"][item] > 0 ) {
+			toPrint += item + " x " + player["inventory"][item] + "<br>";
+			// player has at least one item
+			hasItems = true;
+		}
+	}
+
+	if(hasItems) {
+		message(toPrint);
+	}
+	else {
+		error("Inventory empty.")
 	}
 }
