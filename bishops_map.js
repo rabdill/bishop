@@ -4,6 +4,7 @@ function initialize() {
 	newDescription="";
 	// to to wherever the gamedata says to start:
 	moveRooms(rooms[currentRoom]);
+	proceed();
 }
 
 
@@ -27,7 +28,7 @@ function process() {
 function moveRooms(subject) {
 	try {
 		if (subject["type"] == "room") {
-			newDescription = subject["description"];
+			newDescription = subject["entrance text"];
 			newPrompt = subject["prompt"];
 
 			// Noting that we are moving into a room:
