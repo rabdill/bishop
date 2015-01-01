@@ -38,39 +38,49 @@ function processCommand() {
 			}
 		}
 		
-		// if you're trying to travel
+
 		else if (command[0] ==  "go") {
 			if (current["directions"][command[1]] != undefined) {
 				result = current["directions"][command[1]];
 				nextMove(result);
 			}
-			else error("You are unable to travel to the " + command[1]+".");
+			else error("You are unable to travel " + command[1]+".");
 		}
 		else if (command[0] == "view") {
 			if (command[1] == "inventory") {
 				print_inventory();
 			}
 		}
+		else if (command[0] == "look") {
+			if (command[1] == "around") {
+				printRoom(current);
+			}
+		}
 
-		else if (command[0] in current["actions"]) {
+		// check the room's possible actions
+		else if ("actions" in current && command[0] in current["actions"]) {
+			// check if the verb can be applied to the specified object
 			if (command[1] in current["actions"][command[0]]) {
+				// implement the specified consequences
 				if ("move" in current["actions"][command[0]][command[1]]) {
 					nextMove(current["actions"][command[0]][command[1]]["move"])
 				}
 			}
 		}
+		else error("Sorry, unrecognized command.")
 	}
 }
 
 
 function nextMove(target) {
-	if (target in rooms) printRoom(target);
-	else console.log("ah shit");
+	if (target in rooms) printRoom(rooms[target]);
+	else if (target in menus) printMenu(target);
 }
 
 
-function printRoom(subject) {
-	current = rooms[subject];
+function printRoom(target) {
+	current = target;	// required to be able to reference "current"
+						// elsewhere
 	if (current["title"] != undefined) {
 		newDescription = "<strong>" + current["title"] + "</strong><br>" + current["entrance text"];
 	}
