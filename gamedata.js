@@ -63,7 +63,9 @@ rooms={
 		},
 		"actions" : {
 			"talk" : {
-				"armorer" : {"menu" : "armorer"}
+				"armorer" : {
+					"move" : "armorer"
+				}
 			}
 		}
 	}
