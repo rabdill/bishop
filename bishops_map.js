@@ -3,97 +3,96 @@ function initialize() {
 	newPrompt="";
 	newDescription="";
 	// to to wherever the gamedata says to start:
-	moveRooms(rooms[currentRoom]);
+	nextMove(currentLocation);
 
 	// either do the tests or start the game
 	//	(defined in testing.js)
-	proceed();
+	runTests();
 }
 
 
-function process() {
-	if (current["type"] == "room") processRoom();
-}
+function processCommand() {
+	if (current["type"] == "room") {
+		command = document.getElementById("command").value.split(" ");
 
+		// if there are items in the room and the direct object is one of them
+		if ("items" in current && command[1] in current["items"]) {
+			// if the action can be taken against that item:
+			if (command[0] in current["items"][command[1]]["states"]) {
+				//if the item can be put into the proposed state from its current state, do it:
+	            if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
+					message(current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]]);
+					current["items"][command[1]]["status"] = command[0];
 
-function processRoom() {
-	command = document.getElementById("command").value.split(" ");
-
-	// if there are items in the room and the direct object is one of them
-	if ("items" in current && command[1] in current["items"]) {
-		// if the action can be taken against that item:
-		if (command[0] in current["items"][command[1]]["states"]) {
-			//if the item can be put into the proposed state from its current state, do it:
-            if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
-				message(current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]]);
-				current["items"][command[1]]["status"] = command[0];
-
-				// also, if it's "take," add it to inventory:
-				if (command[0] == "take") {
-					inventory_add(current["items"][command[1]]["name"], 1);
+					// also, if it's "take," add it to inventory:
+					if (command[0] == "take") {
+						inventory_add(current["items"][command[1]]["name"], 1);
+					}
+				}
+				else {
+					error("You can't " + command[0] + " that after you " + current["items"][command[1]]["status"] + " it.");
 				}
 			}
 			else {
-				error("You can't " + command[0] + " that after you " + current["items"][command[1]]["status"] + " it.");
+				error("You can't " + command[0] + " the " + command[1] + ".");
 			}
 		}
-		else {
-			error("You can't " + command[0] + " the " + command[1] + ".");
+		
+		// if you're trying to travel
+		else if (command[0] ==  "go") {
+			if (current["directions"][command[1]] != undefined) {
+				result = current["directions"][command[1]];
+				nextMove(result);
+			}
+			else error("You are unable to travel to the " + command[1]+".");
 		}
-	}
-	
-	// if you're trying to travel
-	else if (command[0] ==  "go") {
-		if (current["directions"][command[1]] != undefined) {
-			result = rooms[current["directions"][command[1]]];
-			moveRooms(result); // takes an object, like a room
+		else if (command[0] == "view") {
+			if (command[1] == "inventory") {
+				print_inventory();
+			}
 		}
-		else error("You are unable to travel to the " + command[1]+".");
-	}
-	else if (command[0] == "view") {
-		if (command[1] == "inventory") {
-			print_inventory();
+
+		else if (command[0] in current["actions"]) {
+			if (command[1] in current["actions"][command[0]]) {
+
+			}
 		}
 	}
 }
 
 
-function moveRooms(subject) {
-	try {
-		if (subject["type"] == "room") {
-			if (subject["title"] != undefined) {
-				newDescription = "<strong>" + subject["title"] + "</strong><br>" + subject["entrance text"];
-			}
-			else newDescription = subject["entrance text"];
+function nextMove(target) {
+	if (target in rooms) printRoom(target);
+	else console.log("ah shit");
+}
 
-			// adding the descriptors of any objects in the room:
-			for (var item in subject["items"]) {
-				if (subject["items"][item]["states"][subject["items"][item]["status"]]["descriptor"] != "") {
-					newDescription += "<br>" + subject["items"][item]["states"][subject["items"][item]["status"]]["descriptor"];
-				}
-			}
 
-			newPrompt = subject["prompt"];
+function printRoom(subject) {
+	current = rooms[subject];
+	if (current["title"] != undefined) {
+		newDescription = "<strong>" + current["title"] + "</strong><br>" + current["entrance text"];
+	}
+	else newDescription = current["entrance text"];
 
-			// Setting the room that we're dealing with going forward
-			// to the one we are moving into right now:
-			current=subject;
+	// adding the descriptors of any objects in the room:
+	for (var item in current["items"]) {
+		if (current["items"][item]["states"][current["items"][item]["status"]]["descriptor"] != "") {
+			newDescription += "<br>" + current["items"][item]["states"][current["items"][item]["status"]]["descriptor"];
 		}
-
-		// if it's not a room:
-		else newDescription = "La de da";
 	}
 
-	catch(err) {
-		newDescription = "ERROR EEEEEEEEEEE";
-	}
+	newPrompt = current["prompt"];
+
+	// Setting the room that we're dealing with going forward
+	// to the one we are moving into right now:
+	current=current;
 
 	// print everything out
 	if (newPrompt != undefined) {
 		document.getElementById("prompt").innerHTML = newPrompt;
 	}
 	document.getElementById("description").innerHTML = newDescription;
-	printDirections(subject);
+	printDirections(current);
 	clearCommand();
 
 	//clear the error box:

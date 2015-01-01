@@ -1,4 +1,4 @@
-currentRoom="lobby";
+currentLocation="lobby";
 
 player={
 	"inventory" : {}
@@ -59,6 +59,11 @@ rooms={
 						}
 					}
 				}
+			}
+		},
+		"actions" : {
+			"talk" : {
+				"armorer" : {"menu" : "armorer"}
 			}
 		}
 	}
