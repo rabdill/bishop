@@ -1,4 +1,4 @@
-function proceed() {
+function runTests() {
 	// ** EDIT THIS LINE TO ENTER DEBUG MODE **
 	debugMode = true;
 
@@ -7,7 +7,8 @@ function proceed() {
 		commands = [
 		// Enter the commands to be entered sequentially here:
 			"go south",
-			"go east"
+			"go east",
+			"take hammer"
 		];
 		for (var i = 0; i < commands.length; i++) {
 			console.log("DEBUG MODE: Sending command \"" + commands[i] + "\"");
