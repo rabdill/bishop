@@ -38,7 +38,7 @@ function processCommand() {
 			}
 		}
 		
-		// if you're trying to travel
+
 		else if (command[0] ==  "go") {
 			if (current["directions"][command[1]] != undefined) {
 				result = current["directions"][command[1]];
@@ -49,6 +49,11 @@ function processCommand() {
 		else if (command[0] == "view") {
 			if (command[1] == "inventory") {
 				print_inventory();
+			}
+		}
+		else if (command[0] == "look") {
+			if (command[1] == "around") {
+				printRoom(current);
 			}
 		}
 
@@ -68,13 +73,14 @@ function processCommand() {
 
 
 function nextMove(target) {
-	if (target in rooms) printRoom(target);
+	if (target in rooms) printRoom(rooms[target]);
 	else if (target in menus) printMenu(target);
 }
 
 
-function printRoom(subject) {
-	current = rooms[subject];
+function printRoom(target) {
+	current = target;	// required to be able to reference "current"
+						// elsewhere
 	if (current["title"] != undefined) {
 		newDescription = "<strong>" + current["title"] + "</strong><br>" + current["entrance text"];
 	}
