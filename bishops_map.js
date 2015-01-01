@@ -44,7 +44,7 @@ function processCommand() {
 				result = current["directions"][command[1]];
 				nextMove(result);
 			}
-			else error("You are unable to travel to the " + command[1]+".");
+			else error("You are unable to travel " + command[1]+".");
 		}
 		else if (command[0] == "view") {
 			if (command[1] == "inventory") {
@@ -52,20 +52,24 @@ function processCommand() {
 			}
 		}
 
-		else if (command[0] in current["actions"]) {
+		// check the room's possible actions
+		else if ("actions" in current && command[0] in current["actions"]) {
+			// check if the verb can be applied to the specified object
 			if (command[1] in current["actions"][command[0]]) {
+				// implement the specified consequences
 				if ("move" in current["actions"][command[0]][command[1]]) {
 					nextMove(current["actions"][command[0]][command[1]]["move"])
 				}
 			}
 		}
+		else error("Sorry, unrecognized command.")
 	}
 }
 
 
 function nextMove(target) {
 	if (target in rooms) printRoom(target);
-	else console.log("ah shit");
+	else if (target in menus) printMenu(target);
 }
 
 
