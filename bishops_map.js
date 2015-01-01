@@ -54,7 +54,9 @@ function processCommand() {
 
 		else if (command[0] in current["actions"]) {
 			if (command[1] in current["actions"][command[0]]) {
-
+				if ("move" in current["actions"][command[0]][command[1]]) {
+					nextMove(current["actions"][command[0]][command[1]]["move"])
+				}
 			}
 		}
 	}
