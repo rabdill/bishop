@@ -12,9 +12,8 @@ function initialize() {
 
 
 function processCommand() {
+	command = document.getElementById("command").value.split(" ");
 	if (current["type"] == "room") {
-		command = document.getElementById("command").value.split(" ");
-
 		// if there are items in the room and the direct object is one of them
 		if ("items" in current && command[1] in current["items"]) {
 			// if the action can be taken against that item:
@@ -53,7 +52,7 @@ function processCommand() {
 		}
 		else if (command[0] == "look") {
 			if (command[1] == "around") {
-				printRoom(current);
+				printer(current);
 			}
 		}
 
@@ -69,46 +68,90 @@ function processCommand() {
 		}
 		else error("Sorry, unrecognized command.")
 	}
+	else if (current["type"] == "menu") {
+		command--;	//because the array starts at #0
+		if (command < current["choices"].length) { //make sure it's an option
+			if (current["choices"][command]["response type"] == "loop") {
+				var toPrint = {};
+				toPrint["type"] = "menuLoop";
+				toPrint["origin"] = current["name"];
+				toPrint["text"] = current["choices"][command]["response text"];
+				toPrint["description"] = current["choices"][command]["description"];
+				printer(toPrint);
+			}
+		}
+	}
 }
 
 
 function nextMove(target) {
-	if (target in rooms) printRoom(rooms[target]);
-	else if (target in menus) printMenu(target);
+	if (target in rooms) printer(rooms[target]);
+	else if (target in menus) printer(menus[target]);
 }
 
 
-function printRoom(target) {
-	current = target;	// required to be able to reference "current"
-						// elsewhere
-	if (current["title"] != undefined) {
-		newDescription = "<strong>" + current["title"] + "</strong><br>" + current["entrance text"];
-	}
-	else newDescription = current["entrance text"];
-
-	// adding the descriptors of any objects in the room:
-	for (var item in current["items"]) {
-		if (current["items"][item]["states"][current["items"][item]["status"]]["descriptor"] != "") {
-			newDescription += "<br>" + current["items"][item]["states"][current["items"][item]["status"]]["descriptor"];
+function printer(target) {
+	if (target["type"] == "room") {
+		if (target["title"] != undefined) {
+			newDescription = "<strong>" + target["title"] + "</strong><br>" + target["entrance text"];
 		}
+		else newDescription = target["entrance text"];
+
+		// adding the descriptors of any objects in the room:
+		for (var item in target["items"]) {
+			if (target["items"][item]["states"][target["items"][item]["status"]]["descriptor"] != "") {
+				newDescription += "<br>" + target["items"][item]["states"][target["items"][item]["status"]]["descriptor"];
+			}
+		}
+		newPrompt = target["prompt"];
+		printDirections(target);
 	}
 
-	newPrompt = current["prompt"];
+	else if (target["type"] == "menu" || target["type"] == "menuLoop") {
+		// If it's a menuLoop response, inject the response at the beginning
+		// of reprinting the menu:
+		if (target["type"] == "menuLoop") {
+			// makes the original menu the "target"
+			// and stores just the loop stuff in "loopInfo":
+			loopInfo = target;
+			target = current;
+			// start off the new description with the new message
+			newDescription = loopInfo["text"] + "<br><br>";
 
-	// Setting the room that we're dealing with going forward
-	// to the one we are moving into right now:
-	current=current;
+			// if the original menu's description should change, change it:
+			if (loopInfo["description"] != undefined) {
+				target["description"] = loopInfo["description"];
+			}
+		}
+		// if it's a regular menu:
+		else {
+			newDescription = "";
+			newPrompt = target["prompt"];
+		}
 
-	// print everything out
+		// then add whatever the menu's full description is now:
+		newDescription += target["description"];
+
+		//lining up the menu's text
+		// to print either way:
+		newDescription += "<ol>";
+		for (var i = 0; i < target["choices"].length; i++) {
+			newDescription += "<li>" + target["choices"][i]["choice"];
+		}
+		newDescription += "</ol>";
+		printDirections("");	
+	}
+
+	// print everything out (rooms *and* menus)
 	if (newPrompt != undefined) {
 		document.getElementById("prompt").innerHTML = newPrompt;
 	}
 	document.getElementById("description").innerHTML = newDescription;
-	printDirections(current);
 	clearCommand();
-
 	//clear the error box:
 	error("");
+	current = target;	// required to be able to reference "current"
+						// elsewhere
 }
 
 
