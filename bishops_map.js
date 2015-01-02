@@ -108,43 +108,48 @@ function printer(target) {
 	}
 
 	else if (target["type"] == "menu" || target["type"] == "menuLoop") {
-		
-		// If it's a menuLoop response, inject the response at the beginning:
+		// If it's a menuLoop response, inject the response at the beginning
+		// of reprinting the menu:
 		if (target["type"] == "menuLoop") {
+			// makes the original menu the "target"
+			// and stores just the loop stuff in "loopInfo":
 			loopInfo = target;
-			target = menus[loopInfo["origin"]];
+			target = current;
+			// start off the new description with the new message
 			newDescription = loopInfo["text"] + "<br><br>";
+
+			// if the original menu's description should change, change it:
 			if (loopInfo["description"] != undefined) {
 				target["description"] = loopInfo["description"];
 			}
 		}
+		// if it's a regular menu:
 		else {
 			newDescription = "";
 			newPrompt = target["prompt"];
 		}
 
+		// then add whatever the menu's full description is now:
 		newDescription += target["description"];
+
+		//lining up the menu's text
+		// to print either way:
 		newDescription += "<ol>";
 		for (var i = 0; i < target["choices"].length; i++) {
 			newDescription += "<li>" + target["choices"][i]["choice"];
 		}
 		newDescription += "</ol>";
-
-		printDirections("");
-		
+		printDirections("");	
 	}
 
-	// print everything out
+	// print everything out (rooms *and* menus)
 	if (newPrompt != undefined) {
 		document.getElementById("prompt").innerHTML = newPrompt;
 	}
 	document.getElementById("description").innerHTML = newDescription;
-	
 	clearCommand();
-
 	//clear the error box:
 	error("");
-
 	current = target;	// required to be able to reference "current"
 						// elsewhere
 }

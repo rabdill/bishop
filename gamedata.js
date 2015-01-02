@@ -73,7 +73,6 @@ rooms={
 
 menus={
 	"armorer" : {
-		"name" : "armorer",
 		"type" : "menu",
 		"description" : "\"Hi pal,\" the armorer says, \"what can I do for you?\"",
 		"prompt" : "How do you respond?",
