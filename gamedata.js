@@ -71,6 +71,23 @@ rooms={
 	}
 }
 
+menus={
+	"armorer" : {
+		"name" : "armorer",
+		"type" : "menu",
+		"description" : "\"Hi pal,\" the armorer says, \"what can I do for you?\"",
+		"prompt" : "How do you respond?",
+		"choices" : [
+			{
+				"choice" : "\"Can you tell me a little about this place?\"",
+				"response type" : "loop",
+				"response text" : "\"Sure!\"",
+				"description" : "\"What else can I help you with?\" he asks."
+			}
+		]
+	}
+}
+
 game={
 	"title" : "The Countryside"
 }
