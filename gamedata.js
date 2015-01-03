@@ -28,7 +28,7 @@ rooms={
 		"directions" : {
 			"west" : "town square"
 		},
-		"entrance text" : "You push open the heavy wooden door and walk into the armory. The walls are lined with weapons: bludgeoning tools and some archery implements, for the most part, but several large swords glisten behind the counter, overseen by the armorer.",
+		"entrance text" : "You push open the heavy wooden door and walk into the armory. The walls are lined with weapons: bludgeoning tools and some archery implements, for the most part, but several large swords glisten behind the counter, overseen by the armorer.<br><br>A small, rickety ladder is in the corner.",
 		"items" : {
 			"hammer" : {
 				"name" : "battle hammer",
@@ -65,6 +65,13 @@ rooms={
 			"talk" : {
 				"armorer" : {
 					"move" : "armorer"
+				}
+			},
+			"break" : {
+				"ladder" : {
+					"changes" : [
+						["rooms", "armory", "entrance text", "You push open the heavy wooden door and walk into the armory. The walls are lined with weapons: bludgeoning tools and some archery implements, for the most part, but several large swords glisten behind the counter, overseen by the armorer."]
+					]
 				}
 			}
 		}
