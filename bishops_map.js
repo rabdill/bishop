@@ -69,15 +69,29 @@ function processCommand() {
 		else error("Sorry, unrecognized command.")
 	}
 	else if (current["type"] == "menu") {
+		var toPrint = {};
 		command--;	//because the array starts at #0
 		if (command < current["choices"].length) { //make sure it's an option
 			if (current["choices"][command]["response type"] == "loop") {
-				var toPrint = {};
 				toPrint["type"] = "menuLoop";
-				toPrint["origin"] = current["name"];
 				toPrint["text"] = current["choices"][command]["response text"];
 				toPrint["description"] = current["choices"][command]["description"];
+
+				// removes the option that got chosen
+				//delete current["choices"][command];
+				current["choices"].splice(command, command + 1)
 				printer(toPrint);
+			}
+			// if the player is supposed to move to a new location:
+			else if (current["choices"][command]["response type"] == "move") {
+				// if there's a message to display before the move
+				if ("premessage" in current["choices"][command]) {
+					toPrint["type"] = "premessage";
+					toPrint["premessage"] = current["choices"][command]["premessage"];
+					toPrint["destination"] = current["choices"][command]["destination"];
+					printer(toPrint);
+				}
+				else nextMove(current["choices"][command]["destination"])
 			}
 		}
 	}
@@ -107,7 +121,9 @@ function printer(target) {
 		printDirections(target);
 	}
 
-	else if (target["type"] == "menu" || target["type"] == "menuLoop") {
+	// if it's one of the menu response types:
+	else if (["menu", "menuLoop", "premessage"].indexOf(target["type"]) >= 0) {
+
 		// If it's a menuLoop response, inject the response at the beginning
 		// of reprinting the menu:
 		if (target["type"] == "menuLoop") {
@@ -123,23 +139,36 @@ function printer(target) {
 				target["description"] = loopInfo["description"];
 			}
 		}
+		else if (target["type"] == "premessage") {
+			newDescription = target["premessage"] + "<br><br>";
+			if (target["destination"] in rooms) target = rooms[target["destination"]];
+			else if (target["destination"] in menus) target = menus[target["destination"]];
+		}
 		// if it's a regular menu:
 		else {
 			newDescription = "";
 			newPrompt = target["prompt"];
 		}
 
-		// then add whatever the menu's full description is now:
-		newDescription += target["description"];
+		// if the player is being sent to a menu:
+		if (target["type"] == "menu") {
+			// then add whatever the menu's full description is now:
+			newDescription += target["description"];
 
-		//lining up the menu's text
-		// to print either way:
-		newDescription += "<ol>";
-		for (var i = 0; i < target["choices"].length; i++) {
-			newDescription += "<li>" + target["choices"][i]["choice"];
+			//lining up the menu's text
+			// to print either way:
+			newDescription += "<ol>";
+			for (var i = 0; i < target["choices"].length; i++) {
+				newDescription += "<li>" + target["choices"][i]["choice"];
+			}
+			newDescription += "</ol>";
+			printDirections("");	
 		}
-		newDescription += "</ol>";
-		printDirections("");	
+		//if they're being sent to a room:
+		else if (target["type"] == "room") {
+			newDescription += target["entrance text"];
+			printDirections(target);
+		}
 	}
 
 	// print everything out (rooms *and* menus)

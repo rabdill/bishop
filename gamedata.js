@@ -80,8 +80,19 @@ menus={
 			{
 				"choice" : "\"Can you tell me a little about this place?\"",
 				"response type" : "loop",
-				"response text" : "\"Sure!\"",
+				"response text" : "\"Sure I can! It's really cool here in the winters.\"",
 				"description" : "\"What else can I help you with?\" he asks."
+			},
+			{
+				"choice" : "\"Why is your face all burned-up looking?\"",
+				"response type" : "loop",
+				"response text" : "\"I'm not at liberty to discuss that.\""
+			},
+			{
+				"choice" : "\"Nevermind, I'm all set.\"",
+				"response type" : "move",
+				"destination" : "lobby",
+				"premessage" : "You walk away."
 			}
 		]
 	}
