@@ -79,14 +79,9 @@ menus={
 		"choices" : [
 			{
 				"choice" : "\"Can you tell me a little about this place?\"",
-				"response type" : "loop",
-				"response text" : "\"Sure I can! It's really cool here in the winters.\"",
-				"description" : "\"What else can I help you with?\" he asks."
-			},
-			{
-				"choice" : "\"Why is your face all burned-up looking?\"",
-				"response type" : "loop",
-				"response text" : "\"I'm not at liberty to discuss that.\""
+				"response type" : "move",
+				"premessage" : "Sure I can!",
+				"destination" : "armorer"
 			},
 			{
 				"choice" : "\"Nevermind, I'm all set.\"",
