@@ -10,7 +10,6 @@ function initialize() {
 	runTests();
 }
 
-
 function processCommand() {
 	command = document.getElementById("command").value
 	//strip out the articles:
@@ -68,6 +67,12 @@ function processCommand() {
 		else if ("actions" in current && command[0] in current["actions"]) {
 			// check if the verb can be applied to the specified object
 			if (command[1] in current["actions"][command[0]]) {
+				if ("changes" in current["actions"][command[0]][command[1]]) {
+					for (var i = 0; i < current["actions"][command[0]][command[1]]["changes"].length; i++) {
+						processChange(current["actions"][command[0]][command[1]]["changes"][i]);
+					}
+				}
+
 				// implement the specified consequences
 				if ("move" in current["actions"][command[0]][command[1]]) {
 					nextMove(current["actions"][command[0]][command[1]]["move"])
@@ -105,8 +110,6 @@ function processCommand() {
 	}
 }
 
-
-
 function printer(target) {
 	if (target["type"] == "room") {
 		if (target["title"] != undefined) {
@@ -126,7 +129,6 @@ function printer(target) {
 
 	// if it's one of the menu response types:
 	else if (["menu", "premessage"].indexOf(target["type"]) >= 0) {
-
 		if (target["type"] == "premessage") {
 			newDescription = target["premessage"] + "<br><br>";
 			if (target["destination"] in rooms) target = rooms[target["destination"]];
@@ -173,6 +175,53 @@ function printer(target) {
 						// elsewhere
 }
 
+function processChange(change) {
+	if (change[0] == "rooms") {
+		switch(change.length) {
+			case 4:
+				rooms[change[1]][change[2]] = change[3];
+				break;
+			case 5:
+				rooms[change[1]][change[2]][change[3]] = change[4];
+				break;
+			case 6:
+				rooms[change[1]][change[2]][change[3]][change[4]] = change[5];
+				break;
+			case 7:
+				rooms[change[1]][change[2]][change[3]][change[4]][change[5]] = change[6];
+				break;
+			case 8:
+				rooms[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]] = change[7];
+				break;
+			default:
+				console.log("Change-processing error: Unrecognized length.");
+		}
+	}
+	else if (change[0] == "menus") {
+		switch(change.length) {
+			case 4:
+				menus[change[1]][change[2]] = change[3];
+				break;
+			case 5:
+				menus[change[1]][change[2]][change[3]] = change[4];
+				break;
+			case 6:
+				menus[change[1]][change[2]][change[3]][change[4]] = change[5];
+				break;
+			case 7:
+				menus[change[1]][change[2]][change[3]][change[4]][change[5]] = change[6];
+				break;
+			case 8:
+				menus[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]] = change[7];
+				break;
+			default:
+				console.log("Change-processing error: Unrecognized length.");
+		}
+	}
+
+	// reprint the current room, in case something got rewritten:
+	printer(current);
+}
 
 function nextMove(target) {
 	if (target in rooms) printer(rooms[target]);
@@ -192,6 +241,7 @@ function error(text) {
 	document.getElementById("error").innerHTML = text;
 	clearCommand();
 }
+
 function message(message) {
 	error("");
 	document.getElementById("description").innerHTML = message;
