@@ -80,8 +80,9 @@ menus={
 			{
 				"choice" : "\"Can you tell me a little about this place?\"",
 				"response type" : "move",
-				"premessage" : "Sure I can!",
-				"destination" : "armorer"
+				"premessage" : "\"Sure I can!,\" he says, \"Tis a lovely place.\"",
+				"destination" : "armorer",
+				"description" : "\"Anything else?\""
 			},
 			{
 				"choice" : "\"Nevermind, I'm all set.\"",
