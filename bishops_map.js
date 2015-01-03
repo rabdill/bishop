@@ -12,7 +12,15 @@ function initialize() {
 
 
 function processCommand() {
-	command = document.getElementById("command").value.split(" ");
+	command = document.getElementById("command").value
+	//strip out the articles:
+	articles = [" the ", " a ", " an ", " to ", " at ", " on "];
+
+	for (var i = 0; i < articles.length; i++) {
+		command = command.replace(articles[i]," ");
+	}
+	command = command.split(" ");
+	console.log("COMMAND: |" + command + "|");
 	if (current["type"] == "room") {
 		// if there are items in the room and the direct object is one of them
 		if ("items" in current && command[1] in current["items"]) {
@@ -74,6 +82,16 @@ function processCommand() {
 		if (command < current["choices"].length) { //make sure it's an option
 			// if the player is supposed to move to a new location:
 			if (current["choices"][command]["response type"] == "move") {
+				// if the destination's description has to be changed:
+				if ("description" in current["choices"][command]) {
+					if (current["choices"][command]["destination"] in rooms) {
+						rooms[current["choices"][command]["destination"]]["entrance text"] = current["choices"][command]["description"];
+					}
+					else if (current["choices"][command]["destination"] in menus) {
+						menus[current["choices"][command]["destination"]]["description"] = current["choices"][command]["description"];
+					}
+				}
+
 				// if there's a message to display before the move
 				if ("premessage" in current["choices"][command]) {
 					toPrint["type"] = "premessage";
