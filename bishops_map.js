@@ -72,18 +72,8 @@ function processCommand() {
 		var toPrint = {};
 		command--;	//because the array starts at #0
 		if (command < current["choices"].length) { //make sure it's an option
-			if (current["choices"][command]["response type"] == "loop") {
-				toPrint["type"] = "menuLoop";
-				toPrint["text"] = current["choices"][command]["response text"];
-				toPrint["description"] = current["choices"][command]["description"];
-
-				// removes the option that got chosen
-				//delete current["choices"][command];
-				current["choices"].splice(command, command + 1)
-				printer(toPrint);
-			}
 			// if the player is supposed to move to a new location:
-			else if (current["choices"][command]["response type"] == "move") {
+			if (current["choices"][command]["response type"] == "move") {
 				// if there's a message to display before the move
 				if ("premessage" in current["choices"][command]) {
 					toPrint["type"] = "premessage";
@@ -97,11 +87,6 @@ function processCommand() {
 	}
 }
 
-
-function nextMove(target) {
-	if (target in rooms) printer(rooms[target]);
-	else if (target in menus) printer(menus[target]);
-}
 
 
 function printer(target) {
@@ -122,24 +107,9 @@ function printer(target) {
 	}
 
 	// if it's one of the menu response types:
-	else if (["menu", "menuLoop", "premessage"].indexOf(target["type"]) >= 0) {
+	else if (["menu", "premessage"].indexOf(target["type"]) >= 0) {
 
-		// If it's a menuLoop response, inject the response at the beginning
-		// of reprinting the menu:
-		if (target["type"] == "menuLoop") {
-			// makes the original menu the "target"
-			// and stores just the loop stuff in "loopInfo":
-			loopInfo = target;
-			target = current;
-			// start off the new description with the new message
-			newDescription = loopInfo["text"] + "<br><br>";
-
-			// if the original menu's description should change, change it:
-			if (loopInfo["description"] != undefined) {
-				target["description"] = loopInfo["description"];
-			}
-		}
-		else if (target["type"] == "premessage") {
+		if (target["type"] == "premessage") {
 			newDescription = target["premessage"] + "<br><br>";
 			if (target["destination"] in rooms) target = rooms[target["destination"]];
 			else if (target["destination"] in menus) target = menus[target["destination"]];
@@ -159,7 +129,9 @@ function printer(target) {
 			// to print either way:
 			newDescription += "<ol>";
 			for (var i = 0; i < target["choices"].length; i++) {
-				newDescription += "<li>" + target["choices"][i]["choice"];
+				if (target["choices"][i] != undefined) {
+					newDescription += "<li>" + target["choices"][i]["choice"];
+				}
 			}
 			newDescription += "</ol>";
 			printDirections("");	
@@ -184,6 +156,11 @@ function printer(target) {
 }
 
 
+function nextMove(target) {
+	if (target in rooms) printer(rooms[target]);
+	else if (target in menus) printer(menus[target]);
+}
+
 function printDirections(room) {
 	result = "<ul>";
 	for (var direction in room["directions"]) {
@@ -192,7 +169,6 @@ function printDirections(room) {
 
 	document.getElementById("directions").innerHTML = result;
 }
-
 
 function error(text) {
 	document.getElementById("error").innerHTML = text;
@@ -203,7 +179,6 @@ function message(message) {
 	document.getElementById("description").innerHTML = message;
 	clearCommand();
 }
-
 
 function clearCommand() {
 	document.getElementById("command").value = "";
@@ -220,7 +195,6 @@ function inventory_add(item, qty) {
 		console.log("Adding " + item + " to player inventory.")
 	}
 }
-
 
 function print_inventory() {
 	toPrint="<strong>Inventory</strong><br>";
