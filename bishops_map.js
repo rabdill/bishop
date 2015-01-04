@@ -191,7 +191,6 @@ function processChange(change) {
 	if (change[0] == "rooms") {
 		switch(change.length) {
 			case 4:
-				console.log("WE'RE HERE");
 				rooms[change[1]][change[2]] = change[3];
 				break;
 			case 5:
