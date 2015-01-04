@@ -58,8 +58,8 @@ function processCommand() {
 		
 
 		else if (command[0] ==  "go") {
-			if (current["directions"][command[1]] != undefined) {
-				result = current["directions"][command[1]];
+			if (current["exits"][command[1]] != undefined) {
+				result = current["exits"][command[1]];
 				nextMove(result);
 			}
 			else error("You are unable to travel " + command[1]+".");
@@ -248,8 +248,8 @@ function nextMove(target) {
 
 function printDirections(room) {
 	result = "<ul>";
-	for (var direction in room["directions"]) {
-		result += "<li>To the " + direction + " is " + rooms[room["directions"][direction]]["name"] + ".";
+	for (var direction in room["exits"]) {
+		result += "<li>To the " + direction + " is " + rooms[room["exits"][direction]]["name"] + ".";
 	}
 
 	document.getElementById("directions").innerHTML = result;
