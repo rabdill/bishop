@@ -177,7 +177,13 @@ function printer(target) {
 
 	// print everything out (rooms *and* menus)
 	if (newPrompt != undefined) {
+		for (var parameter in game) {
+			newPrompt = newPrompt.replace("@"+parameter+"@",game[parameter])
+		}
 		document.getElementById("prompt").innerHTML = newPrompt;
+	}
+	for (var parameter in game) {
+		newDescription = newDescription.replace("@"+parameter+"@",game[parameter])
 	}
 	document.getElementById("description").innerHTML = newDescription;
 	clearCommand();
