@@ -41,6 +41,11 @@ rooms={
 						"descriptor" : "",
 						"from" : {
 							"default" : "When the armorer turns to adjust some insanely sharp implement behind him, you slip the battle hammer into your cloak."
+						},
+						"changes" : {
+							"default" : [
+								["rooms", "town square", "entrance text", "THIS WORKS SHIT YEAH BRO"]
+							]
 						}
 					}
 				}

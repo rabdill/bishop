@@ -19,15 +19,27 @@ function processCommand() {
 		command = command.replace(articles[i]," ");
 	}
 	command = command.split(" ");
-	console.log("COMMAND: |" + command + "|");
 	if (current["type"] == "room") {
 		// if there are items in the room and the direct object is one of them
 		if ("items" in current && command[1] in current["items"]) {
 			// if the action can be taken against that item:
 			if (command[0] in current["items"][command[1]]["states"]) {
-				//if the item can be put into the proposed state from its current state, do it:
+				//if the item can be put into the proposed state from its current state:
 	            if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
+	            	// print the transition message:
 					message(current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]]);
+
+					// if it has any changes associated with it, change em:
+					if ("changes" in current["items"][command[1]]["states"][command[0]]) {
+						// if it has any changes coming from its current state into the new one:
+						if(current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["changes"]) {
+							for (var i = 0; i < current["items"][command[1]]["states"][command[0]]["changes"][current["items"][command[1]]["status"]].length; i++) {
+								processChange(current["items"][command[1]]["states"][command[0]]["changes"][current["items"][command[1]]["status"]][i]);
+							}
+						}
+					}
+
+					// switch to the new state:
 					current["items"][command[1]]["status"] = command[0];
 
 					// also, if it's "take," add it to inventory:
@@ -179,6 +191,7 @@ function processChange(change) {
 	if (change[0] == "rooms") {
 		switch(change.length) {
 			case 4:
+				console.log("WE'RE HERE");
 				rooms[change[1]][change[2]] = change[3];
 				break;
 			case 5:
