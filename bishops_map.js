@@ -28,7 +28,6 @@ function processCommand() {
 	            if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
 	            	// print the transition message:
 					message(current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]]);
-
 					// if it has any changes associated with it, change em:
 					if ("changes" in current["items"][command[1]]["states"][command[0]]) {
 						// if it has any changes coming from its current state into the new one:
@@ -38,7 +37,6 @@ function processCommand() {
 							}
 						}
 					}
-
 					// switch to the new state:
 					current["items"][command[1]]["status"] = command[0];
 
@@ -55,8 +53,6 @@ function processCommand() {
 				error("You can't " + command[0] + " the " + command[1] + ".");
 			}
 		}
-		
-
 		else if (command[0] ==  "go") {
 			if (current["exits"][command[1]] != undefined) {
 				result = current["exits"][command[1]];
@@ -74,7 +70,6 @@ function processCommand() {
 				printer(current);
 			}
 		}
-
 		// check the room's possible actions
 		else if ("actions" in current && command[0] in current["actions"]) {
 			// check if the verb can be applied to the specified object
@@ -84,7 +79,6 @@ function processCommand() {
 						processChange(current["actions"][command[0]][command[1]]["changes"][i]);
 					}
 				}
-
 				// implement the specified consequences
 				if ("move" in current["actions"][command[0]][command[1]]) {
 					nextMove(current["actions"][command[0]][command[1]]["move"])
@@ -236,14 +230,28 @@ function processChange(change) {
 				console.log("Change-processing error: Unrecognized length.");
 		}
 	}
-
 	// reprint the current room, in case something got rewritten:
-	printer(current);
+	//printer(current);
 }
 
 function nextMove(target) {
-	if (target in rooms) printer(rooms[target]);
-	else if (target in menus) printer(menus[target]);
+	if (target in rooms) {
+		if ("changes" in rooms[target]) {
+			for (var i = 0; i < rooms[target]["changes"].length; i++) {
+				processChange(rooms[target]["changes"][i]);
+			}
+		}
+		current = rooms[target];
+	}
+	else if (target in menus) {
+		if ("changes" in menus[target]) {
+			for (var i = 0; i < menus[target]["changes"].length; i++) {
+				processChange(menus[target]["changes"][i]);
+			}
+		}
+		current = menus[target];
+	}
+	printer(current);
 }
 
 function printDirections(room) {
