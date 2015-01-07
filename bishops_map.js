@@ -28,10 +28,11 @@ function processCommand() {
 	            if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
 	            	// print the transition message:
 					message(current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]]);
-					// if it has any changes associated with it, change em:
+					// if it has any changes associated with it:
 					if ("changes" in current["items"][command[1]]["states"][command[0]]) {
 						// if it has any changes coming from its current state into the new one:
 						if(current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["changes"]) {
+							//make all the changes:
 							for (var i = 0; i < current["items"][command[1]]["states"][command[0]]["changes"][current["items"][command[1]]["status"]].length; i++) {
 								processChange(current["items"][command[1]]["states"][command[0]]["changes"][current["items"][command[1]]["status"]][i]);
 							}
@@ -80,7 +81,10 @@ function processCommand() {
 					}
 				}
 				// implement the specified consequences
-				if ("move" in current["actions"][command[0]][command[1]]) {
+				if ("print" in current["actions"][command[0]][command[1]]) {
+					message(current["actions"][command[0]][command[1]]["print"]);
+				}
+				else if ("move" in current["actions"][command[0]][command[1]]) {
 					nextMove(current["actions"][command[0]][command[1]]["move"])
 				}
 			}
