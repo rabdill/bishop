@@ -1,0 +1,13 @@
+{
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "manifest_version": 2,
+  "name": "Bishops Map",
+  "version": "0.0",
+  "description": "A game engine for Zork-like text adventures."
+  //"icons": {...},
+
+}
