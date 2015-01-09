@@ -1,3 +1,6 @@
+window.addEventListener("load", initialize);
+document.getElementById("button1").addEventListener("click",processCommand);
+
 function initialize() {
 	document.getElementById("gameName").innerHTML = game["title"];
 	newPrompt="";
@@ -18,6 +21,7 @@ function processCommand() {
 	for (var i = 0; i < articles.length; i++) {
 		command = command.replace(articles[i]," ");
 	}
+
 	command = command.split(" ");
 	if (current["type"] == "room") {
 		// if there are items in the room and the direct object is one of them
@@ -134,7 +138,12 @@ function printer(target) {
 			}
 		}
 		newPrompt = target["prompt"];
-		printDirections(target);
+
+		// print out the exits
+		newDescription += "<ul>";
+		for (var exit in target["exits"]) {
+			newDescription += "<li>To the " + exit + " is " + rooms[target["exits"][exit]]["name"] + ".";
+		}
 	}
 
 	// if it's one of the menu response types:
@@ -258,14 +267,6 @@ function nextMove(target) {
 	printer(current);
 }
 
-function printDirections(room) {
-	result = "<ul>";
-	for (var direction in room["exits"]) {
-		result += "<li>To the " + direction + " is " + rooms[room["exits"][direction]]["name"] + ".";
-	}
-
-	document.getElementById("directions").innerHTML = result;
-}
 
 function error(text) {
 	document.getElementById("error").innerHTML = text;
