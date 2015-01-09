@@ -1,4 +1,12 @@
-#description #directions {
+.messages {
+	margin-top: 240px;
+}
+
+.command {
+	margin-top: 300px;
+}
+
+.absolute {
 	position: absolute;
 }
 

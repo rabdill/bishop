@@ -1,43 +1,29 @@
 <html>
 <head>
 	<script type="text/javascript" src="gamedata.js"></script>
-	<script type="text/javascript" src="bishops_map.js"></script>
-	<script type="text/javascript" src="testing.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.0/css/foundation.css">
 	<link rel="stylesheet" href="css/main.css">
 	<title>Bishop's Map</title>
 </head>
-<body onload="initialize();">
-	<div class="small-12 columns">
-		<h3>Bishop's Map</h3>
-		<h1 id="gameName" class="padded-bottom">Your Custom Game</h1>
-	</div>
-	<div class="row">
-		<div class="large-4 medium-8 columns">
-			<p id="description">Testinggg</p>
-		</div>
-		<div class="medium-4 columns end">
-			<p id="directions"></p>
-		</div>
+<body>
+	<h3>Bishop's Map</h3>
+	<h1 id="gameName" class="padded-bottom">Your Custom Game</h1>
+	
+	<p id="description" class="absolute">This is sample text. If you see this, something went wrong with loading your game.</p>
+	
+	<p id="directions" class="absolute"></p>
 
-	</div>
-
-	<form action="#">
-		<div class="row padded-top">
-			<div class="small-6 columns">
-				<span id="prompt">What to do?</span>
-				<input type="text" id="command" value="go west">
-			</div>
+	<form id="commandEntry" action="#">
+		<div class="messages absolute">
+			<p id="error"></p>
+			<p id="message"></p>
 		</div>
-		<div class="row">
-			<div class="small-2 columns">
-				<input type="submit" id="submit" onclick="processCommand()" class="round button">
-			</div>
-			<div class="small-6 columns end">
-				<p id="error"></p>
-				<p id="message"></p>
-			</div>
+		<div class="command absolute">
+			<span id="prompt">What to do?</span>
+				<input type="text" id="command">
+				<input type="submit" id="button1" class="round button">
 		</div>
 	</form>
+	<script type="text/javascript" src="bishops_map.js"></script>
+	<script type="text/javascript" src="testing.js"></script>
 </body>
 </html>
