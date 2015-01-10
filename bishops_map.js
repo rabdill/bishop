@@ -16,7 +16,7 @@ function initialize() {
 function processCommand() {
 	command = document.getElementById("command").value
 	//strip out the articles:
-	articles = [" the ", " a ", " an ", " to ", " at ", " on "];
+	var articles = [" the ", " a ", " an ", " to ", " at ", " on "];
 
 	for (var i = 0; i < articles.length; i++) {
 		command = command.replace(articles[i]," ");
@@ -60,8 +60,7 @@ function processCommand() {
 		}
 		else if (command[0] ==  "go") {
 			if (current["exits"][command[1]] != undefined) {
-				result = current["exits"][command[1]];
-				nextMove(result);
+				nextMove(current["exits"][command[1]]);
 			}
 			else error("You are unable to travel " + command[1]+".");
 		}
@@ -72,7 +71,7 @@ function processCommand() {
 		}
 		else if (command[0] == "look") {
 			if (command[1] == "around") {
-				printer(current);
+				printer(current); //just reprint the current location
 			}
 		}
 		// check the room's possible actions
@@ -97,7 +96,7 @@ function processCommand() {
 	}
 	else if (current["type"] == "menu") {
 		var toPrint = {};
-		command--;	//because the array starts at #0
+		command--;	//because the array starts at #0 but the option numbers start at 1
 		if (command < current["choices"].length) { //make sure it's an option
 			// if the player is supposed to move to a new location:
 			if (current["choices"][command]["response type"] == "move") {
@@ -125,6 +124,7 @@ function processCommand() {
 }
 
 function printer(target) {
+	var newDescription;
 	if (target["type"] == "room") {
 		if (target["title"] != undefined) {
 			newDescription = "<strong>" + target["title"] + "</strong><br>" + target["entrance text"];
@@ -137,7 +137,7 @@ function printer(target) {
 				newDescription += "<br>" + target["items"][item]["states"][target["items"][item]["status"]]["descriptor"];
 			}
 		}
-		newPrompt = target["prompt"];
+		var newPrompt = target["prompt"];
 
 		// print out the exits
 		newDescription += "<ul>";
@@ -184,6 +184,7 @@ function printer(target) {
 
 	// print everything out (rooms *and* menus)
 	if (newPrompt != undefined) {
+		// replace any variables in the strings
 		for (var parameter in game) {
 			newPrompt = newPrompt.replace("@"+parameter+"@",game[parameter])
 		}
@@ -196,8 +197,7 @@ function printer(target) {
 	clearCommand();
 	//clear the error box:
 	error("");
-	current = target;	// required to be able to reference "current"
-						// elsewhere
+	current = target;
 }
 
 function processChange(change) {
@@ -243,11 +243,10 @@ function processChange(change) {
 				console.log("Change-processing error: Unrecognized length.");
 		}
 	}
-	// reprint the current room, in case something got rewritten:
-	//printer(current);
 }
 
 function nextMove(target) {
+	currentLocation = target;
 	if (target in rooms) {
 		if ("changes" in rooms[target]) {
 			for (var i = 0; i < rooms[target]["changes"].length; i++) {
@@ -296,8 +295,8 @@ function inventory_add(item, qty) {
 }
 
 function print_inventory() {
-	toPrint="<strong>Inventory</strong><br>";
-	hasItems = false;
+	var toPrint = "<strong>Inventory</strong><br>";
+	var hasItems = false;
 
 	for (var item in player["inventory"]) {
 		//if you have at least one of the thing:
