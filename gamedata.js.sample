@@ -1,0 +1,73 @@
+currentLocation="lobby";
+
+player={
+	"inventory" : {}
+}
+
+rooms={
+	"lobby" : {
+	    "type" : "room",
+	    "name" : "the game lobby",
+	    "exits": {
+	        "south": "town square"
+	    },
+	    "entrance text" : "You are in the first room of the new, data-driven world we are creating in an attempt to be a halfway intelligent human."
+	},
+
+	"town square": {
+	    "type" : "room",
+	    "name" : "the town square",
+	    "look" : "The town square, full of people and activities.",
+	    "exits": {
+	        "north" : "lobby",
+	        "west"  : "copy room"
+	    },
+	    "entrance text" : "You are in the town square, which is bustling with activity. All seems well.",
+	    "items" : {
+	        "pumpkin" : {
+	            "name" : "pumpkin",
+	            "status" : "default",
+	            "states" : {
+	                "default" : {
+	                    "descriptor" : "A large pumpkin sits by the door."
+	                },
+	                "take" : {
+	                    "descriptor" : "",
+	                    "from" : {
+	                    	"default" : "You take the pumpkin."
+	                    }
+	                },
+	                "smash" : {
+	                    "descriptor" : "The gloppy remains of a smashed-up old pumpkin sit by the door.",
+	                    "from" : {
+	                    	"default" : "You lift the pumpkin high over your head and slam it back down on the porch. It crumbles into little pumpkin chunklets."
+	                    }
+	                }
+	            }
+	        }
+	    }
+	},
+	"copy room": {
+	    "type" : "room",
+	    "name" : "the front of the cider brewery",
+	    "look" : "The room where everybody makes their photocopies. Doesn't look like anyone's in there.",
+	    
+	    "exits": {
+	        "east" : "town square"
+	    },  
+	    
+	    "entrance text" : "The copy room - it's small, quiet, and smells faintly of ozone. Papers are strewn all over the floor. A poster hangs over the Xerox machine.",
+	    "actions" : {
+	        "inspect" : {
+	            "poster" : {
+	            	"print" : "It is a black poster with bright, bold red lettering: \"DON'T MAKE COLOR COPIES UNLESS ABSOLUTELY NECESSARY.\""
+	            }
+	        }
+	    }
+	    }
+	}
+}
+
+game={
+	"title" : "Sweet Sample Game Numero Uno",
+}
