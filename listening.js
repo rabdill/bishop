@@ -50,7 +50,7 @@ function capitalize(s) {
 function linitialize() {
     speech = new webkitSpeechRecognition();
     interim_transcript = "";
-    speech.continuous = false;
+    speech.continuous = true;
     speech.maxAlternatives = 5;
     speech.interimResults = true;
     speech.lang = "en-us";
@@ -117,7 +117,7 @@ speech.onresult = function(e) {
             interim_transcript += " " + val;
         }
     }
-    document.getElementById("near-command").innerHTML = interim_transcript;
+    document.getElementById("in-progress").innerHTML = interim_transcript;
 };
 
 

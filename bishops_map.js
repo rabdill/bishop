@@ -221,7 +221,7 @@ function printer(target) {
 
 function nextMove(target) {
     console.log("Yeah, we're here");
-    if(working) stopit();
+    //if(working) stopit();
 
     currentLocation = target;
     if (target in rooms) {
