@@ -1,7 +1,8 @@
 function lreset() {
+    speechSynthesis.cancel();
     console.log("Resetting.");
-    document.getElementById("btn").innerHTML = "Start Dictation";
-    localStorage["transcript"], interim_transcript, final_transcript = "";
+    document.getElementById("listening").innerHTML = "Start Listening";
+    localStorage["transcript"], interim_transcript, final_transcript, document.getElementById("command").value = "";
 }
 
 function stopit() {
@@ -21,7 +22,7 @@ function action() {
         speech.start();
         working = true;
         console.log("STARTING");
-        document.getElementById("btn").innerHTML = "Stop Listening";
+        document.getElementById("listening").innerHTML = "Stop Listening";
     }
 }
 
@@ -59,6 +60,7 @@ function linitialize() {
     console.log("Linitializing");
     document.getElementById("command").value = "";
     lreset();
+    action();
 }
 
 var clear, working, speech, final_transcript = "";
@@ -109,16 +111,18 @@ speech.onresult = function(e) {
     for (var i = e.resultIndex; i < e.results.length; ++i) {
         var val = e.results[i][0].transcript;
         if (e.results[i].isFinal) {
-            final_transcript += val;
+            final_transcript = val;
             document.getElementById("command").value = final_transcript;
             console.log("command: |" + final_transcript + "|");
+            interim_transcript, final_transcript = "";
             document.getElementById("button1").click();
         } else {
-            interim_transcript += " " + val;
+            interim_transcript = val;
         }
     }
-    document.getElementById("in-progress").innerHTML = interim_transcript;
+    document.getElementById("command").value = interim_transcript;
+
 };
 
 
-document.getElementById("btn").addEventListener("click", action);
+document.getElementById("listening").addEventListener("click", action);
