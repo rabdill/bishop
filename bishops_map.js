@@ -21,6 +21,15 @@ function processCommand() {
     }
 
     command = command.split(" ");
+    // fix the array in case the command for some reason starts with a space:
+
+    if (command[0] == "") {
+        var j;
+        for (j = 1; j < command.length; j++) {
+            command[j-1] = command[j];
+        }
+
+    }
     if (current["type"] == "room") {
         // if there are items in the room and the direct object is one of them
         if ("items" in current && command[1] in current["items"]) {
@@ -93,7 +102,7 @@ function processCommand() {
             }
         }
         else {
-        	error("Sorry, unrecognized command.");
+        	error("Sorry, unrecognized command: |" + command[0] + "|" + command[1] + "|");
         }
     }
     else if (current["type"] == "menu") {
@@ -205,13 +214,7 @@ function printer(target) {
     }
     document.getElementById("description").innerHTML = newDescription;
 
-    // Translate the printed description into one that can be read by the speaker:
-    var toSpeak = newDescription.replace("<ul>","");
-    toSpeak = toSpeak.replace("<li>","");
-    var msg = new SpeechSynthesisUtterance(toSpeak);
-    window.speechSynthesis.speak(msg);
-
-
+    say(newDescription);
     clearCommand();
     //clear the error box:
     error("");
@@ -220,9 +223,6 @@ function printer(target) {
 
 
 function nextMove(target) {
-    console.log("Yeah, we're here");
-    //if(working) stopit();
-
     currentLocation = target;
     if (target in rooms) {
         if ("changes" in rooms[target]) {
