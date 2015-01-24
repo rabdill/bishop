@@ -204,6 +204,14 @@ function printer(target) {
         newDescription = newDescription.replace("@"+parameter+"@",game[parameter]);
     }
     document.getElementById("description").innerHTML = newDescription;
+
+    // Translate the printed description into one that can be read by the speaker:
+    var toSpeak = newDescription.replace("<ul>","");
+    toSpeak = toSpeak.replace("<li>","");
+    var msg = new SpeechSynthesisUtterance(toSpeak);
+    window.speechSynthesis.speak(msg);
+
+
     clearCommand();
     //clear the error box:
     error("");
@@ -212,6 +220,9 @@ function printer(target) {
 
 
 function nextMove(target) {
+    console.log("Yeah, we're here");
+    if(working) stopit();
+
     currentLocation = target;
     if (target in rooms) {
         if ("changes" in rooms[target]) {
