@@ -4,7 +4,7 @@ function say(words) {
 	//won't get killed)
 	toSpeak = words.replace(/<strong>.*?<\/strong><br>/,"");
 	//strip out HTML
-    words = words.replace(/<\/?[a-z]*>/g,"");
+    toSpeak = toSpeak.replace(/<\/?[a-z]*>/g,"");
 
     //this is where we should break up "toSpeak" into chunks,
     // to prevent the end of messages from getting chopped off.
