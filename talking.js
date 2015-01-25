@@ -1,5 +1,10 @@
 function say(words) {
-    toSpeak = words.replace(/<\/?[a-z]*>/g,""); //strip out HTML
+	//strip out the title
+	//(and only do it once, so bold type elsewhere
+	//won't get killed)
+	toSpeak = words.replace(/<strong>.*?<\/strong><br>/,"");
+	//strip out HTML
+    words = words.replace(/<\/?[a-z]*>/g,"");
 
     //this is where we should break up "toSpeak" into chunks,
     // to prevent the end of messages from getting chopped off.

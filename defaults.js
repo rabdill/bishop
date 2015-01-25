@@ -9,8 +9,7 @@ required = {
 // this just loops through the defaults, no need to fiddle with it:
 for (var parameter in required) {
 	if (parameter in game){
-		console.log(parameter + " is defined");
-		pass;
+		console.log(parameter + " is defined.");
 	}
 	else {
 		console.log("\"" + parameter + "\" is NOT defined, setting to "+ required[parameter]);

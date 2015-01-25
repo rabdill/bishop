@@ -297,6 +297,11 @@ function processChange(change) {
 function error(text) {
     document.getElementById("error").innerHTML = text;
     clearCommand();
+
+    // read the error aloud if everything else is getting read:
+    if (game["allow text to speech"]) {
+        say(text);
+    }
 }
 
 function message(message) {
