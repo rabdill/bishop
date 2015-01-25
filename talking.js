@@ -1,7 +1,12 @@
 function say(words) {
     toSpeak = words.replace(/<\/?[a-z]*>/g,""); //strip out HTML
+
+    //this is where we should break up "toSpeak" into chunks,
+    // to prevent the end of messages from getting chopped off.
     console.log("SPEAKING: " + toSpeak);
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(toSpeak));
+    utterance = new SpeechSynthesisUtterance(toSpeak);
+	utterance.lang = 'en-GB';
+    window.speechSynthesis.speak(utterance);
 }
 
 function shutup() {
