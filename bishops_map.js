@@ -214,7 +214,9 @@ function printer(target) {
     }
     document.getElementById("description").innerHTML = newDescription;
 
-    say(newDescription);
+    if (game["allow text to speech"]) {
+        say(newDescription);
+    }
     clearCommand();
     //clear the error box:
     error("");
