@@ -99,7 +99,7 @@ speech.onerror = function(e) {
     } else if (e.error === 'not-allowed') {
         msg = "The app cannot access your microphone. Please go to chrome://settings/contentExceptions#media-stream and allow Microphone access to this website.";
     }
-    document.getElementById("command").value = msg;
+    error(msg);
 };
 
 speech.onresult = function(e) {
