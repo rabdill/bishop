@@ -100,12 +100,10 @@ function processCommand(command) {
                 }
             }
             // if the action isn't found, check if it's a synonym of one:
-            else if ("synonyms" in current && "item states" in current["synonyms"]) {
-                for (item in current["synonyms"]["item states"]) {
-                    for (state in current["synonyms"]["item states"][item]) {
-                        if (current["synonyms"]["item states"][item][state].indexOf(command[0]) >= 0) {
-                            processCommand(state + " " + command[1]);
-                        }
+            else if ("synonyms" in current && "item states" in current["synonyms"] && command[1] in current["synonyms"]["item states"]) {
+                for (state in current["synonyms"]["item states"][command[1]]) {
+                    if (current["synonyms"]["item states"][item][state].indexOf(command[0]) >= 0) {
+                        processCommand(state + " " + command[1]);
                     }
                 }
             }
