@@ -10,8 +10,11 @@ function initialize() {
     runTests();
 }
 
-function processCommand() {
-    command = document.getElementById("command").value;
+function processCommand(command) {
+    // if nothing is passed to the function, just grab the typed command:
+    // (will happen almost every time)
+    if (typeof command !== "string") command = document.getElementById("command").value;
+    
     //strip out the articles:
     var articles = [" the ", " a ", " an ", " to ", " at ", " on "];
     var i;    // loop iterator
@@ -100,7 +103,21 @@ function processCommand() {
                 error("You can't " + command[0] + " the " + command[1] + ".");
             }
         }
-        
+        // if the player referenced an item by a synonym:
+        else if ("synonyms" in current && "items" in current["synonyms"]) {
+            var unfound = true
+            // look in all the item synonym lists
+            for (item in current["synonyms"]["items"]) {
+                // if the specified item is in a synonym list, swap it out for the
+                // real name of the item and re-process the command:
+                if (current["synonyms"]["items"][item].indexOf(command[1]) >= 0) {
+                    processCommand(command[0] + " " + item)
+                    var unfound = false
+                }
+            }
+            //if we didn't find the item in any lis of synonyms:
+            if (unfound) error("Sorry, unrecognized command: |" + command[0] + "|" + command[1] + "|");
+        }
         else {
         	error("Sorry, unrecognized command: |" + command[0] + "|" + command[1] + "|");
         }
