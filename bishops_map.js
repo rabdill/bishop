@@ -22,7 +22,6 @@ function processCommand() {
 
     command = command.split(" ");
     // fix the array in case the command for some reason starts with a space:
-
     if (command[0] == "") {
         var j;
         for (j = 1; j < command.length; j++) {
@@ -31,8 +30,44 @@ function processCommand() {
 
     }
     if (current["type"] == "room") {
+        if (command[0] ==  "go") {
+            if (current["exits"][command[1]] != undefined) {
+                nextMove(current["exits"][command[1]]);
+            }
+            else {
+                error("You are unable to travel " + command[1]+".");
+            }
+        }
+        else if (command[0] == "view") {
+            if (command[1] == "inventory") {
+                print_inventory();
+            }
+        }
+        else if (command[0] == "look") {
+            if (command[1] == "around") {
+                printer(current); //just reprint the current location
+            }
+        }
+        // check the room's possible actions
+        else if ("actions" in current && command[0] in current["actions"]) {
+            // check if the verb can be applied to the specified object
+            if (command[1] in current["actions"][command[0]]) {
+                if ("changes" in current["actions"][command[0]][command[1]]) {
+                    for (i = 0; i < current["actions"][command[0]][command[1]]["changes"].length; i++) {
+                        processChange(current["actions"][command[0]][command[1]]["changes"][i]);
+                    }
+                }
+                // implement the specified consequences
+                if ("print" in current["actions"][command[0]][command[1]]) {
+                    message(current["actions"][command[0]][command[1]]["print"]);
+                }
+                else if ("move" in current["actions"][command[0]][command[1]]) {
+                    nextMove(current["actions"][command[0]][command[1]]["move"]);
+                }
+            }
+        }
         // if there are items in the room and the direct object is one of them
-        if ("items" in current && command[1] in current["items"]) {
+        else if ("items" in current && command[1] in current["items"]) {
             // if the action can be taken against that item:
             if (command[0] in current["items"][command[1]]["states"]) {
                 //if the item can be put into the proposed state from its current state:
@@ -65,42 +100,7 @@ function processCommand() {
                 error("You can't " + command[0] + " the " + command[1] + ".");
             }
         }
-        else if (command[0] ==  "go") {
-            if (current["exits"][command[1]] != undefined) {
-                nextMove(current["exits"][command[1]]);
-            }
-            else {
-            	error("You are unable to travel " + command[1]+".");
-            }
-        }
-        else if (command[0] == "view") {
-            if (command[1] == "inventory") {
-                print_inventory();
-            }
-        }
-        else if (command[0] == "look") {
-            if (command[1] == "around") {
-                printer(current); //just reprint the current location
-            }
-        }
-        // check the room's possible actions
-        else if ("actions" in current && command[0] in current["actions"]) {
-            // check if the verb can be applied to the specified object
-            if (command[1] in current["actions"][command[0]]) {
-                if ("changes" in current["actions"][command[0]][command[1]]) {
-                    for (i = 0; i < current["actions"][command[0]][command[1]]["changes"].length; i++) {
-                        processChange(current["actions"][command[0]][command[1]]["changes"][i]);
-                    }
-                }
-                // implement the specified consequences
-                if ("print" in current["actions"][command[0]][command[1]]) {
-                    message(current["actions"][command[0]][command[1]]["print"]);
-                }
-                else if ("move" in current["actions"][command[0]][command[1]]) {
-                    nextMove(current["actions"][command[0]][command[1]]["move"]);
-                }
-            }
-        }
+        
         else {
         	error("Sorry, unrecognized command: |" + command[0] + "|" + command[1] + "|");
         }
