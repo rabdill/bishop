@@ -99,6 +99,17 @@ function processCommand(command) {
                     error("You can't " + command[0] + " that after you " + current["items"][command[1]]["status"] + " it.");
                 }
             }
+            // if the action isn't found, check if it's a synonym of one:
+            else if ("synonyms" in current && "item states" in current["synonyms"]) {
+                for (item in current["synonyms"]["item states"]) {
+                    for (state in current["synonyms"]["item states"][item]) {
+                        if (current["synonyms"]["item states"][item][state].indexOf(command[0]) >= 0) {
+                            processCommand(state + " " + command[1]);
+                        }
+                    }
+                }
+            }
+
             else {
                 error("You can't " + command[0] + " the " + command[1] + ".");
             }
