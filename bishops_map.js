@@ -69,6 +69,20 @@ function processCommand(command) {
                 }
             }
         }
+        else if ("synonyms" in current && "actions" in current["synonyms"]) {
+            var unfound = true
+            // look in all the item synonym lists
+            for (action in current["synonyms"]["actions"]) {
+                // if the specified action is in a synonym list, swap it out for the
+                // real name of the action and re-process the command:
+                if (current["synonyms"]["actions"][action].indexOf(command[0]) >= 0) {
+                    processCommand(action + " " + command[1])
+                    var unfound = false
+                }
+            }
+            //if we didn't find the action in any list of synonyms:
+            if (unfound) error("Sorry, unrecognized command: |" + command[0] + "|" + command[1] + "|");
+        }
         // if there are items in the room and the direct object is one of them
         else if ("items" in current && command[1] in current["items"]) {
             // if the action can be taken against that item:
@@ -127,7 +141,7 @@ function processCommand(command) {
                     var unfound = false
                 }
             }
-            //if we didn't find the item in any lis of synonyms:
+            //if we didn't find the item in any list of synonyms:
             if (unfound) error("Sorry, unrecognized command: |" + command[0] + "|" + command[1] + "|");
         }
         else {
