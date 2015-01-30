@@ -4,14 +4,13 @@ function runTests() {
 
 	// Edit this line to start the game in a different location:
 	moveLocation="copy room";
-		commands = [
-		// Enter the test commands to be entered sequentially here:
-			"go south",
-			"inspect mail"
-		];
+	commands = [
+	// Enter the test commands to be entered sequentially here:
+		"go south",
+		"inspect mail"
+	];
 
 	if (debugMode) {
-
 		if (moveLocation != undefined) {
 			console.log("DEBUG MODE: Moving player to " + moveLocation + ".");
 			nextMove(moveLocation);
