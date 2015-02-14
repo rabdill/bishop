@@ -33,58 +33,65 @@ function processCommand(command) {
 
     }
     if (current["type"] == "room") {
+        var searching = true;
+        // "searching" is used to keep track of whether or not a command
+        // has been processed, to prevent it from getting accepted from
+        // one section and rejected by another.
         if (command[0] ==  "go") {
             if (current["exits"][command[1]] != undefined) {
+                searching = false;
                 nextMove(current["exits"][command[1]]);
             }
-            else {
-                error("You are unable to travel " + command[1]+".");
-            }
         }
-        else if (command[0] == "view") {
+        if (command[0] == "view" && searching) {
             if (command[1] == "inventory") {
+                searching = false;
                 print_inventory();
             }
         }
-        else if (command[0] == "look") {
+        if (command[0] == "look" && searching) {
             if (command[1] == "around") {
+                searching = false;
                 printer(current); //just reprint the current location
             }
         }
         // check the room's possible actions
-        else if ("actions" in current && command[0] in current["actions"]) {
+        if ("actions" in current && command[0] in current["actions"] && searching) {
+            // if the verb is in the room,
             // check if the verb can be applied to the specified object
             if (command[1] in current["actions"][command[0]]) {
+                // implement any changes
                 if ("changes" in current["actions"][command[0]][command[1]]) {
                     for (i = 0; i < current["actions"][command[0]][command[1]]["changes"].length; i++) {
+                        searching = false;
                         processChange(current["actions"][command[0]][command[1]]["changes"][i]);
                     }
                 }
-                // implement the specified consequences
+                // print out a message, if there is one
                 if ("print" in current["actions"][command[0]][command[1]]) {
+                    searching = false;
                     message(current["actions"][command[0]][command[1]]["print"]);
                 }
+                // otherwise if the result is a move, go there:
                 else if ("move" in current["actions"][command[0]][command[1]]) {
+                    searching = false;
                     nextMove(current["actions"][command[0]][command[1]]["move"]);
                 }
             }
         }
-        else if ("synonyms" in current && "actions" in current["synonyms"]) {
-            var unfound = true
+        if ("synonyms" in current && "actions" in current["synonyms"] && searching) {
             // look in all the item synonym lists
             for (action in current["synonyms"]["actions"]) {
                 // if the specified action is in a synonym list, swap it out for the
                 // real name of the action and re-process the command:
                 if (current["synonyms"]["actions"][action].indexOf(command[0]) >= 0) {
-                    processCommand(action + " " + command[1])
-                    var unfound = false
+                    searching = false;
+                    processCommand(action + " " + command[1]);
                 }
             }
-            //if we didn't find the action in any list of synonyms:
-            if (unfound) error("Sorry, unrecognized command: |" + command[0] + "|" + command[1] + "|");
         }
         // if there are items in the room and the direct object is one of them
-        else if ("items" in current && command[1] in current["items"]) {
+        if ("items" in current && command[1] in current["items"] && searching) {
             // if the action can be taken against that item:
             if (command[0] in current["items"][command[1]]["states"]) {
                 //if the item can be put into the proposed state from its current state:
@@ -108,44 +115,33 @@ function processCommand(command) {
                     if (command[0] == "take") {
                         inventory_add(current["items"][command[1]]["name"], 1);
                     }
-                }
-                else {
-                    error("You can't " + command[0] + " that after you " + current["items"][command[1]]["status"] + " it.");
+                    searching = false;
                 }
             }
             // if the action isn't found, check if it's a synonym of one:
             else if ("synonyms" in current && "item states" in current["synonyms"] && command[1] in current["synonyms"]["item states"]) {
-                var unfound = true;
                 for (state in current["synonyms"]["item states"][command[1]]) {
                     if (current["synonyms"]["item states"][item][state].indexOf(command[0]) >= 0) {
+                        searching = false;
                         processCommand(state + " " + command[1]);
-                        unfound = false;
                     }
                 }
-                if (unfound) error("You can't " + command[0] + " the " + command[1] + ".");
-            }
-
-            else {
-                error("You can't " + command[0] + " the " + command[1] + ".");
             }
         }
         // if the player referenced an item by a synonym:
         else if ("synonyms" in current && "items" in current["synonyms"]) {
-            var unfound = true
             // look in all the item synonym lists
             for (item in current["synonyms"]["items"]) {
                 // if the specified item is in a synonym list, swap it out for the
                 // real name of the item and re-process the command:
                 if (current["synonyms"]["items"][item].indexOf(command[1]) >= 0) {
+                    searching = false;
                     processCommand(command[0] + " " + item)
-                    var unfound = false
                 }
             }
-            //if we didn't find the item in any list of synonyms:
-            if (unfound) error("Sorry, unrecognized command: |" + command[0] + "|" + command[1] + "|");
         }
-        else {
-        	error("Sorry, unrecognized command: |" + command[0] + "|" + command[1] + "|");
+        if (searching) {
+            error("NOPE, SORRY BUB");
         }
     }
     else if (current["type"] == "menu") {
