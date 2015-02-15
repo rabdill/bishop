@@ -398,4 +398,4 @@ function print_inventory() {
 
 // connect the code to the DOM:
 window.addEventListener("load", initialize);
-document.getElementById("button1").addEventListener("click", processCommand);
+document.getElementById("sendCommand").addEventListener("click", processCommand);
