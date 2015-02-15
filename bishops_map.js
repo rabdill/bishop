@@ -78,6 +78,15 @@ function processCommand(command) {
                     nextMove(current["actions"][command[0]][command[1]]["move"]);
                 }
             }
+            // check if the target of the action might be a synonym
+            else if ("synonyms" in current && "direct objects" in current["synonyms"]) {
+                for (object in current["synonyms"]["direct objects"]) {
+                    if (current["synonyms"]["direct objects"][object].indexOf(command[1]) >= 0) {
+                        searching = false;
+                        processCommand(command[0] + " " + state);
+                    }
+                }
+            }
         }
         if ("synonyms" in current && "actions" in current["synonyms"] && searching) {
             // look in all the item synonym lists
@@ -108,7 +117,7 @@ function processCommand(command) {
                             }
                         }
                     }
-                    // switch to the new state:
+                    // and switch to the new state:
                     current["items"][command[1]]["status"] = command[0];
 
                     // also, if it's "take," add it to inventory:
@@ -121,7 +130,7 @@ function processCommand(command) {
             // if the action isn't found, check if it's a synonym of one:
             else if ("synonyms" in current && "item states" in current["synonyms"] && command[1] in current["synonyms"]["item states"]) {
                 for (state in current["synonyms"]["item states"][command[1]]) {
-                    if (current["synonyms"]["item states"][item][state].indexOf(command[0]) >= 0) {
+                    if (current["synonyms"]["item states"][command[1]][state].indexOf(command[0]) >= 0) {
                         searching = false;
                         processCommand(state + " " + command[1]);
                     }
@@ -129,7 +138,7 @@ function processCommand(command) {
             }
         }
         // if the player referenced an item by a synonym:
-        else if ("synonyms" in current && "items" in current["synonyms"]) {
+        if ("synonyms" in current && "items" in current["synonyms"] && searching) {
             // look in all the item synonym lists
             for (item in current["synonyms"]["items"]) {
                 // if the specified item is in a synonym list, swap it out for the
