@@ -151,7 +151,7 @@ function processCommand(command) {
             }
         }
         if (searching) {
-            error("NOPE, SORRY BUB");
+            error("Error: Invalid or impossible command.");
         }
     }
     else if (current["type"] == "menu") {
