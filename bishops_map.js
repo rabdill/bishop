@@ -79,11 +79,12 @@ function processCommand(command) {
                 }
             }
             // check if the target of the action might be a synonym
-            else if ("synonyms" in current && "direct objects" in current["synonyms"]) {
-                for (object in current["synonyms"]["direct objects"]) {
-                    if (current["synonyms"]["direct objects"][object].indexOf(command[1]) >= 0) {
+            // ** direct objects and items are stored IN THE SAME SYNONYM GROUP **
+            else if ("synonyms" in current && "items" in current["synonyms"]) {
+                for (object in current["synonyms"]["items"]) {
+                    if (current["synonyms"]["items"][object].indexOf(command[1]) >= 0) {
                         searching = false;
-                        processCommand(command[0] + " " + state);
+                        processCommand(command[0] + " " + object);
                     }
                 }
             }
