@@ -70,7 +70,8 @@ function processCommand(command) {
                 // print out a message, if there is one
                 if ("print" in current["actions"][command[0]][command[1]]) {
                     searching = false;
-                    message(current["actions"][command[0]][command[1]]["print"]);
+                    current["message"] = current["actions"][command[0]][command[1]]["print"];
+                    printer(current);
                 }
                 // otherwise if the result is a move, go there:
                 else if ("move" in current["actions"][command[0]][command[1]]) {
@@ -106,8 +107,8 @@ function processCommand(command) {
             if (command[0] in current["items"][command[1]]["states"]) {
                 //if the item can be put into the proposed state from its current state:
                 if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
-                    // print the transition message:
-                    message(current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]]);
+                    // record what the transition message should be:
+                    transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
                     // if it has any changes associated with it:
                     if ("changes" in current["items"][command[1]]["states"][command[0]]) {
                         // if it has any changes coming from its current state into the new one:
@@ -126,6 +127,15 @@ function processCommand(command) {
                         inventory_add(current["items"][command[1]]["name"], 1);
                     }
                     searching = false;
+
+                    // print the transition message from the old state:
+                    current["message"] = transMessage;
+                    printer(current);
+                    // (this gets printed after everything else because the 
+                    // room's description gets re-printed when the message is
+                    // displayed, so we have to make all the descriptive changes
+                    // before it's printed. otherwise, we'll get stuck with
+                    // things like "You smashed the pumpkin. There is a pumpkin here.")
                 }
             }
             // if the action isn't found, check if it's a synonym of one:
@@ -186,6 +196,13 @@ function processCommand(command) {
 }
 
 function printer(target) {
+    if (target["message"] === undefined) {
+        target["message"] = "";
+    }
+    document.getElementById("message").innerHTML = target["message"];
+    target["message"] = "";
+
+    console.log("Printing description for " + target["name"]);
     var newDescription;
     if (target["type"] == "room") {
         if (target["title"] !== undefined) {
@@ -266,9 +283,8 @@ function printer(target) {
     if (game["allow text to speech"]) {
         say(newDescription);
     }
-    clearCommand();
-    //clear the error box:
-    error("");
+
+    clearFields();
     current = target;
 }
 
@@ -344,24 +360,30 @@ function processChange(change) {
 
 
 function error(text) {
+    clearFields();
     document.getElementById("error").innerHTML = text;
-    clearCommand();
-
+    
     // read the error aloud if everything else is getting read:
     if (game["allow text to speech"]) {
         say(text);
     }
 }
 
-function message(message) {
-    error("");
-    document.getElementById("description").innerHTML = message;
-    clearCommand();
+/*function message(message) {
+    console.log("MESSAGE: " + message);
+    clearFields();
+    
+    printer(current);
+}*/
+
+function clearFields() {
+    document.getElementById("command").value = "";
+    document.getElementById("error").innerHTML = "";
+    document.getElementById("command").focus();
 }
 
-function clearCommand() {
-    document.getElementById("command").value = "";
-    document.getElementById("command").focus();
+function clearMessage() {
+    document.getElementById("message").innerHTML = "";
 }
 
 function inventory_add(item, qty) {
@@ -389,7 +411,8 @@ function print_inventory() {
     }
 
     if(hasItems) {
-        message(toPrint);
+        current["message"] = toPrint;
+        printer(current);
     }
     else {
         error("Inventory empty.");
