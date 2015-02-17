@@ -1,3 +1,9 @@
+## v0.2
+
+### New features
+
+* Transactional messages are now printed in a separate text box, rather than erasing the description of the current room.
+
 ## v0.1
 
 ### New features
