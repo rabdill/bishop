@@ -2,7 +2,8 @@
 // to prevent messiness elsewhere
 
 required = {
-	"allow text to speech" : false
+	"allow text to speech" : false,
+	"print directions" : true
 }
 
 
@@ -13,6 +14,6 @@ for (var parameter in required) {
 	}
 	else {
 		console.log("\"" + parameter + "\" is NOT defined, setting to "+ required[parameter]);
-		game["allow text to speech"] = required[parameter];
+		game[parameter] = required[parameter];
 	}
 }
