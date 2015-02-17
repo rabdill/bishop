@@ -10,6 +10,7 @@ function initialize() {
     runTests();
 }
 
+
 function processCommand(command) {
     // if nothing is passed to the function, just grab the typed command:
     // (will happen almost every time)
@@ -195,6 +196,7 @@ function processCommand(command) {
     }
 }
 
+
 function printer(target) {
     if (target["message"] === undefined) {
         target["message"] = "";
@@ -221,9 +223,13 @@ function printer(target) {
         var newPrompt = target["prompt"];
 
         // print out the exits
-        newDescription += "<ul>";
-        for (var exit in target["exits"]) {
-            newDescription += "<li>To the " + exit + " is " + rooms[target["exits"][exit]]["name"] + ".";
+        if (game["print directions"]) {
+            console.log("PRINTING DIRECTIONZ");
+            newDescription += "<ul>";
+            for (var exit in target["exits"]) {
+                newDescription += "<li>To the " + exit + " is " + rooms[target["exits"][exit]]["name"] + ".";
+            }
+            newDescription += "</ul>";
         }
     }
 
@@ -257,13 +263,11 @@ function printer(target) {
                     newDescription += "<li>" + target["choices"][i]["choice"];
                 }
             }
-            newDescription += "</ol>";
-            printDirections("");    
+            newDescription += "</ol>"; 
         }
         //if they're being sent to a room:
         else if (target["type"] == "room") {
             newDescription += target["entrance text"];
-            printDirections(target);
         }
     }
 
@@ -281,6 +285,7 @@ function printer(target) {
     document.getElementById("description").innerHTML = newDescription;
 
     if (game["allow text to speech"]) {
+        console.log("TTS: " + game["allow text to speech"]);
         say(newDescription);
     }
 
@@ -369,12 +374,6 @@ function error(text) {
     }
 }
 
-/*function message(message) {
-    console.log("MESSAGE: " + message);
-    clearFields();
-    
-    printer(current);
-}*/
 
 function clearFields() {
     document.getElementById("command").value = "";
@@ -382,9 +381,6 @@ function clearFields() {
     document.getElementById("command").focus();
 }
 
-function clearMessage() {
-    document.getElementById("message").innerHTML = "";
-}
 
 function inventory_add(item, qty) {
     if (item in player["inventory"]) {
@@ -396,6 +392,7 @@ function inventory_add(item, qty) {
         console.log("Adding " + item + " to player inventory.");
     }
 }
+
 
 function print_inventory() {
     var toPrint = "<strong>Inventory</strong><br>";
