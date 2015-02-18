@@ -122,7 +122,5 @@ if (game["allow speech to text"]) {
         document.getElementById("command").value = interim_transcript;
 
     };
-
-
     document.getElementById("listening").addEventListener("click", action);
 }
