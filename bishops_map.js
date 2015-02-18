@@ -22,12 +22,69 @@ function stripArticles(command) {
     return command;
 }
 
+function processAction(command) {
+    // check the room's possible actions
+    if ("actions" in current && command[0] in current["actions"]) {
+        // if the verb is in the room,
+        // check if the verb can be applied to the specified object
+        if (command[1] in current["actions"][command[0]]) {
+            // implement any changes
+            if ("changes" in current["actions"][command[0]][command[1]]) {
+                for (i = 0; i < current["actions"][command[0]][command[1]]["changes"].length; i++) {
+                    //searching = false;
+                    processChange(current["actions"][command[0]][command[1]]["changes"][i]);
+                    return false;
+                }
+            }
+            // print out a message, if there is one
+            if ("print" in current["actions"][command[0]][command[1]]) {
+                //searching = false;
+                current["message"] = current["actions"][command[0]][command[1]]["print"];
+                printer(current);
+                return false;
+            }
+            // otherwise if the result is a move, go there:
+            else if ("move" in current["actions"][command[0]][command[1]]) {
+                //searching = false;
+                nextMove(current["actions"][command[0]][command[1]]["move"]);
+                return false;
+            }
+        }
+        // check if the target of the action might be a synonym
+        // ** direct objects and items are stored IN THE SAME SYNONYM GROUP **
+        else if ("synonyms" in current && "items" in current["synonyms"]) {
+            for (object in current["synonyms"]["items"]) {
+                if (current["synonyms"]["items"][object].indexOf(command[1]) >= 0) {
+                    //searching = false;
+                    processCommand(command[0] + " " + object);
+                    return false;
+                }
+            }
+        }
+    }
+    if ("synonyms" in current && "actions" in current["synonyms"]) {
+        // look in all the item synonym lists
+        for (action in current["synonyms"]["actions"]) {
+            // if the specified action is in a synonym list, swap it out for the
+            // real name of the action and re-process the command:
+            if (current["synonyms"]["actions"][action].indexOf(command[0]) >= 0) {
+                processCommand(action + " " + command[1]);
+                return false;
+            }
+        }
+    }
+
+    // if we have to keep looking:
+    return true;
+}
+
 function commandInRoom(command) {
     var searching = true;
     // "searching" is used to keep track of whether or not a command
     // has been processed, to prevent it from getting accepted from
     // one section and rejected by another.
 
+    //check the built-in commands:
     if (command[0] ==  "go") {
         if (current["exits"][command[1]] != undefined) {
             searching = false;
@@ -46,58 +103,16 @@ function commandInRoom(command) {
             printer(current); //just reprint the current location
         }
         else if (command[1] in current['exits']) {
+            searching = false;
             toPrint = {
                 "message" : "You look to the " + command[1] + ": " + rooms[current["exits"][command[1]]]["look"]
             };
             printer(toPrint);
         }
     }
-    // check the room's possible actions
-    if ("actions" in current && command[0] in current["actions"] && searching) {
-        // if the verb is in the room,
-        // check if the verb can be applied to the specified object
-        if (command[1] in current["actions"][command[0]]) {
-            // implement any changes
-            if ("changes" in current["actions"][command[0]][command[1]]) {
-                for (i = 0; i < current["actions"][command[0]][command[1]]["changes"].length; i++) {
-                    searching = false;
-                    processChange(current["actions"][command[0]][command[1]]["changes"][i]);
-                }
-            }
-            // print out a message, if there is one
-            if ("print" in current["actions"][command[0]][command[1]]) {
-                searching = false;
-                current["message"] = current["actions"][command[0]][command[1]]["print"];
-                printer(current);
-            }
-            // otherwise if the result is a move, go there:
-            else if ("move" in current["actions"][command[0]][command[1]]) {
-                searching = false;
-                nextMove(current["actions"][command[0]][command[1]]["move"]);
-            }
-        }
-        // check if the target of the action might be a synonym
-        // ** direct objects and items are stored IN THE SAME SYNONYM GROUP **
-        else if ("synonyms" in current && "items" in current["synonyms"]) {
-            for (object in current["synonyms"]["items"]) {
-                if (current["synonyms"]["items"][object].indexOf(command[1]) >= 0) {
-                    searching = false;
-                    processCommand(command[0] + " " + object);
-                }
-            }
-        }
-    }
-    if ("synonyms" in current && "actions" in current["synonyms"] && searching) {
-        // look in all the item synonym lists
-        for (action in current["synonyms"]["actions"]) {
-            // if the specified action is in a synonym list, swap it out for the
-            // real name of the action and re-process the command:
-            if (current["synonyms"]["actions"][action].indexOf(command[0]) >= 0) {
-                searching = false;
-                processCommand(action + " " + command[1]);
-            }
-        }
-    }
+
+    if (searching) searching = processAction(command);
+
     // if there are items in the room and the direct object is one of them
     if ("items" in current && command[1] in current["items"] && searching) {
         // if the action can be taken against that item:
