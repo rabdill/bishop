@@ -78,22 +78,36 @@ function checkAction(command) {
         }
         // check if the target of the action might be a synonym
         // ** direct objects and items are stored IN THE SAME SYNONYM GROUP **
-        else if (findSynonyms(command, "items", 1)) return false;
+        else if (findSynonyms(command, "items")) return false;
         // (if findSynonyms returns true, that means it found a synonym
         // and we can stop looking)
     }
 
     //check to see if the action verb is a synonym of a defined one:
-    else if (findSynonyms(command, "actions", 0)) return false;
+    else if (findSynonyms(command, "actions")) return false;
 
     // if we have to keep looking:
     else return true;
 }
 
-function findSynonyms(command,category,searchPosition) {
+function findSynonyms(command,category) {
     //"category" is what type of synonym we're looking for.
     //"searchPosition" is which word in the command we're trying
     //      to replace.
+    switch(category) {
+        case "items":
+            searchPosition = 1;
+            break;
+        case "actions":
+            searchPosition = 0;
+            break;
+        case "item states":
+            searchPosition = 0;
+            break;
+        default:
+            console.log("Synonym search error: Unrecognized category specified.");
+            break;
+    }
 
     if ("synonyms" in current && category in current["synonyms"]) {
         for (object in current["synonyms"][category]) {
@@ -134,37 +148,19 @@ function checkItems(command) {
 
                 // print the transition message from the old state:
                 current["message"] = transMessage;
+
+                // and reprint the room, to make sure the changes are displayed:
                 printer(current);
-                // (this gets printed after everything else because the 
-                // room's description gets re-printed when the message is
-                // displayed, so we have to make all the descriptive changes
-                // before it's printed. otherwise, we'll get stuck with
-                // things like "You smashed the pumpkin. There is a pumpkin here.")
+
                 return false;
             }
         }
         // if the action isn't found, check if it's a synonym of one:
-        else if ("synonyms" in current && "item states" in current["synonyms"] && command[1] in current["synonyms"]["item states"]) {
-            for (state in current["synonyms"]["item states"][command[1]]) {
-                if (current["synonyms"]["item states"][command[1]][state].indexOf(command[0]) >= 0) {
-                    processCommand(state + " " + command[1]);
-                    return false;
-                }
-            }
-        }
+        else if (findSynonyms(command, "item states")) return false;
     }
     // if the player referenced an item by a synonym:
-    if ("synonyms" in current && "items" in current["synonyms"]) {
-        // look in all the item synonym lists
-        for (item in current["synonyms"]["items"]) {
-            // if the specified item is in a synonym list, swap it out for the
-            // real name of the item and re-process the command:
-            if (current["synonyms"]["items"][item].indexOf(command[1]) >= 0) {
-                processCommand(command[0] + " " + item)
-                return false;
-            }
-        }
-    }
+    if (findSynonyms(command, "items")) return false;
+    
 
     //if we have to keep looking:
     return true;
