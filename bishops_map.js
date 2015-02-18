@@ -10,6 +10,8 @@ function initialize() {
     runTests();
 }
 
+
+//  **** Processing a command
 function stripArticles(command) {
     //strip out the articles:
     var articles = [" the ", " a ", " an ", " to ", " at ", " on "];
@@ -22,7 +24,38 @@ function stripArticles(command) {
     return command;
 }
 
-function processAction(command) {
+function checkBuiltIns(command) {
+    if (command[0] ==  "go") {
+        if (current["exits"][command[1]] != undefined) {
+            nextMove(current["exits"][command[1]]);
+            return false;
+        }
+    }
+    if (command[0] == "view") {
+        if (command[1] == "inventory") {
+            print_inventory();
+            return false;
+        }
+    }
+    if (command[0] == "look") {
+        if (command[1] == "around") {
+            printer(current); //just reprint the current location
+            return false;
+        }
+        else if (command[1] in current['exits']) {
+            toPrint = {
+                "message" : "You look to the " + command[1] + ": " + rooms[current["exits"][command[1]]]["look"]
+            };
+            printer(toPrint);
+            return false;
+        }
+    }
+
+    //if we have to keep looking:
+    return true;
+}
+
+function checkAction(command) {
     // check the room's possible actions
     if ("actions" in current && command[0] in current["actions"]) {
         // if the verb is in the room,
@@ -78,43 +111,9 @@ function processAction(command) {
     return true;
 }
 
-function commandInRoom(command) {
-    var searching = true;
-    // "searching" is used to keep track of whether or not a command
-    // has been processed, to prevent it from getting accepted from
-    // one section and rejected by another.
-
-    //check the built-in commands:
-    if (command[0] ==  "go") {
-        if (current["exits"][command[1]] != undefined) {
-            searching = false;
-            nextMove(current["exits"][command[1]]);
-        }
-    }
-    if (command[0] == "view" && searching) {
-        if (command[1] == "inventory") {
-            searching = false;
-            print_inventory();
-        }
-    }
-    if (command[0] == "look" && searching) {
-        if (command[1] == "around") {
-            searching = false;
-            printer(current); //just reprint the current location
-        }
-        else if (command[1] in current['exits']) {
-            searching = false;
-            toPrint = {
-                "message" : "You look to the " + command[1] + ": " + rooms[current["exits"][command[1]]]["look"]
-            };
-            printer(toPrint);
-        }
-    }
-
-    if (searching) searching = processAction(command);
-
+function checkItems(command) {
     // if there are items in the room and the direct object is one of them
-    if ("items" in current && command[1] in current["items"] && searching) {
+    if ("items" in current && command[1] in current["items"]) {
         // if the action can be taken against that item:
         if (command[0] in current["items"][command[1]]["states"]) {
             //if the item can be put into the proposed state from its current state:
@@ -138,7 +137,6 @@ function commandInRoom(command) {
                 if (command[0] == "take") {
                     inventory_add(current["items"][command[1]]["name"], 1);
                 }
-                searching = false;
 
                 // print the transition message from the old state:
                 current["message"] = transMessage;
@@ -148,14 +146,15 @@ function commandInRoom(command) {
                 // displayed, so we have to make all the descriptive changes
                 // before it's printed. otherwise, we'll get stuck with
                 // things like "You smashed the pumpkin. There is a pumpkin here.")
+                return false;
             }
         }
         // if the action isn't found, check if it's a synonym of one:
         else if ("synonyms" in current && "item states" in current["synonyms"] && command[1] in current["synonyms"]["item states"]) {
             for (state in current["synonyms"]["item states"][command[1]]) {
                 if (current["synonyms"]["item states"][command[1]][state].indexOf(command[0]) >= 0) {
-                    searching = false;
                     processCommand(state + " " + command[1]);
+                    return false;
                 }
             }
         }
@@ -167,11 +166,29 @@ function commandInRoom(command) {
             // if the specified item is in a synonym list, swap it out for the
             // real name of the item and re-process the command:
             if (current["synonyms"]["items"][item].indexOf(command[1]) >= 0) {
-                searching = false;
                 processCommand(command[0] + " " + item)
+                return false;
             }
         }
     }
+}
+
+function commandInRoom(command) {
+    var searching = true;
+    // "searching" is used to keep track of whether or not a command
+    // has been processed, to prevent it from getting accepted from
+    // one section and rejected by another.
+
+    //check the built-in commands:
+    searching = checkBuiltIns(command);
+
+    // check the room's possible actions:
+    if (searching) searching = checkAction(command);
+
+    // check the room's possible items:
+    if (searching) searching = checkItems(command);
+
+    // otherwise, you're SOL:
     if (searching) {
         error("Error: Invalid or impossible command.");
     }
