@@ -122,15 +122,8 @@ function checkItems(command) {
                 // record what the transition message should be:
                 transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
                 // if it has any changes associated with it:
-                if ("changes" in current["items"][command[1]]["states"][command[0]]) {
-                    // if it has any changes coming from its current state into the new one:
-                    if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["changes"]) {
-                        //make all the changes:
-                        for (i = 0; i < current["items"][command[1]]["states"][command[0]]["changes"][current["items"][command[1]]["status"]].length; i++) {
-                            processChange(current["items"][command[1]]["states"][command[0]]["changes"][current["items"][command[1]]["status"]][i]);
-                        }
-                    }
-                }
+                processChanges(current["items"][command[1]]["states"][command[0]])
+
                 // and switch to the new state:
                 current["items"][command[1]]["status"] = command[0];
 
@@ -349,71 +342,16 @@ function printer(target) {
 
 function nextMove(target) {
     currentLocation = target;
+    // if it's a room:
     if (target in rooms) {
-        if ("changes" in rooms[target]) {
-            for (i = 0; i < rooms[target]["changes"].length; i++) {
-                processChange(rooms[target]["changes"][i]);
-            }
-        }
+        processChanges(rooms[target]);
         current = rooms[target];
     }
     else if (target in menus) {
-        if ("changes" in menus[target]) {
-            for (var i = 0; i < menus[target]["changes"].length; i++) {
-                processChange(menus[target]["changes"][i]);
-            }
-        }
+        processChanges(menus[target]);
         current = menus[target];
     }
     printer(current);
-}
-
-
-function processChange(change) {
-    if (change[0] == "rooms") {
-        switch(change.length) {
-            case 4:
-                rooms[change[1]][change[2]] = change[3];
-                break;
-            case 5:
-                rooms[change[1]][change[2]][change[3]] = change[4];
-                break;
-            case 6:
-                rooms[change[1]][change[2]][change[3]][change[4]] = change[5];
-                break;
-            case 7:
-                rooms[change[1]][change[2]][change[3]][change[4]][change[5]] = change[6];
-                break;
-            case 8:
-                rooms[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]] = change[7];
-                break;
-            default:
-                console.log("Change-processing error: Unrecognized length.");
-                break;
-        }
-    }
-    else if (change[0] == "menus") {
-        switch(change.length) {
-            case 4:
-                menus[change[1]][change[2]] = change[3];
-                break;
-            case 5:
-                menus[change[1]][change[2]][change[3]] = change[4];
-                break;
-            case 6:
-                menus[change[1]][change[2]][change[3]][change[4]] = change[5];
-                break;
-            case 7:
-                menus[change[1]][change[2]][change[3]][change[4]][change[5]] = change[6];
-                break;
-            case 8:
-                menus[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]] = change[7];
-                break;
-            default:
-                console.log("Change-processing error: Unrecognized length.");
-                break;
-        }
-    }
 }
 
 function processChanges(thing) {
