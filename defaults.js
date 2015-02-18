@@ -3,6 +3,7 @@
 
 required = {
 	"allow text to speech" : false,
+	"allow speech to text" : false,
 	"print directions" : true
 }
 
