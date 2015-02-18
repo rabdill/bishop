@@ -10,7 +10,6 @@ function initialize() {
     runTests();
 }
 
-
 //  **** start of processing commands in rooms
 function stripArticles(command) {
     //strip out the articles:
@@ -195,7 +194,6 @@ function commandInRoom(command) {
 }
 //  **** end of processing commands in rooms
 
-
 function commandInMenu(command) {
     var toPrint = {};
     command--;    //because the array starts at #0 but the option numbers start at 1
@@ -245,7 +243,6 @@ function processCommand(command) {
     if (current["type"] == "room") commandInRoom(command);
     else if (current["type"] == "menu") commandInMenu(command);
 }
-
 
 //******* printer functions:
 function describeRoom(target) {
@@ -320,30 +317,29 @@ function describeMenu(target) {
     else printDescription({"newDescription" : newDescription});
 }
 
+function detokenize(text) {
+    for (parameter in game) {
+        text = text.replace("@"+parameter+"@",game[parameter]);
+    }
+    return text;
+}
+
 function printDescription(toPrint) {
     // print everything out (rooms *and* menus)
     if ("newPrompt" in toPrint) {
-        newPrompt = toPrint["newPrompt"];
-        // replace any variables in the strings
-        for (var parameter in game) {
-            newPrompt = newPrompt.replace("@"+parameter+"@",game[parameter]);
-        }
+        newPrompt = detokenize(toPrint["newPrompt"]);
         document.getElementById("prompt").innerHTML = newPrompt;
     }
 
     //sub out variables in description:
     if ("newDescription" in toPrint) {
-        newDescription = toPrint["newDescription"];
-        for (parameter in game) {
-            newDescription = newDescription.replace("@"+parameter+"@",game[parameter]);
-        }
+        newDescription = detokenize(toPrint["newDescription"]);
         document.getElementById("description").innerHTML = newDescription;
-
+        
         if (game["allow text to speech"]) {
             console.log("TTS: " + game["allow text to speech"]);
             say(newDescription);
         }
-
         clearFields();
     }
 }
@@ -378,7 +374,6 @@ function printer(target) {
             break;
     }
 }
-
 
 function nextMove(target) {
     currentLocation = target;
@@ -467,7 +462,6 @@ function inventory_add(item, qty) {
 function print_inventory() {
     var toPrint = "<strong>Inventory</strong><br>";
     var hasItems = false;
-
     for (var item in player["inventory"]) {
         //if you have at least one of the thing:
         if (player["inventory"][item] > 0 ) {
@@ -476,7 +470,6 @@ function print_inventory() {
             hasItems = true;
         }
     }
-
     if(hasItems) {
         current["message"] = toPrint;
         printer(current);
