@@ -18,4 +18,6 @@ function shutup() {
 	speechSynthesis.cancel();
 }
 
-document.getElementById("talking").addEventListener("click", shutup);
+if (game["allow speech to text"]) {
+	document.getElementById("talking").addEventListener("click", shutup);
+}
