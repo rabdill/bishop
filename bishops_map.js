@@ -229,13 +229,7 @@ function commandInMenu(command) {
             }
         }
     }
-    else {
-        toPrint = {
-            "type" : "error",
-            "text" : "Error: Choice out of bounds."
-        };
-        printer(toPrint);
-    }
+    else printer({"type" : "error", "text" : "Error: Choice out of bounds."});
 }
 
 function processCommand(command) {
