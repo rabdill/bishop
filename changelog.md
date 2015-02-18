@@ -1,10 +1,36 @@
 ## v0.2
+Released: n/a
+
+### Breaking changes
+
+#### Item state synonyms
+Synonyms for "item states" are no longer nested inside of an item for which they are a state. Whereas before you would need something like this:
+```json
+"synonyms" : {
+    "item states" : {
+        "frog" : {
+            "pet" : ["tickle", "touch"]
+        }
+    }
+}
+```
+Now, you can (and must) do this instead:
+```json
+"synonyms" : {
+    "item states" : {
+        "pet" : ["tickle", "touch"]
+    }
+}
+```
 
 ### New features
 
 * Transactional messages are now printed in a separate text box, rather than erasing the description of the current room.
 
+* Players can now use the `look` command to get hints about what the scenery looks like in different directions.
+
 ## v0.1
+Released: Feb. 15, 2015
 
 ### New features
 
