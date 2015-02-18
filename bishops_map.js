@@ -248,7 +248,7 @@ function processCommand(command) {
 
 
 //******* printer functions:
-function printRoom(target) {
+function describeRoom(target) {
     // slap a headline on the top if there's one specified:
     if (target["title"] !== undefined) {
         newDescription = "<strong>" + target["title"] + "</strong><br>" + target["entrance text"];
@@ -263,7 +263,6 @@ function printRoom(target) {
             newDescription += "<br>" + target["items"][item]["states"][target["items"][item]["status"]]["descriptor"];
         }
     }
-    var newPrompt = target["prompt"];
 
     // print out the exits
     if (game["print directions"]) {
@@ -274,10 +273,13 @@ function printRoom(target) {
         newDescription += "</ul>";
     }
 
-    return {"newDescription" : newDescription, "newPrompt" : newPrompt};
+    if ("prompt" in target) {
+        printDescription({"newDescription" : newDescription, "newPrompt" : target["prompt"]});
+    }
+    else printDescription({"newDescription" : newDescription});
 }
 
-function printMenu(target) {
+function describeMenu(target) {
     if (target["type"] == "premessage") {
         newDescription = target["premessage"] + "<br><br>";
         if (target["destination"] in rooms) {
@@ -287,10 +289,9 @@ function printMenu(target) {
             target = menus[target["destination"]];
         }
     }
-    // if it's a regular menu:
+    // if it's a regular menu, no premessage:
     else {
         newDescription = "";
-        newPrompt = target["prompt"];
     }
 
     // if the player is being sent to a menu:
@@ -313,52 +314,26 @@ function printMenu(target) {
         newDescription += target["entrance text"];
     }
 
-    return {"newDescription" : newDescription, "newPrompt" : newPrompt};
+    if ("prompt" in target) {
+        printDescription({"newDescription" : newDescription, "newPrompt" : target["prompt"]});
+    }
+    else printDescription({"newDescription" : newDescription});
 }
 
-function printer(target) {
-    var newDescription;
-
-    // print a message, if there is one, then forget it exists:
-    if (target["message"] === undefined) {
-        target["message"] = "";
-    }
-    document.getElementById("message").innerHTML = target["message"];
-    target["message"] = "";
-    // (this also serves an added bonus of erasing any leftover
-    //  messages for when we print the next thing, whatever it is)
-
-    if (target["type"] == "error") {
-        clearFields();
-        document.getElementById("error").innerHTML = target["text"];
-        
-        // read the error aloud if everything else is getting read:
-        if (game["allow text to speech"]) {
-            say(text);
-        }
-    }
-    
-    else if (target["type"] == "room") {
-        toPrint = printRoom(target);
-    }
-
-    // if it's one of the menu response types:
-    else if (["menu", "premessage"].indexOf(target["type"]) >= 0) {
-        toPrint = printMenu(target);
-    }
-
-    newDescription = toPrint["newDescription"];
-    newPrompt = toPrint["newPrompt"];
-    
+function printDescription(toPrint) {
     // print everything out (rooms *and* menus)
-    if (newPrompt != undefined) {
+    if ("newPrompt" in toPrint) {
+        newPrompt = toPrint["newPrompt"];
         // replace any variables in the strings
         for (var parameter in game) {
             newPrompt = newPrompt.replace("@"+parameter+"@",game[parameter]);
         }
         document.getElementById("prompt").innerHTML = newPrompt;
     }
-    if (newDescription != undefined) {
+
+    //sub out variables in description:
+    if ("newDescription" in toPrint) {
+        newDescription = toPrint["newDescription"];
         for (parameter in game) {
             newDescription = newDescription.replace("@"+parameter+"@",game[parameter]);
         }
@@ -370,7 +345,37 @@ function printer(target) {
         }
 
         clearFields();
-        current = target;
+    }
+}
+
+function printer(target) {
+    // print a message, if there is one, then forget it exists:
+    if (target["message"] === undefined) {
+        target["message"] = "";
+    }
+    document.getElementById("message").innerHTML = target["message"];
+    target["message"] = "";
+    // (this also serves an added bonus of erasing any leftover
+    //  messages for when we print the next thing, whatever it is)
+
+    switch(target["type"]) {
+        case "error":
+            clearFields();
+            document.getElementById("error").innerHTML = target["text"];
+            if (game["allow text to speech"]) say(text);
+            break;
+        case "room":
+            describeRoom(target);
+            break;
+        case "premessage":
+            describeMenu(target);
+            break;
+        case "menu":
+            describeMenu(target);
+            break;
+        default:
+            console.log("Printer error: Unrecognized type.");
+            break;
     }
 }
 
