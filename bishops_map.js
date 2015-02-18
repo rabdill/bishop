@@ -11,7 +11,7 @@ function initialize() {
 }
 
 
-//  **** Processing a command
+//  **** start of processing commands in rooms
 function stripArticles(command) {
     //strip out the articles:
     var articles = [" the ", " a ", " an ", " to ", " at ", " on "];
@@ -85,15 +85,9 @@ function checkAction(command) {
         }
         // check if the target of the action might be a synonym
         // ** direct objects and items are stored IN THE SAME SYNONYM GROUP **
-        else if ("synonyms" in current && "items" in current["synonyms"]) {
-            for (object in current["synonyms"]["items"]) {
-                if (current["synonyms"]["items"][object].indexOf(command[1]) >= 0) {
-                    //searching = false;
-                    processCommand(command[0] + " " + object);
-                    return false;
-                }
-            }
-        }
+        else if (findSynonyms(command,"item")) return false;
+        // (if findSynonyms returns true, that means it found a synonym
+        // and we can stop looking)
     }
     if ("synonyms" in current && "actions" in current["synonyms"]) {
         // look in all the item synonym lists
@@ -109,6 +103,19 @@ function checkAction(command) {
 
     // if we have to keep looking:
     return true;
+}
+
+function findSynonyms(command,category) {
+    if ("synonyms" in current && category in current["synonyms"]) {
+        for (object in current["synonyms"][category]) {
+            if (current["synonyms"][category][object].indexOf(command[1]) >= 0) {
+                processCommand(command[0] + " " + object);
+                return true;
+            }
+        }
+    }
+    // if we didn't find a synonym
+    return false;
 }
 
 function checkItems(command) {
@@ -160,7 +167,7 @@ function checkItems(command) {
         }
     }
     // if the player referenced an item by a synonym:
-    if ("synonyms" in current && "items" in current["synonyms"] && searching) {
+    if ("synonyms" in current && "items" in current["synonyms"]) {
         // look in all the item synonym lists
         for (item in current["synonyms"]["items"]) {
             // if the specified item is in a synonym list, swap it out for the
@@ -171,6 +178,9 @@ function checkItems(command) {
             }
         }
     }
+
+    //if we have to keep looking:
+    return true;
 }
 
 function commandInRoom(command) {
@@ -193,6 +203,8 @@ function commandInRoom(command) {
         error("Error: Invalid or impossible command.");
     }
 }
+//  **** end of processing commands in rooms
+
 
 function commandInMenu(command) {
     var toPrint = {};
