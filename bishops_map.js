@@ -10,12 +10,7 @@ function initialize() {
     runTests();
 }
 
-
-function processCommand(command) {
-    // if nothing is passed to the function, just grab the typed command:
-    // (will happen almost every time)
-    if (typeof command !== "string") command = document.getElementById("command").value;
-    
+function stripArticles(command) {
     //strip out the articles:
     var articles = [" the ", " a ", " an ", " to ", " at ", " on "];
     var i;    // loop iterator
@@ -23,6 +18,16 @@ function processCommand(command) {
     for (i = 0; i < articles.length; i++) {
         command = command.replace(articles[i], " ");
     }
+    
+    return command;
+}
+
+function processCommand(command) {
+    // if nothing is passed to the function, just grab the typed command:
+    // (will happen almost every time)
+    if (typeof command !== "string") command = document.getElementById("command").value;
+    
+    command = stripArticles(command);
 
     command = command.split(" ");
     // fix the array in case the command for some reason starts with a space:
