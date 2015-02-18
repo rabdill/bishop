@@ -183,7 +183,11 @@ function commandInRoom(command) {
 
     // otherwise, you're SOL:
     if (searching) {
-        error("Error: Invalid or impossible command.");
+        toPrint = {
+            "type" : "error",
+            "text" : "Error: Invalid or impossible command."
+        };
+        printer(toPrint);
     }
 }
 //  **** end of processing commands in rooms
@@ -241,13 +245,27 @@ function processCommand(command) {
 
 
 function printer(target) {
+    var newDescription;
+
+    // print a message, if there is one, then forget it exists:
     if (target["message"] === undefined) {
         target["message"] = "";
     }
     document.getElementById("message").innerHTML = target["message"];
     target["message"] = "";
-    var newDescription;
-    if (target["type"] == "room") {
+
+
+    if (target["type"] == "error") {
+        clearFields();
+        document.getElementById("error").innerHTML = target["text"];
+        
+        // read the error aloud if everything else is getting read:
+        if (game["allow text to speech"]) {
+            say(text);
+        }
+    }
+    
+    else if (target["type"] == "room") {
         if (target["title"] !== undefined) {
             newDescription = "<strong>" + target["title"] + "</strong><br>" + target["entrance text"];
         }
@@ -403,23 +421,11 @@ function processChanges(thing) {
     }
 }
 
-function error(text) {
-    clearFields();
-    document.getElementById("error").innerHTML = text;
-    
-    // read the error aloud if everything else is getting read:
-    if (game["allow text to speech"]) {
-        say(text);
-    }
-}
-
-
 function clearFields() {
     document.getElementById("command").value = "";
     document.getElementById("error").innerHTML = "";
     document.getElementById("command").focus();
 }
-
 
 function inventory_add(item, qty) {
     if (item in player["inventory"]) {
@@ -431,7 +437,6 @@ function inventory_add(item, qty) {
         console.log("Adding " + item + " to player inventory.");
     }
 }
-
 
 function print_inventory() {
     var toPrint = "<strong>Inventory</strong><br>";
@@ -451,7 +456,11 @@ function print_inventory() {
         printer(current);
     }
     else {
-        error("Inventory empty.");
+        toPrint = {
+            "type" : "error",
+            "text" : "Inventory empty."
+        };
+        printer(toPrint);
     }
 }
 
