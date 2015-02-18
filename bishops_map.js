@@ -85,31 +85,32 @@ function checkAction(command) {
         }
         // check if the target of the action might be a synonym
         // ** direct objects and items are stored IN THE SAME SYNONYM GROUP **
-        else if (findSynonyms(command,"item")) return false;
+        else if (findSynonyms(command, "items", 1)) return false;
         // (if findSynonyms returns true, that means it found a synonym
         // and we can stop looking)
     }
-    if ("synonyms" in current && "actions" in current["synonyms"]) {
-        // look in all the item synonym lists
-        for (action in current["synonyms"]["actions"]) {
-            // if the specified action is in a synonym list, swap it out for the
-            // real name of the action and re-process the command:
-            if (current["synonyms"]["actions"][action].indexOf(command[0]) >= 0) {
-                processCommand(action + " " + command[1]);
-                return false;
-            }
-        }
-    }
+
+    //check to see if the action verb is a synonym of a defined one:
+    else if (findSynonyms(command, "actions", 0)) return false;
 
     // if we have to keep looking:
-    return true;
+    else return true;
 }
 
-function findSynonyms(command,category) {
+function findSynonyms(command,category,searchPosition) {
+    //"category" is what type of synonym we're looking for.
+    //"searchPosition" is which word in the command we're trying
+    //      to replace.
+
     if ("synonyms" in current && category in current["synonyms"]) {
         for (object in current["synonyms"][category]) {
-            if (current["synonyms"][category][object].indexOf(command[1]) >= 0) {
-                processCommand(command[0] + " " + object);
+            if (current["synonyms"][category][object].indexOf(command[searchPosition]) >= 0) {
+                if (searchPosition === 0) {
+                    processCommand(object + " " + command[1]);
+                }
+                else {
+                   processCommand(command[0] + " " + object);
+                }
                 return true;
             }
         }
