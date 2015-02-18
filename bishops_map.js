@@ -10,6 +10,13 @@ function initialize() {
     runTests();
 }
 
+function detokenize(text) {
+    for (parameter in game) {
+        text = text.replace("@"+parameter+"@",game[parameter]);
+    }
+    return text;
+}
+
 //  **** start of processing commands in rooms
 function stripArticles(command) {
     //strip out the articles:
@@ -222,6 +229,13 @@ function commandInMenu(command) {
             }
         }
     }
+    else {
+        toPrint = {
+            "type" : "error",
+            "text" : "Error: Choice out of bounds."
+        };
+        printer(toPrint);
+    }
 }
 
 function processCommand(command) {
@@ -277,6 +291,7 @@ function describeRoom(target) {
 }
 
 function describeMenu(target) {
+    newDescription = "";
     if (target["type"] == "premessage") {
         newDescription = target["premessage"] + "<br><br>";
         if (target["destination"] in rooms) {
@@ -285,10 +300,6 @@ function describeMenu(target) {
         else if (target["destination"] in menus) {
             target = menus[target["destination"]];
         }
-    }
-    // if it's a regular menu, no premessage:
-    else {
-        newDescription = "";
     }
 
     // if the player is being sent to a menu:
@@ -317,13 +328,6 @@ function describeMenu(target) {
     else printDescription({"newDescription" : newDescription});
 }
 
-function detokenize(text) {
-    for (parameter in game) {
-        text = text.replace("@"+parameter+"@",game[parameter]);
-    }
-    return text;
-}
-
 function printDescription(toPrint) {
     // print everything out (rooms *and* menus)
     if ("newPrompt" in toPrint) {
@@ -335,7 +339,7 @@ function printDescription(toPrint) {
     if ("newDescription" in toPrint) {
         newDescription = detokenize(toPrint["newDescription"]);
         document.getElementById("description").innerHTML = newDescription;
-        
+
         if (game["allow text to speech"]) {
             console.log("TTS: " + game["allow text to speech"]);
             say(newDescription);
