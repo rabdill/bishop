@@ -62,23 +62,16 @@ function checkAction(command) {
         // check if the verb can be applied to the specified object
         if (command[1] in current["actions"][command[0]]) {
             // implement any changes
-            if ("changes" in current["actions"][command[0]][command[1]]) {
-                for (i = 0; i < current["actions"][command[0]][command[1]]["changes"].length; i++) {
-                    //searching = false;
-                    processChange(current["actions"][command[0]][command[1]]["changes"][i]);
-                    return false;
-                }
-            }
+            processChanges(current["actions"][command[0]][command[1]])
+
             // print out a message, if there is one
             if ("print" in current["actions"][command[0]][command[1]]) {
-                //searching = false;
                 current["message"] = current["actions"][command[0]][command[1]]["print"];
                 printer(current);
                 return false;
             }
             // otherwise if the result is a move, go there:
             else if ("move" in current["actions"][command[0]][command[1]]) {
-                //searching = false;
                 nextMove(current["actions"][command[0]][command[1]]["move"]);
                 return false;
             }
@@ -423,6 +416,58 @@ function processChange(change) {
     }
 }
 
+function processChanges(thing) {
+    if ("changes" in thing) {
+        for (i = 0; i < thing["changes"].length; i++) {
+            change = thing["changes"][i];
+            if (change[0] == "rooms") {
+                switch(change.length) {
+                    case 4:
+                        rooms[change[1]][change[2]] = change[3];
+                        console.log("Setting " + change[1] + " " + change[2] + " to " + change[3]);
+                        break;
+                    case 5:
+                        rooms[change[1]][change[2]][change[3]] = change[4];
+                        break;
+                    case 6:
+                        rooms[change[1]][change[2]][change[3]][change[4]] = change[5];
+                        break;
+                    case 7:
+                        rooms[change[1]][change[2]][change[3]][change[4]][change[5]] = change[6];
+                        break;
+                    case 8:
+                        rooms[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]] = change[7];
+                        break;
+                    default:
+                        console.log("Change-processing error: Unrecognized length.");
+                        break;
+                }
+            }
+            else if (change[0] == "menus") {
+                switch(change.length) {
+                    case 4:
+                        menus[change[1]][change[2]] = change[3];
+                        break;
+                    case 5:
+                        menus[change[1]][change[2]][change[3]] = change[4];
+                        break;
+                    case 6:
+                        menus[change[1]][change[2]][change[3]][change[4]] = change[5];
+                        break;
+                    case 7:
+                        menus[change[1]][change[2]][change[3]][change[4]][change[5]] = change[6];
+                        break;
+                    case 8:
+                        menus[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]] = change[7];
+                        break;
+                    default:
+                        console.log("Change-processing error: Unrecognized length.");
+                        break;
+                }
+            }
+        }
+    }
+}
 
 function error(text) {
     clearFields();
