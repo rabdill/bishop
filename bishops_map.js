@@ -18,17 +18,187 @@ function stripArticles(command) {
     for (i = 0; i < articles.length; i++) {
         command = command.replace(articles[i], " ");
     }
-    
+
     return command;
+}
+
+function commandInRoom(command) {
+    var searching = true;
+    // "searching" is used to keep track of whether or not a command
+    // has been processed, to prevent it from getting accepted from
+    // one section and rejected by another.
+
+    if (command[0] ==  "go") {
+        if (current["exits"][command[1]] != undefined) {
+            searching = false;
+            nextMove(current["exits"][command[1]]);
+        }
+    }
+    if (command[0] == "view" && searching) {
+        if (command[1] == "inventory") {
+            searching = false;
+            print_inventory();
+        }
+    }
+    if (command[0] == "look" && searching) {
+        if (command[1] == "around") {
+            searching = false;
+            printer(current); //just reprint the current location
+        }
+        else if (command[1] in current['exits']) {
+            toPrint = {
+                "message" : "You look to the " + command[1] + ": " + rooms[current["exits"][command[1]]]["look"]
+            };
+            printer(toPrint);
+        }
+    }
+    // check the room's possible actions
+    if ("actions" in current && command[0] in current["actions"] && searching) {
+        // if the verb is in the room,
+        // check if the verb can be applied to the specified object
+        if (command[1] in current["actions"][command[0]]) {
+            // implement any changes
+            if ("changes" in current["actions"][command[0]][command[1]]) {
+                for (i = 0; i < current["actions"][command[0]][command[1]]["changes"].length; i++) {
+                    searching = false;
+                    processChange(current["actions"][command[0]][command[1]]["changes"][i]);
+                }
+            }
+            // print out a message, if there is one
+            if ("print" in current["actions"][command[0]][command[1]]) {
+                searching = false;
+                current["message"] = current["actions"][command[0]][command[1]]["print"];
+                printer(current);
+            }
+            // otherwise if the result is a move, go there:
+            else if ("move" in current["actions"][command[0]][command[1]]) {
+                searching = false;
+                nextMove(current["actions"][command[0]][command[1]]["move"]);
+            }
+        }
+        // check if the target of the action might be a synonym
+        // ** direct objects and items are stored IN THE SAME SYNONYM GROUP **
+        else if ("synonyms" in current && "items" in current["synonyms"]) {
+            for (object in current["synonyms"]["items"]) {
+                if (current["synonyms"]["items"][object].indexOf(command[1]) >= 0) {
+                    searching = false;
+                    processCommand(command[0] + " " + object);
+                }
+            }
+        }
+    }
+    if ("synonyms" in current && "actions" in current["synonyms"] && searching) {
+        // look in all the item synonym lists
+        for (action in current["synonyms"]["actions"]) {
+            // if the specified action is in a synonym list, swap it out for the
+            // real name of the action and re-process the command:
+            if (current["synonyms"]["actions"][action].indexOf(command[0]) >= 0) {
+                searching = false;
+                processCommand(action + " " + command[1]);
+            }
+        }
+    }
+    // if there are items in the room and the direct object is one of them
+    if ("items" in current && command[1] in current["items"] && searching) {
+        // if the action can be taken against that item:
+        if (command[0] in current["items"][command[1]]["states"]) {
+            //if the item can be put into the proposed state from its current state:
+            if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
+                // record what the transition message should be:
+                transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
+                // if it has any changes associated with it:
+                if ("changes" in current["items"][command[1]]["states"][command[0]]) {
+                    // if it has any changes coming from its current state into the new one:
+                    if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["changes"]) {
+                        //make all the changes:
+                        for (i = 0; i < current["items"][command[1]]["states"][command[0]]["changes"][current["items"][command[1]]["status"]].length; i++) {
+                            processChange(current["items"][command[1]]["states"][command[0]]["changes"][current["items"][command[1]]["status"]][i]);
+                        }
+                    }
+                }
+                // and switch to the new state:
+                current["items"][command[1]]["status"] = command[0];
+
+                // also, if it's "take," add it to inventory:
+                if (command[0] == "take") {
+                    inventory_add(current["items"][command[1]]["name"], 1);
+                }
+                searching = false;
+
+                // print the transition message from the old state:
+                current["message"] = transMessage;
+                printer(current);
+                // (this gets printed after everything else because the 
+                // room's description gets re-printed when the message is
+                // displayed, so we have to make all the descriptive changes
+                // before it's printed. otherwise, we'll get stuck with
+                // things like "You smashed the pumpkin. There is a pumpkin here.")
+            }
+        }
+        // if the action isn't found, check if it's a synonym of one:
+        else if ("synonyms" in current && "item states" in current["synonyms"] && command[1] in current["synonyms"]["item states"]) {
+            for (state in current["synonyms"]["item states"][command[1]]) {
+                if (current["synonyms"]["item states"][command[1]][state].indexOf(command[0]) >= 0) {
+                    searching = false;
+                    processCommand(state + " " + command[1]);
+                }
+            }
+        }
+    }
+    // if the player referenced an item by a synonym:
+    if ("synonyms" in current && "items" in current["synonyms"] && searching) {
+        // look in all the item synonym lists
+        for (item in current["synonyms"]["items"]) {
+            // if the specified item is in a synonym list, swap it out for the
+            // real name of the item and re-process the command:
+            if (current["synonyms"]["items"][item].indexOf(command[1]) >= 0) {
+                searching = false;
+                processCommand(command[0] + " " + item)
+            }
+        }
+    }
+    if (searching) {
+        error("Error: Invalid or impossible command.");
+    }
+}
+
+function commandInMenu(command) {
+    var toPrint = {};
+    command--;    //because the array starts at #0 but the option numbers start at 1
+    if (command < current["choices"].length) { //make sure it's an option
+        // if the player is supposed to move to a new location:
+        if (current["choices"][command]["response type"] == "move") {
+            // if the destination's description has to be changed:
+            if ("description" in current["choices"][command]) {
+                if (current["choices"][command]["destination"] in rooms) {
+                    rooms[current["choices"][command]["destination"]]["entrance text"] = current["choices"][command]["description"];
+                }
+                else if (current["choices"][command]["destination"] in menus) {
+                    menus[current["choices"][command]["destination"]]["description"] = current["choices"][command]["description"];
+                }
+            }
+
+            // if there's a message to display before the move
+            if ("premessage" in current["choices"][command]) {
+                toPrint["type"] = "premessage";
+                toPrint["premessage"] = current["choices"][command]["premessage"];
+                toPrint["destination"] = current["choices"][command]["destination"];
+                printer(toPrint);
+            }
+            else {
+                nextMove(current["choices"][command]["destination"]);
+            }
+        }
+    }
 }
 
 function processCommand(command) {
     // if nothing is passed to the function, just grab the typed command:
-    // (will happen almost every time)
+    // will happen almost every time.
+    // (when will this NOT happen? i never noted.)
     if (typeof command !== "string") command = document.getElementById("command").value;
     
     command = stripArticles(command);
-
     command = command.split(" ");
     // fix the array in case the command for some reason starts with a space:
     if (command[0] == "") {
@@ -36,169 +206,10 @@ function processCommand(command) {
         for (j = 1; j < command.length; j++) {
             command[j-1] = command[j];
         }
-
     }
-    if (current["type"] == "room") {
-        var searching = true;
-        // "searching" is used to keep track of whether or not a command
-        // has been processed, to prevent it from getting accepted from
-        // one section and rejected by another.
-        if (command[0] ==  "go") {
-            if (current["exits"][command[1]] != undefined) {
-                searching = false;
-                nextMove(current["exits"][command[1]]);
-            }
-        }
-        if (command[0] == "view" && searching) {
-            if (command[1] == "inventory") {
-                searching = false;
-                print_inventory();
-            }
-        }
-        if (command[0] == "look" && searching) {
-            if (command[1] == "around") {
-                searching = false;
-                printer(current); //just reprint the current location
-            }
-        }
-        // check the room's possible actions
-        if ("actions" in current && command[0] in current["actions"] && searching) {
-            // if the verb is in the room,
-            // check if the verb can be applied to the specified object
-            if (command[1] in current["actions"][command[0]]) {
-                // implement any changes
-                if ("changes" in current["actions"][command[0]][command[1]]) {
-                    for (i = 0; i < current["actions"][command[0]][command[1]]["changes"].length; i++) {
-                        searching = false;
-                        processChange(current["actions"][command[0]][command[1]]["changes"][i]);
-                    }
-                }
-                // print out a message, if there is one
-                if ("print" in current["actions"][command[0]][command[1]]) {
-                    searching = false;
-                    current["message"] = current["actions"][command[0]][command[1]]["print"];
-                    printer(current);
-                }
-                // otherwise if the result is a move, go there:
-                else if ("move" in current["actions"][command[0]][command[1]]) {
-                    searching = false;
-                    nextMove(current["actions"][command[0]][command[1]]["move"]);
-                }
-            }
-            // check if the target of the action might be a synonym
-            // ** direct objects and items are stored IN THE SAME SYNONYM GROUP **
-            else if ("synonyms" in current && "items" in current["synonyms"]) {
-                for (object in current["synonyms"]["items"]) {
-                    if (current["synonyms"]["items"][object].indexOf(command[1]) >= 0) {
-                        searching = false;
-                        processCommand(command[0] + " " + object);
-                    }
-                }
-            }
-        }
-        if ("synonyms" in current && "actions" in current["synonyms"] && searching) {
-            // look in all the item synonym lists
-            for (action in current["synonyms"]["actions"]) {
-                // if the specified action is in a synonym list, swap it out for the
-                // real name of the action and re-process the command:
-                if (current["synonyms"]["actions"][action].indexOf(command[0]) >= 0) {
-                    searching = false;
-                    processCommand(action + " " + command[1]);
-                }
-            }
-        }
-        // if there are items in the room and the direct object is one of them
-        if ("items" in current && command[1] in current["items"] && searching) {
-            // if the action can be taken against that item:
-            if (command[0] in current["items"][command[1]]["states"]) {
-                //if the item can be put into the proposed state from its current state:
-                if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
-                    // record what the transition message should be:
-                    transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
-                    // if it has any changes associated with it:
-                    if ("changes" in current["items"][command[1]]["states"][command[0]]) {
-                        // if it has any changes coming from its current state into the new one:
-                        if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["changes"]) {
-                            //make all the changes:
-                            for (i = 0; i < current["items"][command[1]]["states"][command[0]]["changes"][current["items"][command[1]]["status"]].length; i++) {
-                                processChange(current["items"][command[1]]["states"][command[0]]["changes"][current["items"][command[1]]["status"]][i]);
-                            }
-                        }
-                    }
-                    // and switch to the new state:
-                    current["items"][command[1]]["status"] = command[0];
 
-                    // also, if it's "take," add it to inventory:
-                    if (command[0] == "take") {
-                        inventory_add(current["items"][command[1]]["name"], 1);
-                    }
-                    searching = false;
-
-                    // print the transition message from the old state:
-                    current["message"] = transMessage;
-                    printer(current);
-                    // (this gets printed after everything else because the 
-                    // room's description gets re-printed when the message is
-                    // displayed, so we have to make all the descriptive changes
-                    // before it's printed. otherwise, we'll get stuck with
-                    // things like "You smashed the pumpkin. There is a pumpkin here.")
-                }
-            }
-            // if the action isn't found, check if it's a synonym of one:
-            else if ("synonyms" in current && "item states" in current["synonyms"] && command[1] in current["synonyms"]["item states"]) {
-                for (state in current["synonyms"]["item states"][command[1]]) {
-                    if (current["synonyms"]["item states"][command[1]][state].indexOf(command[0]) >= 0) {
-                        searching = false;
-                        processCommand(state + " " + command[1]);
-                    }
-                }
-            }
-        }
-        // if the player referenced an item by a synonym:
-        if ("synonyms" in current && "items" in current["synonyms"] && searching) {
-            // look in all the item synonym lists
-            for (item in current["synonyms"]["items"]) {
-                // if the specified item is in a synonym list, swap it out for the
-                // real name of the item and re-process the command:
-                if (current["synonyms"]["items"][item].indexOf(command[1]) >= 0) {
-                    searching = false;
-                    processCommand(command[0] + " " + item)
-                }
-            }
-        }
-        if (searching) {
-            error("Error: Invalid or impossible command.");
-        }
-    }
-    else if (current["type"] == "menu") {
-        var toPrint = {};
-        command--;    //because the array starts at #0 but the option numbers start at 1
-        if (command < current["choices"].length) { //make sure it's an option
-            // if the player is supposed to move to a new location:
-            if (current["choices"][command]["response type"] == "move") {
-                // if the destination's description has to be changed:
-                if ("description" in current["choices"][command]) {
-                    if (current["choices"][command]["destination"] in rooms) {
-                        rooms[current["choices"][command]["destination"]]["entrance text"] = current["choices"][command]["description"];
-                    }
-                    else if (current["choices"][command]["destination"] in menus) {
-                        menus[current["choices"][command]["destination"]]["description"] = current["choices"][command]["description"];
-                    }
-                }
-
-                // if there's a message to display before the move
-                if ("premessage" in current["choices"][command]) {
-                    toPrint["type"] = "premessage";
-                    toPrint["premessage"] = current["choices"][command]["premessage"];
-                    toPrint["destination"] = current["choices"][command]["destination"];
-                    printer(toPrint);
-                }
-                else {
-                	nextMove(current["choices"][command]["destination"]);
-                }
-            }
-        }
-    }
+    if (current["type"] == "room") commandInRoom(command);
+    else if (current["type"] == "menu") commandInMenu(command);
 }
 
 
@@ -281,18 +292,20 @@ function printer(target) {
         }
         document.getElementById("prompt").innerHTML = newPrompt;
     }
-    for (parameter in game) {
-        newDescription = newDescription.replace("@"+parameter+"@",game[parameter]);
-    }
-    document.getElementById("description").innerHTML = newDescription;
+    if (newDescription != undefined) {
+        for (parameter in game) {
+            newDescription = newDescription.replace("@"+parameter+"@",game[parameter]);
+        }
+        document.getElementById("description").innerHTML = newDescription;
 
-    if (game["allow text to speech"]) {
-        console.log("TTS: " + game["allow text to speech"]);
-        say(newDescription);
-    }
+        if (game["allow text to speech"]) {
+            console.log("TTS: " + game["allow text to speech"]);
+            say(newDescription);
+        }
 
-    clearFields();
-    current = target;
+        clearFields();
+        current = target;
+    }
 }
 
 
