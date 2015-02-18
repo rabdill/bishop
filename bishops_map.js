@@ -135,6 +135,10 @@ function checkItems(command) {
             if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
                 // record what the transition message should be:
                 transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
+                // (this has to be saved here because the state of the item is about
+                //  to change, which will change all the messages around. We need
+                //  the one in effect BEFORE the shift.)
+
                 // if it has any changes associated with it:
                 processChanges(current["items"][command[1]]["states"][command[0]])
 
@@ -160,7 +164,6 @@ function checkItems(command) {
     }
     // if the player referenced an item by a synonym:
     if (findSynonyms(command, "items")) return false;
-    
 
     //if we have to keep looking:
     return true;
@@ -244,6 +247,75 @@ function processCommand(command) {
 }
 
 
+//******* printer functions:
+function printRoom(target) {
+    // slap a headline on the top if there's one specified:
+    if (target["title"] !== undefined) {
+        newDescription = "<strong>" + target["title"] + "</strong><br>" + target["entrance text"];
+    }
+    else {
+        newDescription = target["entrance text"];
+    }
+
+    // adding the descriptors of any objects in the room:
+    for (var item in target["items"]) {
+        if (target["items"][item]["states"][target["items"][item]["status"]]["descriptor"] !== "") {
+            newDescription += "<br>" + target["items"][item]["states"][target["items"][item]["status"]]["descriptor"];
+        }
+    }
+    var newPrompt = target["prompt"];
+
+    // print out the exits
+    if (game["print directions"]) {
+        newDescription += "<ul>";
+        for (var exit in target["exits"]) {
+            newDescription += "<li>To the " + exit + " is " + rooms[target["exits"][exit]]["name"] + ".";
+        }
+        newDescription += "</ul>";
+    }
+
+    return {"newDescription" : newDescription, "newPrompt" : newPrompt};
+}
+
+function printMenu(target) {
+    if (target["type"] == "premessage") {
+        newDescription = target["premessage"] + "<br><br>";
+        if (target["destination"] in rooms) {
+            target = rooms[target["destination"]];
+        }
+        else if (target["destination"] in menus) {
+            target = menus[target["destination"]];
+        }
+    }
+    // if it's a regular menu:
+    else {
+        newDescription = "";
+        newPrompt = target["prompt"];
+    }
+
+    // if the player is being sent to a menu:
+    if (target["type"] == "menu") {
+        // then add whatever the menu's full description is now:
+        newDescription += target["description"];
+
+        //lining up the menu's text
+        // to print either way:
+        newDescription += "<ol>";
+        for (var i = 0; i < target["choices"].length; i++) {
+            if (target["choices"][i] != undefined) {
+                newDescription += "<li>" + target["choices"][i]["choice"];
+            }
+        }
+        newDescription += "</ol>"; 
+    }
+    //if they're being sent to a room:
+    else if (target["type"] == "room") {
+        newDescription += target["entrance text"];
+    }
+
+    return {"newDescription" : newDescription, "newPrompt" : newPrompt};
+}
+
 function printer(target) {
     var newDescription;
 
@@ -253,7 +325,8 @@ function printer(target) {
     }
     document.getElementById("message").innerHTML = target["message"];
     target["message"] = "";
-
+    // (this also serves an added bonus of erasing any leftover
+    //  messages for when we print the next thing, whatever it is)
 
     if (target["type"] == "error") {
         clearFields();
@@ -266,69 +339,17 @@ function printer(target) {
     }
     
     else if (target["type"] == "room") {
-        if (target["title"] !== undefined) {
-            newDescription = "<strong>" + target["title"] + "</strong><br>" + target["entrance text"];
-        }
-        else {
-        	newDescription = target["entrance text"];
-        }
-
-        // adding the descriptors of any objects in the room:
-        for (var item in target["items"]) {
-            if (target["items"][item]["states"][target["items"][item]["status"]]["descriptor"] !== "") {
-                newDescription += "<br>" + target["items"][item]["states"][target["items"][item]["status"]]["descriptor"];
-            }
-        }
-        var newPrompt = target["prompt"];
-
-        // print out the exits
-        if (game["print directions"]) {
-            newDescription += "<ul>";
-            for (var exit in target["exits"]) {
-                newDescription += "<li>To the " + exit + " is " + rooms[target["exits"][exit]]["name"] + ".";
-            }
-            newDescription += "</ul>";
-        }
+        toPrint = printRoom(target);
     }
 
     // if it's one of the menu response types:
     else if (["menu", "premessage"].indexOf(target["type"]) >= 0) {
-        if (target["type"] == "premessage") {
-            newDescription = target["premessage"] + "<br><br>";
-            if (target["destination"] in rooms) {
-            	target = rooms[target["destination"]];
-            }
-            else if (target["destination"] in menus) {
-            	target = menus[target["destination"]];
-            }
-        }
-        // if it's a regular menu:
-        else {
-            newDescription = "";
-            newPrompt = target["prompt"];
-        }
-
-        // if the player is being sent to a menu:
-        if (target["type"] == "menu") {
-            // then add whatever the menu's full description is now:
-            newDescription += target["description"];
-
-            //lining up the menu's text
-            // to print either way:
-            newDescription += "<ol>";
-            for (var i = 0; i < target["choices"].length; i++) {
-                if (target["choices"][i] != undefined) {
-                    newDescription += "<li>" + target["choices"][i]["choice"];
-                }
-            }
-            newDescription += "</ol>"; 
-        }
-        //if they're being sent to a room:
-        else if (target["type"] == "room") {
-            newDescription += target["entrance text"];
-        }
+        toPrint = printMenu(target);
     }
 
+    newDescription = toPrint["newDescription"];
+    newPrompt = toPrint["newPrompt"];
+    
     // print everything out (rooms *and* menus)
     if (newPrompt != undefined) {
         // replace any variables in the strings
