@@ -203,8 +203,6 @@ function printer(target) {
     }
     document.getElementById("message").innerHTML = target["message"];
     target["message"] = "";
-
-    console.log("Printing description for " + target["name"]);
     var newDescription;
     if (target["type"] == "room") {
         if (target["title"] !== undefined) {
@@ -224,7 +222,6 @@ function printer(target) {
 
         // print out the exits
         if (game["print directions"]) {
-            console.log("PRINTING DIRECTIONZ");
             newDescription += "<ul>";
             for (var exit in target["exits"]) {
                 newDescription += "<li>To the " + exit + " is " + rooms[target["exits"][exit]]["name"] + ".";
