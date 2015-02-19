@@ -167,6 +167,14 @@ function checkItems(command) {
         }
         // if the action isn't found, check if it's a synonym of one:
         else if (findSynonyms(command, "item states")) return false;
+
+        // if that doesn't work, check to see if the command is a built-in:
+        built_ins = ["taste", "smell", "examine"];
+        if (built_ins.indexOf(command[0]) >= 0) {
+            current["message"] = current["items"][command[1]][command[0]];
+            printer(current);
+            return false;
+        }
     }
     // if the player referenced an item by a synonym:
     if (findSynonyms(command, "items")) return false;
