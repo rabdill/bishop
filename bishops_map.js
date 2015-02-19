@@ -169,9 +169,8 @@ function checkItems(command) {
         else if (findSynonyms(command, "item states")) return false;
 
         // if that doesn't work, check to see if the command is a built-in:
-        built_ins = ["taste", "smell", "examine"];
-        if (built_ins.indexOf(command[0]) >= 0) {
-            current["message"] = current["items"][command[1]][command[0]];
+        if ("messages" in current["items"][command[1]] && command[0] in current["items"][command[1]]["messages"]) {
+            current["message"] = current["items"][command[1]]["messages"][command[0]];
             printer(current);
             return false;
         }
