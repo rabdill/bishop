@@ -132,6 +132,11 @@ function findSynonyms(command,category) {
     return false;
 }
 
+function message(text) {
+    current["message"] = text;
+    printer(current);
+}
+
 function checkItems(command) {
     // if there are items in the room and the direct object is one of them
     if ("items" in current && command[1] in current["items"]) {
@@ -157,10 +162,7 @@ function checkItems(command) {
                 }
 
                 // print the transition message from the old state:
-                current["message"] = transMessage;
-
-                // and reprint the room, to make sure the changes are displayed:
-                printer(current);
+                message(transMessage);
 
                 return false;
             }
@@ -170,8 +172,7 @@ function checkItems(command) {
 
         // if that doesn't work, check to see if the command is a built-in:
         if ("messages" in current["items"][command[1]] && command[0] in current["items"][command[1]]["messages"]) {
-            current["message"] = current["items"][command[1]]["messages"][command[0]];
-            printer(current);
+            message(current["items"][command[1]]["messages"][command[0]]);
             return false;
         }
     }

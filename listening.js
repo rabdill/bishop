@@ -58,7 +58,7 @@ if (game["allow speech to text"]) {
         speech.lang = "en-us";
         //speech.onend = lreset;
         speech.lang = "en-us";
-        console.log("Linitializing");
+        console.log("Initializing listener");
         document.getElementById("command").value = "";
         lreset();
         action();
@@ -96,7 +96,7 @@ if (game["allow speech to text"]) {
         } else if (e.error === 'audio-capture') {
             msg = "Please ensure that a microphone is connected to your computer.";
         } else if (e.error === 'not-allowed') {
-            msg = "The app cannot access your microphone. Please go to chrome://settings/contentExceptions#media-stream and allow Microphone access to this website.";
+            msg = "The app cannot access your microphone.";
         }
         error(msg);
     };
@@ -120,7 +120,6 @@ if (game["allow speech to text"]) {
             }
         }
         document.getElementById("command").value = interim_transcript;
-
     };
     document.getElementById("listening").addEventListener("click", action);
 }
