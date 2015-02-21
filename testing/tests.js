@@ -65,6 +65,19 @@ function defineGame() {
 	}
 }
 
+function stringTester(text, stringTests) {
+	for (conditions in stringTests) {
+		test = stringTests[conditions];
+
+		if (text.substring(test["start"], test["stop"]) == test["criteria"]) {
+			record(conditions + " successful.", "pass");
+		} else {
+			record(conditions + " failed:<ul><li>Should have been '" + test["criteria"] + "' but was actually '" + text.substring(test["start"], test["stop"]) + "'</ul>","fail");
+			errored = true;
+		}
+	}
+}
+
 
 /*************************************************** */
 function test_initialize() {
@@ -144,16 +157,7 @@ function test_detokenize() {
 		}
 	}
 
-	for (conditions in stringTests) {
-		test = stringTests[conditions];
-
-		if (newText.substring(test["start"], test["stop"]) == test["criteria"]) {
-			record(conditions + " successful.", "pass");
-		} else {
-			record(conditions + " failed:<ul><li>Should have been '" + test["criteria"] + "' but was actually '" + newText.substring(test["start"], test["stop"]) + "'</ul>","fail");
-			errored = true;
-		}
-	}
+	stringTester(newText, stringTests);
 
 
 	if (errored) {
@@ -162,6 +166,7 @@ function test_detokenize() {
 		record("<strong>detokenize() fulfilled expectations.</strong>","pass");
 	}
 }
+
 function test_stripArticles() {
 	
 }
