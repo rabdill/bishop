@@ -7,7 +7,8 @@ function runTests() {
 	record("Test suite loaded.", "new")
 
 	toTest = [
-		"initialize"
+		"initialize",
+		"detokenize"
 	]
 
 	for (var i = 0; i < toTest.length; i++) {
@@ -48,7 +49,9 @@ function defineGame() {
 	currentLocation = "lobby";
 
 	game = {
-		"title" : "My Cool Game Title"
+		"title" : "My Cool Game Title",
+		"hometown" : "Delran",
+		"favorite cheese" : "brie"
 	}
 	rooms = {
 		"lobby" : {
@@ -67,7 +70,7 @@ function defineGame() {
 function test_initialize() {
 	var errored = false;
 
-	record("Testing 'initialize'...", "new");
+	record("Testing 'initialize()'...", "new");
 
 	defineGame();
 
@@ -100,13 +103,55 @@ function test_initialize() {
 	} else {
 		record("<strong>initialize() fulfilled expectations.</strong>","pass");
 	}
-
 }
 
 function test_detokenize() {
-	
-}
+	var errored = false;
 
+	record("Testing 'detokenize(text)'...", "new");
+
+	defineGame();
+
+	text = "Your hometown is @hometown@, and your favorite cheese is @favorite cheese@. @hometown@ and @favorite cheese@.";
+
+	try {newText = detokenize(text);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+
+
+	stringTests = {
+		"First string substitution": {
+			"start" : 0,
+			"stop" : 23,
+			"criteria" : "Your hometown is Delran"
+		},
+		"Second string substitution" : {
+			"start" : 23,
+			"stop" : 57,
+			"criteria" : ", and your favorite cheese is brie"
+		}
+	}
+
+	for (conditions in stringTests) {
+		test = stringTests[conditions];
+
+		if (newText.substring(test["start"], test["stop"]) == test["criteria"]) {
+			record(conditions + " successful.", "pass");
+		} else {
+			record(conditions + " failed:<ul><li>Should have been '" + test["criteria"] + "' but was actually '" + newText.substring(test["start"], test["stop"]) + "'</ul>","fail");
+			errored = true;
+		}
+	}
+
+
+	if (errored) {
+		record("<strong>detokenize() did not meet expectations.</strong>","fail");
+	} else {
+		record("<strong>detokenize() fulfilled expectations.</strong>","pass");
+	}
+}
 function test_stripArticles() {
 	
 }
