@@ -523,5 +523,6 @@ function print_inventory() {
 }
 
 // connect the code to the DOM:
-window.addEventListener("load", initialize);
+    // if we aren't doing a run through the unit tests:
+if (document.getElementsByClassName("TESTRESULT").length === 0) window.addEventListener("load", initialize);
 document.getElementById("sendCommand").addEventListener("click", processCommand);
