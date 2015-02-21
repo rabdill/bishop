@@ -65,14 +65,15 @@ function checkBuiltIns(command) {
                 // it can be printed:
                 var transMessage = current["items"][command[1]]["take"][current["items"][command[1]]["status"]];
                 
-                inventory_add(current["items"][command[1]], 1);
+                inventory_add(command[1], current["items"][command[1]], 1);
                 message(transMessage);
                 return false;
             }
         case "drop":
             if (command[1] in player["inventory"] && player["inventory"][command[1]] > 0) {
-                player["inventory"][command[1]] -= 1;
-                message("You drop the " + command[1]);
+                current["items"][command[1]] = player["carrying"][command[1]];
+                message("You drop the " + command[1] + ".");
+                inventory_remove(command[1], 1);
                 return false;
             }
         default:
@@ -470,25 +471,31 @@ function clearFields() {
     document.getElementById("command").focus();
 }
 
-function inventory_add(item, qty) {
+function inventory_add(name, item, qty) {
     if (item["name"] in player["inventory"]) {
-        player["inventory"][item["name"]]++;
-        console.log("Adding 1 to inventory for " + item["name"] + ".");
+        player["inventory"][item["name"]] += qty;
+        console.log("Adding " + qty + " to inventory for " + item["name"] + ".");
     }
     else {
         player["inventory"][item["name"]] = qty;
         console.log("Adding " + item["name"] + " to player inventory.");
     }
-    player["carrying"].push(item);
+
+    player["carrying"][name] = item;
 
     for (var carrying in current["items"]) {
-        console.log(carrying);
-        console.log("Checking if " + current["items"][carrying]["id"] + " is " + item["id"]);
         if (current["items"][carrying]["id"] == item["id"]) {
-            console.log("IT IS!");
             delete current["items"][carrying];
         }
     }
+}
+
+function inventory_remove(name, qty) {
+    console.log("Removing " + qty + " from inventory for " + name + ".");
+    player["inventory"][name] -= qty;
+
+    delete player["carrying"][name];
+
 }
 
 function print_inventory() {
