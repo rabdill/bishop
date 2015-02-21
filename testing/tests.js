@@ -17,11 +17,6 @@ function runTests() {
 	};
 }
 
-function clearResults() {
-	sessionStorage.results = "";
-	document.getElementById('test-results').innerHTML = sessionStorage.results;
-}
-
 function record(text,parameter) {
 	switch (parameter) {
 		case "new":
@@ -43,8 +38,6 @@ function record(text,parameter) {
 }
 
 document.getElementById("start").addEventListener("click", runTests);
-document.getElementById("clear").addEventListener("click", clearResults);
-
 
 function defineGame() {
 	currentLocation = "lobby";
