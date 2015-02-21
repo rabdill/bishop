@@ -55,6 +55,20 @@ function checkBuiltIns(command) {
                 return false;
             }
             break;
+        case "take":
+            if (command[1] in current["items"] &&
+                "take" in current["items"][command[1]] &&
+                current["items"][command[1]]["status"] in current["items"][command[1]]["take"])
+                {
+                // we need to save the transition message before we add the item
+                // to the inventory because then we'll end up losing the message before
+                // it can be printed:
+                var transMessage = current["items"][command[1]]["take"][current["items"][command[1]]["status"]];
+                
+                inventory_add(current["items"][command[1]], 1);
+                message(transMessage);
+                return false;
+            }
         case "drop":
             if (command[1] in player["inventory"] && player["inventory"][command[1]] > 0) {
                 player["inventory"][command[1]] -= 1;
@@ -65,6 +79,8 @@ function checkBuiltIns(command) {
             return true;
             break;
     }
+    // if the verb matches a built-in but the other tests inside of it fail:
+    return true;
 }
 
 function checkAction(command) {
@@ -161,11 +177,6 @@ function checkItems(command) {
 
                 // and switch to the new state:
                 current["items"][command[1]]["status"] = command[0];
-
-                // also, if it's "take," add it to inventory:
-                if (command[0] == "take") {
-                    inventory_add(current["items"][command[1]]["name"], 1);
-                }
 
                 // print the transition message from the old state:
                 message(transMessage);
@@ -460,13 +471,23 @@ function clearFields() {
 }
 
 function inventory_add(item, qty) {
-    if (item in player["inventory"]) {
-        player["inventory"][item]++;
-        console.log("Adding 1 to inventory for " + item + ".");
+    if (item["name"] in player["inventory"]) {
+        player["inventory"][item["name"]]++;
+        console.log("Adding 1 to inventory for " + item["name"] + ".");
     }
     else {
-        player["inventory"][item] = qty;
-        console.log("Adding " + item + " to player inventory.");
+        player["inventory"][item["name"]] = qty;
+        console.log("Adding " + item["name"] + " to player inventory.");
+    }
+    player["carrying"].push(item);
+
+    for (var carrying in current["items"]) {
+        console.log(carrying);
+        console.log("Checking if " + current["items"][carrying]["id"] + " is " + item["id"]);
+        if (current["items"][carrying]["id"] == item["id"]) {
+            console.log("IT IS!");
+            delete current["items"][carrying];
+        }
     }
 }
 
