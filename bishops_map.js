@@ -32,34 +32,36 @@ function stripArticles(command) {
 }
 
 function checkBuiltIns(command) {
-    if (command[0] ==  "go") {
-        if (current["exits"][command[1]] != undefined) {
-            nextMove(current["exits"][command[1]]);
-            return false;
-        }
+    switch(command[0]) {
+        case "go":
+            if (current["exits"][command[1]] != undefined) {
+                nextMove(current["exits"][command[1]]);
+                return false;
+            }
+            break;
+        case "view":
+            if (command[1] == "inventory") {
+                print_inventory();
+                return false;
+            }
+            break;
+        case "look":
+            if (command[1] == "around") {
+                printer(current); //just reprint the current location
+                return false;
+            }
+            else if (command[1] in current['exits']) {
+                toPrint = {
+                    "message" : "You look to the " + command[1] + ": " + rooms[current["exits"][command[1]]]["look"]
+                };
+                printer(toPrint);
+                return false;
+            }
+            break;
+        default:
+            return true;
+            break;
     }
-    if (command[0] == "view") {
-        if (command[1] == "inventory") {
-            print_inventory();
-            return false;
-        }
-    }
-    if (command[0] == "look") {
-        if (command[1] == "around") {
-            printer(current); //just reprint the current location
-            return false;
-        }
-        else if (command[1] in current['exits']) {
-            toPrint = {
-                "message" : "You look to the " + command[1] + ": " + rooms[current["exits"][command[1]]]["look"]
-            };
-            printer(toPrint);
-            return false;
-        }
-    }
-
-    //if we have to keep looking:
-    return true;
 }
 
 function checkAction(command) {
@@ -170,9 +172,8 @@ function checkItems(command) {
         }
         // if the action isn't found, check if it's a synonym of one:
         else if (findSynonyms(command, "item states")) return false;
-
-        // if that doesn't work, check to see if the command is a built-in:
-        if ("messages" in current["items"][command[1]] && command[0] in current["items"][command[1]]["messages"]) {
+        // check if the response is just a message:
+        else if ("messages" in current["items"][command[1]] && command[0] in current["items"][command[1]]["messages"]) {
             message(current["items"][command[1]]["messages"][command[0]]);
             return false;
         }
