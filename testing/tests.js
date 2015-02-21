@@ -4,7 +4,7 @@ function runTests() {
 	sessionStorage.results = "";
 	
 	sessionStorage.startTime = new Date().getTime();
-	record("Test suite loaded.", true)
+	record("Test suite loaded.", "new")
 
 	toTest = [
 		"initialize"
@@ -15,39 +15,48 @@ function runTests() {
 	};
 }
 
-document.getElementById("start").addEventListener("click", runTests);
-
 function clearResults() {
-	record();
-}
-
-document.getElementById("clear").addEventListener("click", clearResults);
-
-function record(text,freshPgraph) {
-	if (text != undefined) {
-		if(freshPgraph) {
-			currentTime = new Date().getTime();
-			var timestamp = (currentTime - sessionStorage.startTime)/1000.0
-			sessionStorage.results += "</ul><p>" + timestamp + " seconds: " + text + "<ul>";
-		} else {
-			sessionStorage.results += "<li>" + text;
-		}
-	}
-	else sessionStorage.results = "";
+	sessionStorage.results = "";
 	document.getElementById('test-results').innerHTML = sessionStorage.results;
 }
 
+function record(text,parameter) {
+	switch (parameter) {
+		case "new":
+			currentTime = new Date().getTime();
+			var timestamp = (currentTime - sessionStorage.startTime)/1000.0
+			sessionStorage.results += "</ul><p>" + timestamp + " seconds: " + text + "<ul>";
+			break;
+		case "fail":
+			sessionStorage.results += "<li class='fail'><strong>ERROR:</strong> " + text;
+			break;
+		case "pass":
+			sessionStorage.results += "<li class='pass'>" + text;
+			break;
+		default:
+			sessionStorage.results += "<li>" + text;
+			break;
+	}
+	document.getElementById('test-results').innerHTML = sessionStorage.results;
+}
+
+document.getElementById("start").addEventListener("click", runTests);
+document.getElementById("clear").addEventListener("click", clearResults);
 
 
+
+
+
+/*************************************************** */
 function test_initialize() {
-	record("Testing 'initialize'...", true);
+	record("Testing 'initialize'...", "new");
 	game["title"] = "My Cool Game Title";
 
 	try {initialize();}
-	catch(err) {}
+	catch(err) {record("failure at initialize(): " + err,"fail")}
 
 	if (document.getElementById("gameName").innerHTML == game["title"]) {
-		record("Title changed successfully.")
+		record("Title changed successfully.","pass")
 	} else {
 		record("TITLE FAILURE");
 	}
