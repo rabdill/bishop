@@ -7,7 +7,7 @@ function initialize() {
 
 	// either do the tests or start the game
 	//	(defined in testing.js)
-	runTests();
+	startAutomation();
 }
 
 function detokenize(text) {

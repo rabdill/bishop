@@ -27,7 +27,7 @@
 		</div>
 	</form>
 	<script src="bishops_map.js"></script>
-	<script type="text/javascript" src="testing.js"></script>
+	<script type="text/javascript" src="automation.js"></script>
 	<script type="text/javascript" src="listening.js"></script>
 	<script type="text/javascript" src="talking.js"></script>
 </body>
