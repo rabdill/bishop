@@ -8,7 +8,8 @@ function runTests() {
 
 	toTest = [
 		"initialize",
-		"detokenize"
+		"detokenize",
+		"stripArticles"
 	]
 
 	for (var i = 0; i < toTest.length; i++) {
@@ -168,6 +169,57 @@ function test_detokenize() {
 }
 
 function test_stripArticles() {
+	var errored = false;
+
+	record("Testing 'stripArticles(text)'...", "new");
+
+	commands = {
+		"No substitution" : {
+			"before" : "kick pumpkin",
+			"after" : "kick pumpkin"
+		},
+		"Removing 'the'" : {
+			"before" : "stab the porkchop",
+			"after" : "stab porkchop"
+		},
+		"Removing 'a'" : {
+			"before" : "throw a baseball",
+			"after" : "throw baseball"
+		},
+		"Removing 'an'" : {
+			"before" : "eat an egg",
+			"after" : "eat egg"
+		},
+		"Removing 'to on'" : {
+			"before" : "this to on test",
+			"after" : "this test"
+		},
+		"Removing 'the on at a'" : {
+			"before" : "verb the on at a noun",
+			"after" : "verb noun"
+		}
+	}
+
+	for (test in commands) {
+		try {after = stripArticles(commands[test]["before"]);}
+		catch(err) {
+			record(err,"fail");
+			errored = true;
+		}
+
+		if (after == commands[test]["after"]) {
+			record(test + " successful.", "pass");
+		} else {
+			record(test + " failed:<ul><li>Should have been '" + commands[test]["after"] + "' but was actually '" + after + "'</ul>","fail");
+			errored = true;
+		}
+	}
+
+	if (errored) {
+		record("<strong>stripArticles() did not meet expectations.</strong>","fail");
+	} else {
+		record("<strong>stripArticles() fulfilled expectations.</strong>","pass");
+	}
 	
 }
 
