@@ -131,6 +131,16 @@ function test_detokenize() {
 			"start" : 23,
 			"stop" : 57,
 			"criteria" : ", and your favorite cheese is brie"
+		},
+		"Second substitution of first string" : {
+			"start" : 57,
+			"stop" : 65,
+			"criteria" : ". Delran"
+		},
+		"Second substitution of second string" : {
+			"start" : 65,
+			"stop" : 74,
+			"criteria" : " and brie"
 		}
 	}
 
