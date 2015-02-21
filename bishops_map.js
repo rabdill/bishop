@@ -51,13 +51,16 @@ function checkBuiltIns(command) {
                 return false;
             }
             else if (command[1] in current['exits']) {
-                toPrint = {
-                    "message" : "You look to the " + command[1] + ": " + rooms[current["exits"][command[1]]]["look"]
-                };
-                printer(toPrint);
+                message("You look to the " + command[1] + ": " + rooms[current["exits"][command[1]]]["look"]);
                 return false;
             }
             break;
+        case "drop":
+            if (command[1] in player["inventory"] && player["inventory"][command[1]] > 0) {
+                player["inventory"][command[1]] -= 1;
+                message("You drop the " + command[1]);
+                return false;
+            }
         default:
             return true;
             break;
