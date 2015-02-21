@@ -22,7 +22,8 @@ rooms={
 	        "north" : "lobby",
 	        "west"  : "copy room"
 	    },
-	    "entrance text" : "You are in the town square, which is bustling with activity. All seems well.",
+	    "title" : "@hometown@ Town Square",
+	    "entrance text" : "You are in the @hometown@ town square, which is bustling with activity. All seems well.",
 	    "items" : {
 	        "pumpkin" : {
 	            "name" : "pumpkin",
@@ -68,5 +69,6 @@ rooms={
 }
 
 game={
-	"title" : "Sweet Sample Game Numero Uno"
+	"title" : "Sweet Sample Game Numero Uno",
+	"hometown" : "Delran"
 }

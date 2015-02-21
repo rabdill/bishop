@@ -3,6 +3,7 @@
 	<meta charset="UTF-8"> 
 	<script type="text/javascript" src="gamedata.js"></script>
 	<script type="text/javascript" src="defaults.js"></script>
+
 	<title>Bishop's Map</title>
 </head>
 <body>
@@ -25,8 +26,7 @@
 			<input type="submit" id="sendCommand"><br><br>
 		</div>
 	</form>
-	
-	<script type="text/javascript" src="bishops_map.js"></script>
+	<script src="bishops_map.js"></script>
 	<script type="text/javascript" src="testing.js"></script>
 	<script type="text/javascript" src="listening.js"></script>
 	<script type="text/javascript" src="talking.js"></script>
