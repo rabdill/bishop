@@ -12,7 +12,8 @@ function initialize() {
 
 function detokenize(text) {
     for (parameter in game) {
-        text = text.replace("@"+parameter+"@",game[parameter]);
+        searchString = new RegExp("@" + parameter + "@","g");
+        text = text.replace(searchString,game[parameter]);
     }
     return text;
 }
