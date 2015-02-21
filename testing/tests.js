@@ -28,7 +28,7 @@ function record(text,parameter) {
 			sessionStorage.results += "</ul><p>" + timestamp + " seconds: " + text + "<ul>";
 			break;
 		case "fail":
-			sessionStorage.results += "<li class='fail'><strong>ERROR:</strong> " + text;
+			sessionStorage.results += "<li class='fail'> " + text;
 			break;
 		case "pass":
 			sessionStorage.results += "<li class='pass'>" + text;
@@ -44,22 +44,63 @@ document.getElementById("start").addEventListener("click", runTests);
 document.getElementById("clear").addEventListener("click", clearResults);
 
 
+function defineGame() {
+	currentLocation = "lobby";
 
+	game = {
+		"title" : "My Cool Game Title"
+	}
+	rooms = {
+		"lobby" : {
+			"type" : "room",
+			"name" : "the game lobby",
+			"exits": {
+				"south": "town square"
+			},
+			"entrance text" : "You are in the first room of the new, data-driven world we are creating in an attempt to be a halfway intelligent human."
+		}
+	}
+}
 
 
 /*************************************************** */
 function test_initialize() {
+	var errored = false;
+
 	record("Testing 'initialize'...", "new");
-	game["title"] = "My Cool Game Title";
+
+	defineGame();
 
 	try {initialize();}
-	catch(err) {record("failure at initialize(): " + err,"fail")}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
 
+	// If the title of the game is in the headline
 	if (document.getElementById("gameName").innerHTML == game["title"]) {
 		record("Title changed successfully.","pass")
 	} else {
-		record("TITLE FAILURE");
+		record("Title unchanged in header.","fail");
+		errored = true;
 	}
+
+	// If the starting room is now loaded
+	if (current == rooms[currentLocation]) {
+		record("Room loaded successfully.","pass")
+	} else {
+		record("Room not loaded into object 'current': <ul><li>" + current["name"] + " is not equal to " + rooms[currentLocation]["name"] + "</ul>","fail");
+		errored = true;
+	}
+
+	// Testing farther than this is essentially just testing the "printer"
+	// function.
+	if (errored) {
+		record("<strong>initialize() did not meet expectations.</strong>","fail");
+	} else {
+		record("<strong>initialize() fulfilled expectations.</strong>","pass");
+	}
+
 }
 
 function test_detokenize() {
