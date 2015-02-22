@@ -9,7 +9,8 @@ function runTests() {
 	toTest = [
 		"initialize",
 		"detokenize",
-		"stripArticles"
+		"stripArticles",
+		"checkBuiltIns"
 	]
 
 	for (var i = 0; i < toTest.length; i++) {
@@ -42,6 +43,10 @@ document.getElementById("start").addEventListener("click", runTests);
 function defineGame() {
 	currentLocation = "lobby";
 
+	player={
+		"inventory" : {},
+		"carrying" : {}
+	};
 	game = {
 		"title" : "My Cool Game Title",
 		"hometown" : "Delran",
@@ -52,9 +57,26 @@ function defineGame() {
 			"type" : "room",
 			"name" : "the game lobby",
 			"exits": {
-				"south": "town square"
+				"north" : "closet",
+				"south" : "town square"
 			},
 			"entrance text" : "You are in the first room of the new, data-driven world we are creating in an attempt to be a halfway intelligent human."
+		},
+		"closet" : {
+			"type" : "room",
+			"name" : "the coat closet",
+			"exits": {
+				"south" : "lobby"
+			},
+			"entrance text" : "A little room full of musty old coats."
+		},
+		"town square" : {
+			"type" : "room",
+			"name" : "the @hometown@ town square",
+			"exits": {
+				"north" : "lobby"
+			},
+			"entrance text" : "The rustic @hometown@ town square. It smells faintly of @favorite cheese@."
 		}
 	}
 }
@@ -86,7 +108,7 @@ function test_initialize() {
 	if (current == rooms[currentLocation]) {
 		record("Room loaded successfully.","pass")
 	} else {
-		record("Room not loaded into object 'current': <ul><li>" + current["name"] + " is not equal to " + rooms[currentLocation]["name"] + "</ul>","fail");
+		record("Room not loaded into object 'current': <ul><li>Should have been '" + rooms[currentLocation]["name"] + "' but is actually '" + current["name"] + "'.</ul>","fail");
 		errored = true;
 	}
 
@@ -209,11 +231,100 @@ function test_stripArticles() {
 	} else {
 		record("<strong>stripArticles() fulfilled expectations.</strong>","pass");
 	}
-	
 }
 
 function test_checkBuiltIns() {
-	
+	var errored = false;
+	defineGame();
+	initialize();
+
+	record("Testing 'test_checkBuiltIns(array)'...", "new");
+
+	record("Testing 'go' command.");
+	// processing command to 'go' in an invalid direction
+	try {result = checkBuiltIns(["go","east"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+	if (result) {
+		record("Invalid 'go' command rejected successfully.", "pass");
+	} else {
+		record("Invalid 'go' command returned as valid.", "fail");
+		errored = true;
+	}
+
+	// processing command to 'go' in a valid direction
+	try {result = checkBuiltIns(["go","north"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+
+	if (result == false) {
+		record("Valid 'go' command accepted.", "pass");
+	} else {
+		record("Valid 'go' command not accepted.", "fail");
+		errored = true;
+	}
+
+	if (current == rooms['closet']) {
+		record("'go north' processed successfully.","pass")
+	} else {
+		record("Incorrect room loaded via 'go north' command: <ul><li>Should have been '" + rooms['closet']['name'] + "'' but is actually '" + current["name"] + "'.</ul>","fail");
+		errored = true;
+	}
+
+
+
+	record("Testing 'view' command.");
+	// processing command to 'view' an invalid target
+	try {result = checkBuiltIns(["view","butt"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+	if (result) {
+		record("Invalid 'view' command rejected successfully.", "pass");
+	} else {
+		record("Invalid 'view' command returned as valid.", "fail");
+		errored = true;
+	}
+
+	// processing command to 'view inventory'
+	try {result = checkBuiltIns(["view","inventory"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+
+	if (result == false) {
+		record("Valid 'view' command accepted.", "pass");
+	} else {
+		record("Valid 'view' command not accepted.", "fail");
+		errored = true;
+	}
+	if (document.getElementById("error").innerHTML == "Inventory empty.") {
+		record("'view inventory' command processed successfully.", "pass");
+	} else {
+		record("'view inventory' command processed incorrectly:<ul><li>Message should be 'Inventory empty' but is actually '" + document.getElementById("error").innerHTML + "' </ul>.", "fail");
+		errored = true;
+	}
+
+
+
+
+
+
+
+
+
+
+	if (errored) {
+		record("<strong>checkBuiltIns() did not meet expectations.</strong>","fail");
+	} else {
+		record("<strong>checkBuiltIns() fulfilled expectations.</strong>","pass");
+	}
 }
 
 function test_checkAction() {
