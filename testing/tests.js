@@ -7,10 +7,10 @@ function runTests() {
 	record("Test suite loaded.", "new")
 
 	toTest = [
+		"checkBuiltIns",
 		"initialize",
 		"detokenize",
-		"stripArticles",
-		"checkBuiltIns"
+		"stripArticles"
 	]
 
 	for (var i = 0; i < toTest.length; i++) {
@@ -69,7 +69,21 @@ function defineGame() {
 			"exits": {
 				"south" : "lobby"
 			},
-			"entrance text" : "A little room full of musty old coats."
+			"entrance text" : "A little room full of musty old coats.",
+			"items" : {
+				"stole" : {
+					"name" : "mink stole",
+					"status" : "default",
+					"take" : {
+						"default" : "You gently lift the stole and wrap it around your neck."
+					},
+					"states" : {
+						"default" : {
+							"descriptor" : "There is a delicate mink stole stuffed in the corner."
+						}
+					}
+				}
+			}
 		},
 		"town square" : {
 			"type" : "room",
@@ -372,10 +386,56 @@ function test_checkBuiltIns() {
 		errored = true;
 	}
 
+	//************************************
+	record("Testing 'take' command.");
+	// processing command to 'view' an invalid target
+	try {result = checkBuiltIns(["take","butt"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+	if (result) {
+		record("Invalid 'take' command rejected successfully.", "pass");
+	} else {
+		record("Invalid 'take' command returned as valid.", "fail");
+		errored = true;
+	}
 
+	// processing command to 'take stole'
+	try {result = checkBuiltIns(["take","stole"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
 
+	if (result == false) {
+		record("Valid 'take' command accepted.", "pass");
+	} else {
+		record("Valid 'take' command not accepted.", "fail");
+		errored = true;
+	}
+	if (player["inventory"]["mink stole"] == 1) {
+		record("Item added to player inventory successfully.", "pass");
+	} else {
+		record("Taken item not added to player inventory.", "fail");
+		errored = true;
+	}
 
+	// make sure the description of the item is removed from the room:
+	if (document.getElementById("description").innerHTML.search("mink stole") == -1) {
+		record("Item description removed from room.", "pass");
+	} else {
+		record("Item description not removed from room.", "fail");
+		errored = true;
+	}
 
+	// make sure the transitory "take" message is prined:
+	if (document.getElementById("message").innerHTML == "You gently lift the sole and wrap it around your neck.") {
+		record("Item 'take' message printed successfully.", "pass");
+	} else {
+		record("Item 'take' message not printed:<ul><li>It should have been 'You gently lift the stole and wrap it around your neck.' but was actually '" + document.getElementById("message").innerHTML + "'.</ul>", "fail");
+		errored = true;
+	}
 
 
 
