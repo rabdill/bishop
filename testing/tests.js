@@ -430,7 +430,7 @@ function test_checkBuiltIns() {
 	}
 
 	// make sure the transitory "take" message is prined:
-	if (document.getElementById("message").innerHTML == "You gently lift the sole and wrap it around your neck.") {
+	if (document.getElementById("message").innerHTML == "You gently lift the stole and wrap it around your neck.") {
 		record("Item 'take' message printed successfully.", "pass");
 	} else {
 		record("Item 'take' message not printed:<ul><li>It should have been 'You gently lift the stole and wrap it around your neck.' but was actually '" + document.getElementById("message").innerHTML + "'.</ul>", "fail");
