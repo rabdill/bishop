@@ -7,10 +7,10 @@ function runTests() {
 	record("Test suite loaded.", "new")
 
 	toTest = [
-		"checkBuiltIns",
 		"initialize",
 		"detokenize",
-		"stripArticles"
+		"stripArticles",
+		"checkBuiltIns"
 	]
 
 	for (var i = 0; i < toTest.length; i++) {
@@ -386,7 +386,7 @@ function test_checkBuiltIns() {
 
 	//************************************
 	record("Testing 'take' command.");
-	// processing command to 'view' an invalid target
+	// processing command to 'take' an invalid target
 	try {result = checkBuiltIns(["take","butt"]);}
 	catch(err) {
 		record(err,"fail");
@@ -435,8 +435,59 @@ function test_checkBuiltIns() {
 		errored = true;
 	}
 
+	//************************************
+	record("Testing 'drop' command.");
+	// processing command to 'drop' an invalid target
+	try {result = checkBuiltIns(["drop","butt"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+	if (result) {
+		record("Invalid 'drop' command rejected successfully.", "pass");
+	} else {
+		record("Invalid 'drop' command returned as valid.", "fail");
+		errored = true;
+	}
+
+	// processing command to 'drop stole'
+	try {result = checkBuiltIns(["drop","stole"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+
+	if (result == false) {
+		record("Valid 'drop' command accepted.", "pass");
+	} else {
+		record("Valid 'drop' command not accepted.", "fail");
+		errored = true;
+	}
+	if (player["inventory"]["mink stole"] == 0) {
+		record("Item removed from player inventory successfully.", "pass");
+	} else {
+		record("Dropped item not removed from player inventory.", "fail");
+		errored = true;
+	}
+
+	// make sure the description of the item is added to the room:
+	if (document.getElementById("description").innerHTML.search("mink stole") >= 0) {
+		record("Item description added to room.", "pass");
+	} else {
+		record("Item description not added to room.", "fail");
+		errored = true;
+	}
+
+	// make sure the transitory "take" message is prined:
+	if (document.getElementById("message").innerHTML == "You drop the mink stole.") {
+		record("Item 'drop' message printed successfully.", "pass");
+	} else {
+		record("Item 'drop' message not printed:<ul><li>It should have been 'You drop the mink stole.' but was actually '" + document.getElementById("message").innerHTML + "'.</ul>", "fail");
+		errored = true;
+	}
 
 
+	//************************************
 	if (errored) {
 		record("<strong>checkBuiltIns() did not meet expectations.</strong>","fail");
 	} else {
