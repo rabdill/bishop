@@ -73,7 +73,7 @@ function checkBuiltIns(command) {
 			if (command[1] in player["carrying"]) {
                 inventory_remove(player["carrying"][command[1]]["name"], 1);
 				current["items"][command[1]] = player["carrying"][command[1]];
-				message("You drop the " + command[1] + ".");
+				message("You drop the " + player["carrying"][command[1]]["name"] + ".");
 				return false;
 			}
 		default:
