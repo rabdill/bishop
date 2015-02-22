@@ -25,9 +25,24 @@ Now, you can (and must) do this instead:
 
 ### New features
 
+* Items can now have responses associated with them that do not modify their state: `smell pumpkin`, for example, will no longer move "pumpkin" into a state called "smell." (Unless you want it to.) Authors can specify any response to any verb they want with this feature.
+
 * Transactional messages are now printed in a separate text box, rather than erasing the description of the current room.
 
 * Players can now use the `look` command to get hints about what the scenery looks like in different directions.
+
+* Players can now `drop` items that they've picked up.
+
+* Authors can turn off the feature that tells the player the exits from their current location.
+
+### Project progress
+
+* Basic unit testing has been implemented to allow developers working on the Bishop's Map codebase to make sure their code isn't introducing wonky side-effects.
+
+
+### Bug fixes
+
+* Default settings are actually set now, rather than being pretty much ignored.
 
 ## v0.1
 Released: Feb. 15, 2015
