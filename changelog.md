@@ -3,6 +3,31 @@ Released: n/a
 
 ### Breaking changes
 
+#### More specific implementation of "take" command
+Players using the "take" command on an item will no longer be putting the item into a state called "take" -- instead, they will actually remove the item from the room in its current state, so that dropping it elsewhere will preserve its description.
+
+Because of this, authors should avoid specifying "take" as a state, instead listing it as a property directly inside the item's entry in the room, like this:
+```json
+"town square": {
+    ...
+    "items" : {
+        "pumpkin" : {
+            "name" : "pumpkin",
+            "status" : "default",
+            "take" : {
+                "default" : "You take the pumpkin."
+            },
+            "states" : {
+                "default" : {
+                    "descriptor" : "A large pumpkin sits by the door."
+                },
+                "smash" : {...}
+            }
+        }
+    }
+}
+```
+
 #### Item state synonyms
 Synonyms for "item states" are no longer nested inside of an item for which they are a state. Whereas before you would need something like this:
 ```json
