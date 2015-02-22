@@ -10,7 +10,8 @@ function runTests() {
 		"initialize",
 		"detokenize",
 		"stripArticles",
-		"checkBuiltIns"
+		"checkBuiltIns",
+		"message"
 	]
 
 	for (var i = 0; i < toTest.length; i++) {
@@ -251,7 +252,7 @@ function test_checkBuiltIns() {
 	defineGame();
 	initialize();
 
-	record("Testing 'test_checkBuiltIns(array)'...", "new");
+	record("Testing 'checkBuiltIns(array)'...", "new");
 
 	//*******************************************
 	record("Testing 'go' command.");
@@ -504,7 +505,32 @@ function test_findSynonyms() {
 }
 
 function test_message() {
-	
+	var errored = false;
+
+	record("Testing 'message(text)'...", "new");
+
+	text = "This is the message we're testing for!";
+
+	try {message(text);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+
+	// make sure the current "message" element is updated:
+	if (document.getElementById("message").innerHTML == text) {
+		record("Message printed successfully.", "pass");
+	} else {
+		record("Message not printed.", "fail");
+		errored = true;
+	}
+
+	if (errored) {
+		record("<strong>message() did not meet expectations.</strong>","fail");
+	} else {
+		record("<strong>message() fulfilled expectations.</strong>","pass");
+	}
+
 }
 
 function test_checkItems() {
