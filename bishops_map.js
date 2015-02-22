@@ -71,7 +71,7 @@ function checkBuiltIns(command) {
 			}
 		case "drop":
 			if (command[1] in player["carrying"]) {
-                inventory_remove(player["carrying"][command[1]]["name"], 1);
+				inventory_remove(player["carrying"][command[1]]["name"], 1);
 				current["items"][command[1]] = player["carrying"][command[1]];
 				message("You drop the " + player["carrying"][command[1]]["name"] + ".");
 				return false;
@@ -472,20 +472,24 @@ function clearFields() {
 }
 
 function inventory_add(name, item, qty) {
+	// if the player already has one, add another:
 	if (item["name"] in player["inventory"]) {
 		player["inventory"][item["name"]] += qty;
 		console.log("Adding " + qty + " to inventory for " + item["name"] + ".");
 	}
+	// otherwise add the entry:
 	else {
 		player["inventory"][item["name"]] = qty;
 		console.log("Adding " + item["name"] + " to player inventory.");
 	}
 
+	// add the item to the "carrying" array:
 	player["carrying"][name] = item;
 
-	for (var carrying in current["items"]) {
-		if (current["items"][carrying]["id"] == item["id"]) {
-			delete current["items"][carrying];
+	// and take it out of the room:
+	for (var roomItem in current["items"]) {
+		if (current["items"][roomItem]["id"] == item["id"]) {
+			delete current["items"][roomItem];
 		}
 	}
 }
@@ -523,6 +527,6 @@ function print_inventory() {
 }
 
 // connect the code to the DOM:
-    // if we aren't doing a run through the unit tests:
+	// if we aren't doing a run through the unit tests:
 if (document.getElementsByClassName("TESTRESULT").length === 0) window.addEventListener("load", initialize);
 document.getElementById("sendCommand").addEventListener("click", processCommand);
