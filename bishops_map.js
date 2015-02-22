@@ -70,10 +70,10 @@ function checkBuiltIns(command) {
 				return false;
 			}
 		case "drop":
-			if (command[1] in player["inventory"] && player["inventory"][command[1]] > 0) {
+			if (command[1] in player["carrying"]) {
+                inventory_remove(player["carrying"][command[1]]["name"], 1);
 				current["items"][command[1]] = player["carrying"][command[1]];
 				message("You drop the " + command[1] + ".");
-				inventory_remove(command[1], 1);
 				return false;
 			}
 		default:
