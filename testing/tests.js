@@ -56,6 +56,7 @@ function defineGame() {
 		"lobby" : {
 			"type" : "room",
 			"name" : "the game lobby",
+			"look" : "It's the lobby! It's so good.",
 			"exits": {
 				"north" : "closet",
 				"south" : "town square"
@@ -240,6 +241,7 @@ function test_checkBuiltIns() {
 
 	record("Testing 'test_checkBuiltIns(array)'...", "new");
 
+	//*******************************************
 	record("Testing 'go' command.");
 	// processing command to 'go' in an invalid direction
 	try {result = checkBuiltIns(["go","east"]);}
@@ -276,7 +278,7 @@ function test_checkBuiltIns() {
 	}
 
 
-
+	//************************************
 	record("Testing 'view' command.");
 	// processing command to 'view' an invalid target
 	try {result = checkBuiltIns(["view","butt"]);}
@@ -311,7 +313,64 @@ function test_checkBuiltIns() {
 		errored = true;
 	}
 
+	//*******************************
+	record("Testing 'look' command.");
+	// processing command to 'look' an invalid target
+	try {result = checkBuiltIns(["look","butt"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+	if (result) {
+		record("Invalid 'look' command rejected successfully.", "pass");
+	} else {
+		record("Invalid 'look' command returned as valid.", "fail");
+		errored = true;
+	}
 
+	// processing command to 'look around'
+	try {result = checkBuiltIns(["look","around"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+
+	if (result == false) {
+		record("Valid 'look' command accepted.", "pass");
+	} else {
+		record("Valid 'look' command not accepted.", "fail");
+		errored = true;
+	}
+	// make sure the current room's description is included in the 
+	// "description" paragraph:
+	if (document.getElementById("description").innerHTML.search(current["entrance text"]) >= 0) {
+		record("'look around' command processed successfully.", "pass");
+	} else {
+		record("'look around' command processed incorrectly:<ul><li>Message should include'" + current["entrance text"] + "' but is actually '" + document.getElementById("description").innerHTML + "'</ul>.", "fail");
+		errored = true;
+	}
+
+	// processing command to look at another room
+	
+	try {result = checkBuiltIns(["look","south"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+
+	if (result == false) {
+		record("Valid 'look south' command accepted.", "pass");
+	} else {
+		record("Valid 'look south' command not accepted.", "fail");
+		errored = true;
+	}
+
+	if (document.getElementById("message").innerHTML == "You look to the south: It's the lobby! It's so good.") {
+		record("'look south' command processed successfully.", "pass");
+	} else {
+		record("'look south' command processed incorrectly:<ul><li>Message should be 'You look to the south: It's the lobby! It's so good.' but is actually '" + document.getElementById("message").innerHTML + "'</ul>.", "fail");
+		errored = true;
+	}
 
 
 
@@ -396,5 +455,5 @@ function test_print_inventory() {
 }
 
 // connect the code to the DOM:
-//window.addEventListener("load", runTests);
+window.addEventListener("load", runTests);
 document.getElementById("sendCommand").addEventListener("click", processCommand);
