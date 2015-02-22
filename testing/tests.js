@@ -38,8 +38,6 @@ function record(text,parameter) {
 	document.getElementById('test-results').innerHTML = sessionStorage.results;
 }
 
-document.getElementById("start").addEventListener("click", runTests);
-
 function defineGame() {
 	currentLocation = "lobby";
 
