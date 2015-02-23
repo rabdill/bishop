@@ -1,4 +1,4 @@
-function runTests() {
+function startAutomation() {
 	// ** EDIT THIS LINE TO ENTER DEBUG MODE **
 	debugMode = false;
 
