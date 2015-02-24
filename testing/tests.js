@@ -589,7 +589,7 @@ function test_checkAction() {
 		errored = true;
 	}
 
-	try {result = checkBuiltIns(["build","shed"]);}
+	try {result = checkAction(["build","shed"]);}
 	catch(err) {
 		record(err,"fail");
 		errored = true;
@@ -598,7 +598,7 @@ function test_checkAction() {
 	if (result == false) {
 		record("Valid command accepted.", "pass");
 	} else {
-		record("Valid command not accepted:<ul>'build shed' is valid.</ul>", "fail");
+		record("Valid command not accepted:<ul>'build shed' is valid.  Returned value should have been 'false' but was actually '" + result + "'</ul>", "fail");
 		errored = true;
 	}
 
