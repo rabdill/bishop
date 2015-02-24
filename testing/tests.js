@@ -11,6 +11,7 @@ function runTests() {
 		"detokenize",
 		"stripArticles",
 		"checkBuiltIns",
+		"findSynonyms",
 		"message"
 	]
 
@@ -60,7 +61,45 @@ function defineGame() {
 				"north" : "closet",
 				"south" : "town square"
 			},
-			"entrance text" : "You are in the first room of the new, data-driven world we are creating in an attempt to be a halfway intelligent human."
+			"entrance text" : "You are in the first room of the new, data-driven world we are creating in an attempt to be a halfway intelligent human. A sign is on a post here.",
+			"items" : {
+				"pumpkin" : {
+					"name" : "big pumpkin",
+					"status" : "default",
+					"take" : {
+						"default" : "You heft the pumpkin up onto your shoulder, then, somehow, down into your backpack."
+					},
+					"states" : {
+						"default" : {
+							"descriptor" : "A big pumpkin is on the ground here."
+						},
+						"smash" : {
+							"descriptor" : "The gloppy, smashed-up remains of a pumpkin are on the ground here.",
+							"from" : {
+								"default" : "You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets."
+							}
+						}
+					}
+				}
+			},
+			"actions" : {
+				"inspect" : {
+					"sign" : {
+						"print" : "All it says is 'Welcome to town.'"
+					}
+				}
+			},
+			"synonyms" : {
+				"items": {
+					"pumpkin" : ["gourd"],
+					"sign" : ["signpost"]
+				},
+				"actions" : {
+					"smash" : ["break","throw","slam"],
+					"take" : ["steal"],
+					"inspect" : ["examine","look"]
+				}
+			}
 		},
 		"closet" : {
 			"type" : "room",
@@ -68,7 +107,7 @@ function defineGame() {
 			"exits": {
 				"south" : "lobby"
 			},
-			"entrance text" : "A little room full of musty old coats.",
+			"entrance text" : "A little room full of musty old coats. A switch is on the wall.",
 			"items" : {
 				"stole" : {
 					"name" : "mink stole",
@@ -81,6 +120,11 @@ function defineGame() {
 							"descriptor" : "There is a delicate mink stole stuffed in the corner."
 						}
 					}
+				}
+			},
+			"synonyms" : {
+				"items": {
+					"stole" : ["scarf"]
 				}
 			}
 		},
@@ -501,7 +545,161 @@ function test_checkAction() {
 }
 
 function test_findSynonyms() {
-	
+	var errored = false;
+
+	record("Testing 'findSynonyms(text,text)'...", "new");
+
+	tests = [
+		[["zzz","pumpkin"],"actions"],
+		[["take","zzz"],"items"],
+		[["examine","sign"],"actions"],
+		[["look","sign"],"actions"],
+		[["break","pumpkin"],"actions"],
+		[["throw","pumpkin"],"actions"],
+		[["smash","gourd"],"items"]
+	]
+
+	for (var i = 0; i < tests.length; i++) {
+		defineGame();
+		initialize();
+
+		command = tests[i][0];
+
+
+		record("Testing '" + command[0] + " " + command[1] + "'");
+		try {z = findSynonyms(tests[i][0],tests[i][1]);}
+		catch(err) {
+			record(err,"fail");
+			errored = true;
+		}
+		if (i < 2) {
+			if(z) { //if a synonym was found
+				record("Invalid command accepted as valid:<ul><li>" + command[0] + " " + command[1] + " is invalid.</ul>", "fail")
+				errored = true;
+			} else {
+				record("Invalid command rejected successfully.", "pass")
+				errored = true;
+			}
+		}
+		else {
+			switch(i) {
+				case 2:
+					if (z) {
+						record("First synonym of action found successfully.","pass");
+					} else {
+						record("First synonym of action not found successfully:<ul><li>" + command[0] + " is a synonym of 'examine.'</ul>","fail");
+						errored = true;
+					}
+					break;
+				case 3:
+					if (z) {
+						record("Second synonym of action found successfully.","pass");
+					} else {
+						record("Second synonym of action not found successfully:<ul><li>" + command[0] + " is a synonym of 'examine.'</ul>","fail");
+						errored = true;
+					}
+					break;
+				case 4:
+					if (z) {
+						record("First synonym of item-state found successfully.","pass");
+					} else {
+						record("First synonym of item-state not found successfully:<ul><li>" + command[0] + " is a synonym of 'smash.'</ul>","fail");
+						errored = true;
+					}
+					break;
+				case 5:
+					if (z) {
+						record("Second synonym of item-state found successfully.","pass");
+					} else {
+						record("Second synonym of item-state not found successfully:<ul><li>" + command[0] + " is a synonym of 'smash.'</ul>","fail");
+						errored = true;
+					}
+					break;
+				case 6:
+					if (z) {
+						record("Synonym of item found successfully.","pass");
+					} else {
+						record("Synonym of item not found successfully:<ul><li>" + command[1] + " is a synonym of 'pumpkin.'</ul>","fail");
+						errored = true;
+					}
+					break;
+				default:
+					record("Error: Loop has entered unknown state.","fail");
+					errored = true;
+					break;
+			}
+		}
+
+		// check to see if the response is correct:
+		switch(i) {
+			case 0:
+				if (document.getElementById("error").innerHTML == "Error: Invalid or impossible command.") {
+					record("Rejection message of invalid action printed successfully.","pass");
+				} else {
+					record("Rejection message of invalid action not printed successfully:<ul><li>" + command[0] + " " + command[1] + " is not valid. Displayed error was '" + document.getElementById("error").innerHTML + "'</ul>","fail");
+					errored = true;
+				}
+				break;
+			case 1:
+				if (document.getElementById("error").innerHTML == "Error: Invalid or impossible command.") {
+					record("Rejection message of invalid action target printed successfully.","pass");
+				} else {
+					record("Rejection message of invalid action target not printed successfully:<ul><li>" + command[0] + " " + command[1] + " is not valid. Displayed error was '" + document.getElementById("error").innerHTML + "'</ul>","fail");
+					errored = true;
+				}
+				break;
+			case 2:
+				if (document.getElementById("message").innerHTML == "All it says is 'Welcome to town.'") {
+					record("Response message to first synonym of valid action printed successfully.","pass");
+				} else {
+					record("Response message to first synonym of valid action not printed successfully:<ul><li>Should have been \"All it says is 'Welcome to Delran.'\" but was actually " + document.getElementById("message").innerHTML + ".</ul>","fail");
+					errored = true;
+				}
+				break;
+			case 3:
+				if (document.getElementById("message").innerHTML == "All it says is 'Welcome to town.'") {
+					record("Response message to second synonym of valid action printed successfully.","pass");
+				} else {
+					record("Response message to second synonym of valid action not printed successfully:<ul><li>Should have been \"All it says is 'Welcome to Delran.'\" but was actually " + document.getElementById("message").innerHTML + ".</ul>","fail");
+					errored = true;
+				}
+				break;
+			case 4:
+				if (document.getElementById("message").innerHTML == "You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.") {
+					record("Transition message to first synonym of item state printed successfully.","pass");
+				} else {
+					record("Response message to first synonym of item state not printed successfully:<ul><li>Should have been \"You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.\" but was actually " + document.getElementById("message").innerHTML + ".</ul>","fail");
+					errored = true;
+				}
+				break;
+			case 5:
+				if (document.getElementById("message").innerHTML == "You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.") {
+					record("Transition message to second synonym of item state printed successfully.","pass");
+				} else {
+					record("Response message to second synonym of item state not printed successfully:<ul><li>Should have been \"You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.\" but was actually " + document.getElementById("message").innerHTML + ".</ul>","fail");
+					errored = true;
+				}
+				break;
+			case 6:
+				if (z) {
+					record("Synonym of item found successfully.","pass");
+				} else {
+					record("Synonym of item not found successfully:<ul><li>" + command[1] + " is a synonym of 'pumpkin.'</ul>","fail");
+					errored = true;
+				}
+				break;
+			default:
+				record("Error: Action synonym test loop has entered unknown state.","fail");
+				errored = true;
+				break;
+		}
+	};
+
+	if (errored) {
+		record("<strong>findSynonyms() did not meet expectations.</strong>","fail");
+	} else {
+		record("<strong>findSynonyms() fulfilled expectations.</strong>","pass");
+	}
 }
 
 function test_message() {
