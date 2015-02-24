@@ -11,6 +11,7 @@ function runTests() {
 		"detokenize",
 		"stripArticles",
 		"checkBuiltIns",
+		"checkAction",
 		"findSynonyms",
 		"message"
 	]
@@ -38,6 +39,14 @@ function record(text,parameter) {
 			break;
 	}
 	document.getElementById('test-results').innerHTML = sessionStorage.results;
+}
+
+function runCommands(commands) {
+	for (var i = 0; i < commands.length; i++) {
+		console.log("DEBUG MODE: Sending command \"" + commands[i] + "\"");
+		document.getElementById("command").value = commands[i];
+		document.getElementById("sendCommand").click();
+	}
 }
 
 function defineGame() {
@@ -87,6 +96,11 @@ function defineGame() {
 					"sign" : {
 						"print" : "All it says is 'Welcome to town.'"
 					}
+				},
+				"build" : {
+					"shed" : {
+						"print" : "You don't have enough wood."
+					}
 				}
 			},
 			"synonyms" : {
@@ -97,7 +111,8 @@ function defineGame() {
 				"actions" : {
 					"smash" : ["break","throw","slam"],
 					"take" : ["steal"],
-					"inspect" : ["examine","look"]
+					"inspect" : ["examine","look"],
+					"build" : ["construct","erect"]
 				}
 			}
 		},
@@ -541,7 +556,56 @@ function test_checkBuiltIns() {
 }
 
 function test_checkAction() {
-	
+	var errored = false;
+	defineGame();
+	initialize();
+
+	record("Testing 'checkAction([text,text])'...", "new");
+
+	//*******************************************
+	try {result = checkAction(["zzz","shed"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+	if (result) {
+		record("Invalid command rejected successfully.", "pass");
+	} else {
+		record("Invalid command returned as valid:<ul>'zzz shed' is not valid.</ul>", "fail");
+		errored = true;
+	}
+
+	try {result = checkAction(["build","zzz"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+	if (result) {
+		record("Invalid direct object rejected successfully.", "pass");
+	} else {
+		record("Invalid direct object returned as valid:<ul>'build zzz' is not valid.</ul>", "fail");
+		errored = true;
+	}
+
+	try {result = checkBuiltIns(["build","shed"]);}
+	catch(err) {
+		record(err,"fail");
+		errored = true;
+	}
+
+	if (result == false) {
+		record("Valid command accepted.", "pass");
+	} else {
+		record("Valid command not accepted:<ul>'" + command[0] + " " + command[1] + "' is valid.</ul>", "fail");
+		errored = true;
+	}
+
+	if (document.getElementById("message").innerHTML == "You don't have enough wood.") {
+		record("'build shed' processed successfully.","pass")
+	} else {
+		record("Incorrect transactional message displayed for 'build shed' command: <ul><li>Should have been '" + rooms['lobby']['actions']['build']['shed']['print'] + "'' but is actually '" + document.getElementById("message").innerHTML + "'.</ul>","fail");
+		errored = true;
+	}
 }
 
 function test_findSynonyms() {
@@ -715,7 +779,6 @@ function test_message() {
 	} else {
 		record("<strong>message() fulfilled expectations.</strong>","pass");
 	}
-
 }
 
 function test_checkItems() {
