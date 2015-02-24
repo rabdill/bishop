@@ -562,9 +562,7 @@ function test_findSynonyms() {
 	for (var i = 0; i < tests.length; i++) {
 		defineGame();
 		initialize();
-
 		command = tests[i][0];
-
 
 		record("Testing '" + command[0] + " " + command[1] + "'");
 		try {z = findSynonyms(tests[i][0],tests[i][1]);}
@@ -578,7 +576,6 @@ function test_findSynonyms() {
 				errored = true;
 			} else {
 				record("Invalid command rejected successfully.", "pass")
-				errored = true;
 			}
 		}
 		else {
@@ -633,20 +630,10 @@ function test_findSynonyms() {
 		// check to see if the response is correct:
 		switch(i) {
 			case 0:
-				if (document.getElementById("error").innerHTML == "Error: Invalid or impossible command.") {
-					record("Rejection message of invalid action printed successfully.","pass");
-				} else {
-					record("Rejection message of invalid action not printed successfully:<ul><li>" + command[0] + " " + command[1] + " is not valid. Displayed error was '" + document.getElementById("error").innerHTML + "'</ul>","fail");
-					errored = true;
-				}
+				// findSynonyms doesn't print out rejection messages.
 				break;
 			case 1:
-				if (document.getElementById("error").innerHTML == "Error: Invalid or impossible command.") {
-					record("Rejection message of invalid action target printed successfully.","pass");
-				} else {
-					record("Rejection message of invalid action target not printed successfully:<ul><li>" + command[0] + " " + command[1] + " is not valid. Displayed error was '" + document.getElementById("error").innerHTML + "'</ul>","fail");
-					errored = true;
-				}
+				// ditto
 				break;
 			case 2:
 				if (document.getElementById("message").innerHTML == "All it says is 'Welcome to town.'") {
@@ -681,10 +668,10 @@ function test_findSynonyms() {
 				}
 				break;
 			case 6:
-				if (z) {
-					record("Synonym of item found successfully.","pass");
+				if (document.getElementById("message").innerHTML == "You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.") {
+					record("Transition message to synonym of item printed successfully.","pass");
 				} else {
-					record("Synonym of item not found successfully:<ul><li>" + command[1] + " is a synonym of 'pumpkin.'</ul>","fail");
+					record("Response message to synonym of item not printed successfully:<ul><li>Should have been \"You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.\" but was actually " + document.getElementById("message").innerHTML + ".</ul>","fail");
 					errored = true;
 				}
 				break;
