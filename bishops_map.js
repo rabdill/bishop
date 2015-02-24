@@ -130,9 +130,6 @@ function findSynonyms(command,category) {
 		case "actions":
 			searchPosition = 0;
 			break;
-		case "item states":
-			searchPosition = 0;
-			break;
 		default:
 			console.log("Synonym search error: Unrecognized category specified.");
 			break;
@@ -185,8 +182,10 @@ function checkItems(command) {
 				return false;
 			}
 		}
-		// if the action isn't found, check if it's a synonym of one:
-		else if (findSynonyms(command, "item states")) return false;
+		// if the item state isn't found, check if it's a synonym of one
+		// note: **item states are recorded in the same synonym group
+		// as actions**
+		else if (findSynonyms(command, "actions")) return false;
 		// check if the response is just a message:
 		else if ("messages" in current["items"][command[1]] && command[0] in current["items"][command[1]]["messages"]) {
 			message(current["items"][command[1]]["messages"][command[0]]);
