@@ -568,10 +568,11 @@ function test_checkAction() {
 		record(err,"fail");
 		errored = true;
 	}
+	console.log(result);
 	if (result) {
 		record("Invalid command rejected successfully.", "pass");
 	} else {
-		record("Invalid command returned as valid:<ul>'zzz shed' is not valid.</ul>", "fail");
+		record("Invalid command returned as valid:<ul>'zzz shed' is not valid. Returned value should have been 'true' but was actually '" + result + "'</ul>", "fail");
 		errored = true;
 	}
 
@@ -580,10 +581,11 @@ function test_checkAction() {
 		record(err,"fail");
 		errored = true;
 	}
+	console.log(result);
 	if (result) {
 		record("Invalid direct object rejected successfully.", "pass");
 	} else {
-		record("Invalid direct object returned as valid:<ul>'build zzz' is not valid.</ul>", "fail");
+		record("Invalid direct object returned as valid:<ul>'build zzz' is not valid. Returned value should have been 'true' but was actually '" + result + "'</ul>", "fail");
 		errored = true;
 	}
 
@@ -596,7 +598,7 @@ function test_checkAction() {
 	if (result == false) {
 		record("Valid command accepted.", "pass");
 	} else {
-		record("Valid command not accepted:<ul>'" + command[0] + " " + command[1] + "' is valid.</ul>", "fail");
+		record("Valid command not accepted:<ul>'build shed' is valid.</ul>", "fail");
 		errored = true;
 	}
 
