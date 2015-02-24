@@ -25,7 +25,7 @@ function record(text,parameter) {
 		case "new":
 			currentTime = new Date().getTime();
 			var timestamp = (currentTime - sessionStorage.startTime)/1000.0
-			sessionStorage.results += "</ul><p>" + timestamp + " seconds: " + text + "<ul>";
+			sessionStorage.results += "</ul></div><div><p>" + timestamp + " seconds: " + text + "<ul>";
 			break;
 		case "fail":
 			sessionStorage.results += "<li class='fail'> " + text;
