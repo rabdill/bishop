@@ -115,8 +115,8 @@ function checkAction(command) {
 	//check to see if the action verb is a synonym of a defined one:
 	else if (findSynonyms(command, "actions")) return false;
 
-	// if we have to keep looking:
-	else return true;
+	// if we made it here, we have to keep looking:
+	return true;
 }
 
 function findSynonyms(command,category) {
