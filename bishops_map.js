@@ -3,11 +3,12 @@ function initialize() {
 	newPrompt = "";
 	newDescription = "";
 	setDefaults();
-	
+
 	defaultSynonyms = {
 		"actions" : {
 			"take" : ["get","steal"],
-			"examine" : ["inspect","look"],
+			"examine" : ["inspect","look","x"],
+			"look" : ["l"],
 			"smash" : ["break"],
 			"smell" : ["sniff"],
 			"taste" : ["lick"]
