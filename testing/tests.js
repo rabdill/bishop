@@ -73,6 +73,7 @@ function defineGame() {
 			"entrance text" : "You are in the first room of the new, data-driven world we are creating in an attempt to be a halfway intelligent human. A sign is on a post here.",
 			"items" : {
 				"pumpkin" : {
+					"id" : "lobby pumpkin",
 					"name" : "big pumpkin",
 					"status" : "default",
 					"take" : {
@@ -125,6 +126,7 @@ function defineGame() {
 			"entrance text" : "A little room full of musty old coats. A switch is on the wall.",
 			"items" : {
 				"stole" : {
+					"id" : "mink stole",
 					"name" : "mink stole",
 					"status" : "default",
 					"take" : {
@@ -137,6 +139,7 @@ function defineGame() {
 					}
 				},
 				"shovel" : {
+					"id" : "closet shovel",
 					"name" : "shovel",
 					"status" : "default",
 					"states" : {
