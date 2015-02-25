@@ -19,6 +19,15 @@ function runTests() {
 	for (var i = 0; i < toTest.length; i++) {
 		eval("test_" + toTest[i] + "();");
 	};
+
+	// Render the verdict:
+	if(document.getElementsByClassName('fail').length > 0) {
+		document.getElementById('verdict').className = "fail";
+		document.getElementById('verdict').innerHTML = "Fail.";
+	} else {
+		document.getElementById('verdict').className = "pass";
+		document.getElementById('verdict').innerHTML = "Pass!";
+	}
 }
 
 function record(text,parameter) {
@@ -491,10 +500,10 @@ function test_checkBuiltIns() {
 	}
 
 	// make sure the description of the item is removed from the room:
-	if (document.getElementById("description").innerHTML == "A little room full of musty old coats. A switch is on the wall.<br>Shovel.") {
+	if (document.getElementById("description").innerHTML == "A little room full of musty old coats. A switch is on the wall.<br>Shovel.<ul><li>To the south is the game lobby.</li></ul>") {
 		record("Item description removed from room.", "pass");
 	} else {
-		record("Item description not removed from room:<ul><li>Should have been 'A little room full of musty old coats. A switch is on the wall.<br>Shovel.' but was actually '" +  document.getElementById("description").innerHTML + "'</ul>", "fail");
+		record("Item description not removed from room:<ul><li>Should have been 'A little room full of musty old coats. A switch is on the wall.<br>Shovel.<ul><li>To the south is the game lobby.</li></ul>' but was actually '" +  document.getElementById("description").innerHTML + "'</ul>", "fail");
 		errored = true;
 	}
 
