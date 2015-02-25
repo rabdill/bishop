@@ -1,7 +1,8 @@
 currentLocation="lobby";
 
 player={
-	"inventory" : {}
+	"inventory" : {},
+	"carrying" : []
 }
 
 rooms={
