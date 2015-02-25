@@ -17,6 +17,9 @@
 			display: inline-block;
 			width: 100%;
 		}
+		.hidden {
+			display: none;
+		}
 	</style>
 	<title>Bishop's Map Testing Suite</title>
 </head>
@@ -26,30 +29,26 @@
 	
 	<div id="test-results" class="TESTRESULT"></div>
 
-	
-	
+	<div class="hidden">
+		<h1 id="gameName">Your Custom Game</h1>
+		
+		<p id="message"></p>
+		
+		<p id="description">This is sample text. If you see this, something went wrong with loading your game.</p>
+		
+		<p id="directions"></p>
 
-
-
-<hr>
-	<h1 id="gameName">Your Custom Game</h1>
-	
-	<p id="message"></p>
-	
-	<p id="description">This is sample text. If you see this, something went wrong with loading your game.</p>
-	
-	<p id="directions"></p>
-
-	<form id="commandEntry" action="#">
-		<div>
-			<p id="error"></p>
-		</div>
-		<div>
-			<span id="prompt">What to do?</span>
-			<input type="text" id="command">
-			<input type="submit" id="sendCommand"><br><br>
-		</div>
-	</form>
+		<form id="commandEntry" action="#">
+			<div>
+				<p id="error"></p>
+			</div>
+			<div>
+				<span id="prompt">What to do?</span>
+				<input type="text" id="command">
+				<input type="submit" id="sendCommand"><br><br>
+			</div>
+		</form>
+	</div>
 	<script src="../bishops_map.js"></script>
 	<script type="text/javascript" src="automation.js"></script>
 	<script type="text/javascript" src="tests.js"></script>
