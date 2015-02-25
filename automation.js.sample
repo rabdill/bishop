@@ -20,7 +20,7 @@ function startAutomation() {
 		for (var i = 0; i < commands.length; i++) {
 			console.log("DEBUG MODE: Sending command \"" + commands[i] + "\"");
 			document.getElementById("command").value = commands[i];
-			document.getElementById("submit").click();
+			document.getElementById("sendCommand").click();
 		}
 		console.log("DEBUG MODE: Simulated actions complete.")
 	}
