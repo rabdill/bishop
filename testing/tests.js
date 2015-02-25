@@ -10,10 +10,10 @@ function runTests() {
 		"initialize",
 		"detokenize",
 		"stripArticles",
-		"checkBuiltIns",
+		"checkBuiltIns"/*,
 		"checkAction",
 		"findSynonyms",
-		"message"
+		"message"*/
 	]
 
 	for (var i = 0; i < toTest.length; i++) {
@@ -133,6 +133,15 @@ function defineGame() {
 					"states" : {
 						"default" : {
 							"descriptor" : "There is a delicate mink stole stuffed in the corner."
+						}
+					}
+				},
+				"shovel" : {
+					"name" : "shovel",
+					"status" : "default",
+					"states" : {
+						"default" : {
+							"descriptor" : "Shovel."
 						}
 					}
 				}
@@ -480,14 +489,14 @@ function test_checkBuiltIns() {
 	}
 
 	// make sure the description of the item is removed from the room:
-	if (document.getElementById("description").innerHTML.search("mink stole") == -1) {
+	if (document.getElementById("description").innerHTML == "A little room full of musty old coats. A switch is on the wall.<br>Shovel.") {
 		record("Item description removed from room.", "pass");
 	} else {
-		record("Item description not removed from room.", "fail");
+		record("Item description not removed from room:<ul><li>Should have been 'A little room full of musty old coats. A switch is on the wall.<br>Shovel.' but was actually '" +  document.getElementById("description").innerHTML + "'</ul>", "fail");
 		errored = true;
 	}
 
-	// make sure the transitory "take" message is prined:
+	// make sure the transitory "take" message is printed:
 	if (document.getElementById("message").innerHTML == "You gently lift the stole and wrap it around your neck.") {
 		record("Item 'take' message printed successfully.", "pass");
 	} else {
@@ -546,10 +555,9 @@ function test_checkBuiltIns() {
 		errored = true;
 	}
 
-
 	//************************************
 	if (errored) {
-		record("<strong>checkBuiltIns() did not meet expectations.</strong>","fail");
+		record("<strong>checkBuiltIns() did not meet expectations.</strong> ","fail");
 	} else {
 		record("<strong>checkBuiltIns() fulfilled expectations.</strong>","pass");
 	}
@@ -568,7 +576,6 @@ function test_checkAction() {
 		record(err,"fail");
 		errored = true;
 	}
-	console.log(result);
 	if (result) {
 		record("Invalid command rejected successfully.", "pass");
 	} else {
@@ -581,7 +588,6 @@ function test_checkAction() {
 		record(err,"fail");
 		errored = true;
 	}
-	console.log(result);
 	if (result) {
 		record("Invalid direct object rejected successfully.", "pass");
 	} else {
@@ -613,7 +619,7 @@ function test_checkAction() {
 function test_findSynonyms() {
 	var errored = false;
 
-	record("Testing 'findSynonyms(text,text)'...", "new");
+	record("Testing 'findSynonyms([text,text])'...", "new");
 
 	tests = [
 		[["zzz","pumpkin"],"actions"],
