@@ -10,10 +10,10 @@ function runTests() {
 		"initialize",
 		"detokenize",
 		"stripArticles",
-		"checkBuiltIns"/*,
+		"checkBuiltIns",
 		"checkAction",
 		"findSynonyms",
-		"message"*/
+		"message"
 	]
 
 	for (var i = 0; i < toTest.length; i++) {
@@ -93,7 +93,7 @@ function defineGame() {
 				}
 			},
 			"actions" : {
-				"inspect" : {
+				"examine" : {
 					"sign" : {
 						"print" : "All it says is 'Welcome to town.'"
 					}
@@ -110,7 +110,6 @@ function defineGame() {
 					"sign" : ["signpost"]
 				},
 				"actions" : {
-					"smash" : ["break","throw","slam"],
 					"take" : ["steal"],
 					"inspect" : ["examine","look"],
 					"build" : ["construct","erect"]
@@ -627,10 +626,9 @@ function test_findSynonyms() {
 	tests = [
 		[["zzz","pumpkin"],"actions"],
 		[["take","zzz"],"items"],
-		[["examine","sign"],"actions"],
-		[["look","sign"],"actions"],
+		[["inspect","sign"],"actions"],
+		[["construct","shed"],"actions"],
 		[["break","pumpkin"],"actions"],
-		[["throw","pumpkin"],"actions"],
 		[["smash","gourd"],"items"]
 	]
 
@@ -657,17 +655,17 @@ function test_findSynonyms() {
 			switch(i) {
 				case 2:
 					if (z) {
-						record("First synonym of action found successfully.","pass");
+						record("Default synonym of action found successfully.","pass");
 					} else {
-						record("First synonym of action not found successfully:<ul><li>" + command[0] + " is a synonym of 'examine.'</ul>","fail");
+						record("Default synonym of action not found successfully:<ul><li>" + command[0] + " is a synonym of 'examine.' Value returned was '" + z + "'</ul>","fail");
 						errored = true;
 					}
 					break;
 				case 3:
 					if (z) {
-						record("Second synonym of action found successfully.","pass");
+						record("First synonym of action found successfully.","pass");
 					} else {
-						record("Second synonym of action not found successfully:<ul><li>" + command[0] + " is a synonym of 'examine.'</ul>","fail");
+						record("First synonym of action not found successfully:<ul><li>" + command[0] + " is a synonym of 'build.'</ul>","fail");
 						errored = true;
 					}
 					break;
@@ -712,17 +710,17 @@ function test_findSynonyms() {
 				break;
 			case 2:
 				if (document.getElementById("message").innerHTML == "All it says is 'Welcome to town.'") {
-					record("Response message to first synonym of valid action printed successfully.","pass");
+					record("Response message to default synonym of valid action printed successfully.","pass");
 				} else {
-					record("Response message to first synonym of valid action not printed successfully:<ul><li>Should have been \"All it says is 'Welcome to Delran.'\" but was actually " + document.getElementById("message").innerHTML + ".</ul>","fail");
+					record("Response message to default synonym of valid action not printed successfully:<ul><li>Should have been \"All it says is 'Welcome to Delran.'\" but was actually '" + document.getElementById("message").innerHTML + "'.</ul>","fail");
 					errored = true;
 				}
 				break;
 			case 3:
-				if (document.getElementById("message").innerHTML == "All it says is 'Welcome to town.'") {
-					record("Response message to second synonym of valid action printed successfully.","pass");
+				if (document.getElementById("message").innerHTML == "You don't have enough wood.") {
+					record("Response message to synonym of valid action printed successfully.","pass");
 				} else {
-					record("Response message to second synonym of valid action not printed successfully:<ul><li>Should have been \"All it says is 'Welcome to Delran.'\" but was actually " + document.getElementById("message").innerHTML + ".</ul>","fail");
+					record("Response message to synonym of valid action not printed successfully:<ul><li>Should have been \"You don't have enough wood.\" but was actually '" + document.getElementById("message").innerHTML + "'.</ul>","fail");
 					errored = true;
 				}
 				break;
@@ -730,7 +728,7 @@ function test_findSynonyms() {
 				if (document.getElementById("message").innerHTML == "You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.") {
 					record("Transition message to first synonym of item state printed successfully.","pass");
 				} else {
-					record("Response message to first synonym of item state not printed successfully:<ul><li>Should have been \"You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.\" but was actually " + document.getElementById("message").innerHTML + ".</ul>","fail");
+					record("Response message to first synonym of item state not printed successfully:<ul><li>Should have been \"You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.\" but was actually '" + document.getElementById("message").innerHTML + "'.</ul>","fail");
 					errored = true;
 				}
 				break;
@@ -738,7 +736,7 @@ function test_findSynonyms() {
 				if (document.getElementById("message").innerHTML == "You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.") {
 					record("Transition message to second synonym of item state printed successfully.","pass");
 				} else {
-					record("Response message to second synonym of item state not printed successfully:<ul><li>Should have been \"You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.\" but was actually " + document.getElementById("message").innerHTML + ".</ul>","fail");
+					record("Response message to second synonym of item state not printed successfully:<ul><li>Should have been \"You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.\" but was actually '" + document.getElementById("message").innerHTML + "'.</ul>","fail");
 					errored = true;
 				}
 				break;
@@ -746,7 +744,7 @@ function test_findSynonyms() {
 				if (document.getElementById("message").innerHTML == "You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.") {
 					record("Transition message to synonym of item printed successfully.","pass");
 				} else {
-					record("Response message to synonym of item not printed successfully:<ul><li>Should have been \"You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.\" but was actually " + document.getElementById("message").innerHTML + ".</ul>","fail");
+					record("Response message to synonym of item not printed successfully:<ul><li>Should have been \"You grab the pumpkin tightly, lift it over your head, and slam it to the ground as hard as you can, smashing it into dozens of pumpkin chunklets.\" but was actually '" + document.getElementById("message").innerHTML + "'.</ul>","fail");
 					errored = true;
 				}
 				break;

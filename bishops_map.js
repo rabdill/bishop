@@ -2,6 +2,20 @@ function initialize() {
 	document.getElementById("gameName").innerHTML = game["title"];
 	newPrompt = "";
 	newDescription = "";
+	setDefaults();
+	
+	defaultSynonyms = {
+		"actions" : {
+			"take" : ["get","steal"],
+			"examine" : ["inspect","look"],
+			"smash" : ["break"],
+			"smell" : ["sniff"],
+			"taste" : ["lick"]
+		},
+		"items" : {
+			"photo" : ["picture"]
+		}
+	}
 	// to to wherever the gamedata says to start:
 	nextMove(currentLocation);
 
@@ -136,8 +150,24 @@ function findSynonyms(command,category) {
 	}
 
 	if ("synonyms" in current && category in current["synonyms"]) {
+		//check the room:
 		for (object in current["synonyms"][category]) {
 			if (current["synonyms"][category][object].indexOf(command[searchPosition]) >= 0) {
+				if (searchPosition === 0) {
+					processCommand(object + " " + command[1]);
+				}
+				else {
+				   processCommand(command[0] + " " + object);
+				}
+				return true;
+			}
+		}
+	}
+	//check the defaults:
+	if(game["allow default synonyms"]) {
+		console.log("Testing default synonyms");
+		for (object in defaultSynonyms[category]) {
+			if (defaultSynonyms[category][object].indexOf(command[searchPosition]) >= 0) {
 				if (searchPosition === 0) {
 					processCommand(object + " " + command[1]);
 				}
