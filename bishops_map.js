@@ -306,10 +306,10 @@ function commandInMenu(command) {
 
 			// if there's a message to display before the move
 			if ("premessage" in current["choices"][command]) {
-				toPrint["type"] = "premessage";
-				toPrint["premessage"] = current["choices"][command]["premessage"];
-				toPrint["destination"] = current["choices"][command]["destination"];
+				toPrint["type"] = "message";
+				toPrint["text"] = current["choices"][command]["premessage"];
 				printer(toPrint);
+				nextMove(current["choices"][command]["destination"]);
 			}
 			else {
 				nextMove(current["choices"][command]["destination"]);
@@ -351,7 +351,8 @@ function processCommand(command) {
 	
 	switch (command.length) {
 		case 1:
-			singletonCommand(command[0]);
+			if (current["type"] == "menu") commandInMenu(command[0]);
+			else singletonCommand(command[0]);
 			break;
 		case 2:
 			if (current["type"] == "room") commandInRoom(command);
