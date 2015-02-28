@@ -50,6 +50,8 @@ Now, you can (and must) do this instead:
 
 ### New features
 
+* One-word commands and shortcuts (`i` for `view inventory`, `s` for `go south`, etc.) are now allowed.
+
 * Items can now have responses associated with them that do not modify their state: `smell pumpkin`, for example, will no longer move "pumpkin" into a state called "smell." (Unless you want it to.) Authors can specify any response to any verb they want with this feature.
 
 * Changes can now refer to values elsewhere in the game. For example: Instead of saying "set the entrance text of the lobby to 'This is the text!'," you can say "set the entrance text of the lobby to whatever the entrance text is of the third dungeon hallway."

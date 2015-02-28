@@ -348,8 +348,7 @@ function processCommand(command) {
 			command[j-1] = command[j];
 		}
 	}
-
-<<<<<<< HEAD
+	
 	switch (command.length) {
 		case 1:
 			singletonCommand(command[0]);
@@ -377,18 +376,6 @@ function processCommand(command) {
 			}
 			printer(toPrint);
 			break;
-=======
-	// if the player specifies using an object, make sure they have one:
-	if (command.length > 2 && (command[2] in player["carrying"] == false)) {
-		toPrint = {
-			"type" : "error",
-			"text" : "No " + command[2] + " in your inventory."
-		}
-		printer(toPrint);
-	} else {
-		if (current["type"] == "room") commandInRoom(command);
-		else if (current["type"] == "menu") commandInMenu(command);
->>>>>>> bf0ea4657603274f9bdae814bf2f06e1ab4ab19b
 	}
 }
 
