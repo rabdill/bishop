@@ -77,6 +77,8 @@ Now, you can (and must) do this instead:
 
 * Default settings are actually set now, rather than being pretty much ignored.
 
+* Printing now works right for transactional messages printed upon moving the player from a menu to a room.
+
 * String substitution in transactional messages now works like it does in room descriptions.
 
 ## v0.1

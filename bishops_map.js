@@ -306,10 +306,10 @@ function commandInMenu(command) {
 
 			// if there's a message to display before the move
 			if ("premessage" in current["choices"][command]) {
-				toPrint["type"] = "message";
 				toPrint["text"] = current["choices"][command]["premessage"];
+				toPrint["type"] = "premessage";
+				toPrint["destination"] = current["choices"][command]["destination"];
 				printer(toPrint);
-				nextMove(current["choices"][command]["destination"]);
 			}
 			else {
 				nextMove(current["choices"][command]["destination"]);
@@ -481,6 +481,10 @@ function printer(target) {
 	//  messages for when we print the next thing, whatever it is)
 
 	switch(target["type"]) {
+		case "premessage":
+			nextMove(target["destination"]);
+			document.getElementById("message").innerHTML = detokenize(target["text"]);
+			break;
 		case "error":
 			clearFields();
 			document.getElementById("error").innerHTML = target["text"];
