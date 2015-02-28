@@ -319,8 +319,7 @@ function processCommand(command) {
 	// (when will this NOT happen? i never noted.)
 	if (typeof command !== "string") command = document.getElementById("command").value;
 	
-	command = stripArticles(command);
-	command = command.split(" ");
+	command = stripArticles(command).split(" ");
 	// fix the array in case the command for some reason starts with a space:
 	if (command[0] == "") {
 		var j;
@@ -329,8 +328,17 @@ function processCommand(command) {
 		}
 	}
 
-	if (current["type"] == "room") commandInRoom(command);
-	else if (current["type"] == "menu") commandInMenu(command);
+	// if the player specifies using an object, make sure they have one:
+	if (command.length > 2 && (command[2] in player["carrying"] == false)) {
+		toPrint = {
+			"type" : "error",
+			"text" : "No " + command[2] + " in your inventory."
+		}
+		printer(toPrint);
+	} else {
+		if (current["type"] == "room") commandInRoom(command);
+		else if (current["type"] == "menu") commandInMenu(command);
+	}
 }
 
 //******* printer functions:
