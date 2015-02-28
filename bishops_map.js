@@ -59,7 +59,7 @@ function detokenize(text) {
 //  **** start of processing commands in rooms
 function stripArticles(command) {
 	//strip out the articles:
-	var articles = [" the ", " a ", " an ", " to ", " at ", " on "];
+	var articles = [" the ", " a ", " an ", " to ", " at ", " on ", " with "];
 	var i;	// loop iterator
 
 	for (i = 0; i < articles.length; i++) {
@@ -218,22 +218,25 @@ function checkItems(command) {
 		if (command[0] in current["items"][command[1]]["states"]) {
 			//if the item can be put into the proposed state from its current state:
 			if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
-				// record what the transition message should be:
-				transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
-				// (this has to be saved here because the state of the item is about
-				//  to change, which will change all the messages around. We need
-				//  the one in effect BEFORE the shift.)
+				// if it meets any requirements:
+				if (("requires" in current["items"][command[1]]["states"][command[0]] == false) || current["items"][command[1]]["states"][command[0]]["requires"] == command[2]) {
+					// record what the transition message should be:
+					transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
+					// (this has to be saved here because the state of the item is about
+					//  to change, which will change all the messages around. We need
+					//  the one in effect BEFORE the shift.)
 
-				// if it has any changes associated with it:
-				processChanges(current["items"][command[1]]["states"][command[0]])
+					// if it has any changes associated with it:
+					processChanges(current["items"][command[1]]["states"][command[0]])
 
-				// and switch to the new state:
-				current["items"][command[1]]["status"] = command[0];
+					// and switch to the new state:
+					current["items"][command[1]]["status"] = command[0];
 
-				// print the transition message from the old state:
-				message(transMessage);
+					// print the transition message from the old state:
+					message(transMessage);
 
-				return false;
+					return false;
+				}
 			}
 		}
 		// if the item state isn't found, check if it's a synonym of one
@@ -316,8 +319,7 @@ function processCommand(command) {
 	// (when will this NOT happen? i never noted.)
 	if (typeof command !== "string") command = document.getElementById("command").value;
 	
-	command = stripArticles(command);
-	command = command.split(" ");
+	command = stripArticles(command).split(" ");
 	// fix the array in case the command for some reason starts with a space:
 	if (command[0] == "") {
 		var j;
@@ -326,8 +328,17 @@ function processCommand(command) {
 		}
 	}
 
-	if (current["type"] == "room") commandInRoom(command);
-	else if (current["type"] == "menu") commandInMenu(command);
+	// if the player specifies using an object, make sure they have one:
+	if (command.length > 2 && (command[2] in player["carrying"] == false)) {
+		toPrint = {
+			"type" : "error",
+			"text" : "No " + command[2] + " in your inventory."
+		}
+		printer(toPrint);
+	} else {
+		if (current["type"] == "room") commandInRoom(command);
+		else if (current["type"] == "menu") commandInMenu(command);
+	}
 }
 
 //******* printer functions:
