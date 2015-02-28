@@ -446,23 +446,91 @@ function processChanges(thing) {
 	if ("changes" in thing) {
 		for (i = 0; i < thing["changes"].length; i++) {
 			change = thing["changes"][i];
+			// determine if the new value
+			// is just a value, or if it's a reference
+			// to something elsewhere in the game:
+			if (typeof change[change.length-1] == 'object' && "reference" in change[change.length-1]) {
+				// grab the array that's stored in the "reference" object:
+				result = change[change.length-1]["reference"];
+				if (result[0] == "rooms") {
+					switch(result.length) {
+						case 3:
+							finalValue = rooms[result[1]][result[2]];
+							break;
+						case 4:
+							finalValue = rooms[result[1]][result[2]][result[3]];
+							break;
+						case 5:
+							finalValue = rooms[result[1]][result[2]][result[3]][result[4]];
+							break;
+						case 6:
+							finalValue = rooms[result[1]][result[2]][result[3]][result[4]][result[5]];
+							break;
+						case 7:
+							finalValue = rooms[result[1]][result[2]][result[3]][result[4]][result[5]][result[6]];
+							break;
+						case 8:
+							finalValue = rooms[result[1]][result[2]][result[3]][result[4]][result[5]][result[6]][result[7]];
+							break;
+						case 9:
+							finalValue = rooms[result[1]][result[2]][result[3]][result[4]][result[5]][result[6]][result[7]][result[8]];
+							break;
+						default:
+							console.log("Change-processing error: Unrecognized length of result reference.");
+							break;
+					}
+				}
+				else if (result[0] == "menus") {
+					switch(result.length) {
+						case 3:
+							finalValue = menus[result[1]][result[2]];
+							break;
+						case 4:
+							finalValue = menus[result[1]][result[2]][result[3]];
+							break;
+						case 5:
+							finalValue = menus[result[1]][result[2]][result[3]][result[4]];
+							break;
+						case 6:
+							finalValue = menus[result[1]][result[2]][result[3]][result[4]][result[5]];
+							break;
+						case 7:
+							finalValue = menus[result[1]][result[2]][result[3]][result[4]][result[5]][result[6]];
+							break;
+						case 8:
+							finalValue = menus[result[1]][result[2]][result[3]][result[4]][result[5]][result[6]][result[7]];
+							break;
+						case 9:
+							finalValue = menus[result[1]][result[2]][result[3]][result[4]][result[5]][result[6]][result[7]][result[8]];
+							break;
+						default:
+							console.log("Change-processing error: Unrecognized length of result reference.");
+							break;
+					}
+				}
+			} else {
+				finalValue = change[change.length-1];
+			}
 			if (change[0] == "rooms") {
 				switch(change.length) {
 					case 4:
-						rooms[change[1]][change[2]] = change[3];
+						rooms[change[1]][change[2]] = finalValue;
 						console.log("Setting " + change[1] + " " + change[2] + " to " + change[3]);
 						break;
 					case 5:
-						rooms[change[1]][change[2]][change[3]] = change[4];
+						rooms[change[1]][change[2]][change[3]] = finalValue;
 						break;
 					case 6:
-						rooms[change[1]][change[2]][change[3]][change[4]] = change[5];
+						rooms[change[1]][change[2]][change[3]][change[4]] = finalValue;
 						break;
 					case 7:
-						rooms[change[1]][change[2]][change[3]][change[4]][change[5]] = change[6];
+						rooms[change[1]][change[2]][change[3]][change[4]][change[5]] = finalValue;
 						break;
 					case 8:
-						rooms[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]] = change[7];
+						rooms[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]] = finalValue;
+						break;
+					case 9:
+						rooms[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]][change[7]] = finalValue;
 						break;
 					default:
 						console.log("Change-processing error: Unrecognized length.");
@@ -472,19 +540,22 @@ function processChanges(thing) {
 			else if (change[0] == "menus") {
 				switch(change.length) {
 					case 4:
-						menus[change[1]][change[2]] = change[3];
+						menus[change[1]][change[2]] = finalValue;
 						break;
 					case 5:
-						menus[change[1]][change[2]][change[3]] = change[4];
+						menus[change[1]][change[2]][change[3]] = finalValue;
 						break;
 					case 6:
-						menus[change[1]][change[2]][change[3]][change[4]] = change[5];
+						menus[change[1]][change[2]][change[3]][change[4]] = finalValue;
 						break;
 					case 7:
-						menus[change[1]][change[2]][change[3]][change[4]][change[5]] = change[6];
+						menus[change[1]][change[2]][change[3]][change[4]][change[5]] = finalValue;
 						break;
 					case 8:
-						menus[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]] = change[7];
+						menus[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]] = finalValue;
+						break;
+					case 9:
+						menus[change[1]][change[2]][change[3]][change[4]][change[5]][change[6]][change[7]] = finalValue;
 						break;
 					default:
 						console.log("Change-processing error: Unrecognized length.");
