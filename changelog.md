@@ -77,6 +77,8 @@ Now, you can (and must) do this instead:
 
 * Default settings are actually set now, rather than being pretty much ignored.
 
+* String substitution in transactional messages now works like it does in room descriptions.
+
 ## v0.1
 Released: Feb. 15, 2015
 

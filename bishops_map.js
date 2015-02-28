@@ -474,7 +474,7 @@ function printer(target) {
 	if (target["message"] === undefined) {
 		target["message"] = "";
 	}
-	document.getElementById("message").innerHTML = target["message"];
+	document.getElementById("message").innerHTML = detokenize(target["message"]);
 	target["message"] = "";
 	// (this also serves an added bonus of erasing any leftover
 	//  messages for when we print the next thing, whatever it is)
