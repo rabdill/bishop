@@ -66,6 +66,8 @@ Now, you can (and must) do this instead:
 
 * Basic unit testing has been implemented to allow developers working on the Bishop's Map codebase to make sure their code isn't introducing wonky side-effects.
 
+* File organization has been improved to reduce the number of components required to get a game working.
+
 
 ### Bug fixes
 
