@@ -1,5 +1,5 @@
 ## v0.2
-Released: n/a
+Released 28 Feb 2015
 
 ### Breaking changes
 
@@ -68,9 +68,11 @@ Now, you can (and must) do this instead:
 
 ### Project progress
 
-* Basic unit testing has been implemented to allow developers working on the Bishop's Map codebase to make sure their code isn't introducing wonky side-effects.
+* The early stages of basic unit testing have been implemented to allow developers working on the Bishop's Map codebase to make sure their code isn't introducing wonky side-effects.
 
 * File organization has been improved to reduce the number of components required to get a game working.
+
+* A minified version of bishops_map.js should now be available with each release.
 
 
 ### Bug fixes
@@ -82,7 +84,7 @@ Now, you can (and must) do this instead:
 * String substitution in transactional messages now works like it does in room descriptions.
 
 ## v0.1
-Released: Feb. 15, 2015
+Released: 15 Feb 2015
 
 ### New features
 
