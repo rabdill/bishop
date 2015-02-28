@@ -59,7 +59,7 @@ function detokenize(text) {
 //  **** start of processing commands in rooms
 function stripArticles(command) {
 	//strip out the articles:
-	var articles = [" the ", " a ", " an ", " to ", " at ", " on "];
+	var articles = [" the ", " a ", " an ", " to ", " at ", " on ", " with "];
 	var i;	// loop iterator
 
 	for (i = 0; i < articles.length; i++) {
@@ -218,22 +218,25 @@ function checkItems(command) {
 		if (command[0] in current["items"][command[1]]["states"]) {
 			//if the item can be put into the proposed state from its current state:
 			if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
-				// record what the transition message should be:
-				transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
-				// (this has to be saved here because the state of the item is about
-				//  to change, which will change all the messages around. We need
-				//  the one in effect BEFORE the shift.)
+				// if it meets any requirements:
+				if (("requires" in current["items"][command[1]]["states"][command[0]] == false) || current["items"][command[1]]["states"][command[0]]["requires"] == command[2]) {
+					// record what the transition message should be:
+					transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
+					// (this has to be saved here because the state of the item is about
+					//  to change, which will change all the messages around. We need
+					//  the one in effect BEFORE the shift.)
 
-				// if it has any changes associated with it:
-				processChanges(current["items"][command[1]]["states"][command[0]])
+					// if it has any changes associated with it:
+					processChanges(current["items"][command[1]]["states"][command[0]])
 
-				// and switch to the new state:
-				current["items"][command[1]]["status"] = command[0];
+					// and switch to the new state:
+					current["items"][command[1]]["status"] = command[0];
 
-				// print the transition message from the old state:
-				message(transMessage);
+					// print the transition message from the old state:
+					message(transMessage);
 
-				return false;
+					return false;
+				}
 			}
 		}
 		// if the item state isn't found, check if it's a synonym of one
