@@ -8,8 +8,8 @@ In addition, *you should expect multiple breaking changes between now and the 1.
 ## Implementation
 Authors define the entirety of their game logic in a file called gamedata.js. For documentation on syntax and game logic, check out [the Bishop's Map wiki](https://github.com/rabdill/bishops_map/wiki). Once the game has been designed, all a player needs to do is open an HTML file that links together the Bishop's Map code with the game data.
 
-When building the gameplay page, the included "index.html" should be helpful in determining basic requirements, but they are here as well:
-
+When building the gameplay page, the included "index.html.sample" should be helpful in determining basic requirements, but they are here as well:
+* You need a page called "index.html" to host your game. All out-of-the-box functionality of Bishop's Map can run on a single HTML page. There is a sample of one of these in the "extras" directory.
 * You may need to include as many as five Bishop's Map Javascript files for the game to operate properly:
   * "gamedata.js" and "bishops_map.js" are mandatory, and should be loaded in that order.
   * Include "automation.js" after the other two if you are still in a testing phase. Including the file does not mean the tests will be fired every time the game is loaded (you need to set `debugMode = true` for that), but it keeps you from needing to remember to include it whenever you want to run a check.
