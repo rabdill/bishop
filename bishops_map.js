@@ -8,6 +8,24 @@ function setDefaults() {
 		"allow default synonyms" : true
 	}
 
+	defaultSynonyms = {
+		"actions" : {
+			"take" : ["get","steal"],
+			"examine" : ["inspect","look","x"],
+			"look" : ["l"],
+			"smash" : ["break"],
+			"smell" : ["sniff"],
+			"taste" : ["lick"]
+		},
+		"items" : {
+			"photo" : ["picture"],
+			"north" : ["n"],
+			"east" : ["e"],
+			"south" : ["s"],
+			"west" : ["w"]
+		}
+	}
+
 
 	// this just loops through the defaults, no need to fiddle with it:
 	for (var parameter in required) {
@@ -27,19 +45,7 @@ function initialize() {
 	newDescription = "";
 	setDefaults();
 
-	defaultSynonyms = {
-		"actions" : {
-			"take" : ["get","steal"],
-			"examine" : ["inspect","look","x"],
-			"look" : ["l"],
-			"smash" : ["break"],
-			"smell" : ["sniff"],
-			"taste" : ["lick"]
-		},
-		"items" : {
-			"photo" : ["picture"]
-		}
-	}
+	
 	// to to wherever the gamedata says to start:
 	nextMove(currentLocation);
 
@@ -59,7 +65,7 @@ function detokenize(text) {
 //  **** start of processing commands in rooms
 function stripArticles(command) {
 	//strip out the articles:
-	var articles = [" the ", " a ", " an ", " to ", " at ", " on "];
+	var articles = [" the ", " a ", " an ", " to ", " at ", " on ", " with "];
 	var i;	// loop iterator
 
 	for (i = 0; i < articles.length; i++) {
@@ -218,22 +224,25 @@ function checkItems(command) {
 		if (command[0] in current["items"][command[1]]["states"]) {
 			//if the item can be put into the proposed state from its current state:
 			if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
-				// record what the transition message should be:
-				transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
-				// (this has to be saved here because the state of the item is about
-				//  to change, which will change all the messages around. We need
-				//  the one in effect BEFORE the shift.)
+				// if it meets any requirements:
+				if (("requires" in current["items"][command[1]]["states"][command[0]] == false) || current["items"][command[1]]["states"][command[0]]["requires"] == command[2]) {
+					// record what the transition message should be:
+					transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
+					// (this has to be saved here because the state of the item is about
+					//  to change, which will change all the messages around. We need
+					//  the one in effect BEFORE the shift.)
 
-				// if it has any changes associated with it:
-				processChanges(current["items"][command[1]]["states"][command[0]])
+					// if it has any changes associated with it:
+					processChanges(current["items"][command[1]]["states"][command[0]])
 
-				// and switch to the new state:
-				current["items"][command[1]]["status"] = command[0];
+					// and switch to the new state:
+					current["items"][command[1]]["status"] = command[0];
 
-				// print the transition message from the old state:
-				message(transMessage);
+					// print the transition message from the old state:
+					message(transMessage);
 
-				return false;
+					return false;
+				}
 			}
 		}
 		// if the item state isn't found, check if it's a synonym of one
@@ -310,14 +319,28 @@ function commandInMenu(command) {
 	else printer({"type" : "error", "text" : "Error: Choice out of bounds."});
 }
 
+function singletonCommand(command) {
+	// translates one-word shorthand commands into full ones
+	switch(command) {
+		case "l":
+			processCommand("look around");
+			break;
+		case "i":
+			processCommand("view inventory");
+			break;
+		default:
+			processCommand("go " + command);
+			break;
+	}
+}
+
 function processCommand(command) {
 	// if nothing is passed to the function, just grab the typed command:
 	// will happen almost every time.
 	// (when will this NOT happen? i never noted.)
 	if (typeof command !== "string") command = document.getElementById("command").value;
 	
-	command = stripArticles(command);
-	command = command.split(" ");
+	command = stripArticles(command).split(" ");
 	// fix the array in case the command for some reason starts with a space:
 	if (command[0] == "") {
 		var j;
@@ -326,8 +349,34 @@ function processCommand(command) {
 		}
 	}
 
-	if (current["type"] == "room") commandInRoom(command);
-	else if (current["type"] == "menu") commandInMenu(command);
+	switch (command.length) {
+		case 1:
+			singletonCommand(command[0]);
+			break;
+		case 2:
+			if (current["type"] == "room") commandInRoom(command);
+			else if (current["type"] == "menu") commandInMenu(command);
+			break;
+		case 3:
+			if (command[2] in player["carrying"] == false) {
+				toPrint = {
+					"type" : "error",
+					"text" : "No " + command[2] + " in your inventory."
+				}
+				printer(toPrint);
+			} else {
+				if (current["type"] == "room") commandInRoom(command);
+				else if (current["type"] == "menu") commandInMenu(command);
+			}
+			break;
+		default:
+			toPrint = {
+				"type" : "error",
+				"text" : "Command too long."
+			}
+			printer(toPrint);
+			break;
+	}
 }
 
 //******* printer functions:
