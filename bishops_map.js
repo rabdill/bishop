@@ -248,9 +248,9 @@ function checkItems(command) {
 		// if the item state isn't found, check if it's a synonym of one
 		// note: **item states are recorded in the same synonym group
 		// as actions**
-		else if (findSynonyms(command, "actions")) return false;
+		if (findSynonyms(command, "actions")) return false;
 		// check if the response is just a message:
-		else if ("messages" in current["items"][command[1]] && command[0] in current["items"][command[1]]["messages"]) {
+		if ("messages" in current["items"][command[1]] && command[0] in current["items"][command[1]]["messages"]) {
 			message(current["items"][command[1]]["messages"][command[0]]);
 			return false;
 		}
