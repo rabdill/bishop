@@ -5,7 +5,7 @@ Released n/a
 
 ### New features
 
-* Authors no longer need to specify `"status" : "default"` when setting up new items in a room. It's now... the default.
+* Authors no longer need to specify `"status" : "default"` when setting up new items in a room. It's now... the default. The same goes for setting `"type" : "room"` for rooms and `"type" : "menu"` for menus.
 
 ### Project progress
 

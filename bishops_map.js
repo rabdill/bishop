@@ -35,14 +35,22 @@ function setDefaults() {
 		}
 	}
 
-	//setting each item state to "default":
+	//setting each item state to "default", room types, etc:
 	for (var room in rooms) {
+		if ("type" in rooms[room] == false) {
+			rooms[room]["type"] = "room";
+		}
 		if ("items" in rooms[room]) {
 			for (item in rooms[room]["items"]) {
 				if ("status" in rooms[room]["items"][item] == false) {
 					rooms[room]["items"][item]["status"] = "default";
 				}
 			}
+		}
+	}
+	for (var menu in menus) {
+		if ("type" in menus[menu] == false) {
+			menus[menu]["type"] = "menu";
 		}
 	}
 }
