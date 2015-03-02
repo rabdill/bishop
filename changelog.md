@@ -1,3 +1,17 @@
+## v0.3
+Released n/a
+
+### Breaking changes
+
+### New features
+
+* Authors no longer need to specify `"status" : "default"` when setting up new items in a room. It's now... the default.
+
+### Project progress
+
+### Bug fixes
+
+
 ## v0.2
 Released 28 Feb 2015
 

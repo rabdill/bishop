@@ -25,9 +25,6 @@ function setDefaults() {
 			"west" : ["w"]
 		}
 	}
-
-
-	// this just loops through the defaults, no need to fiddle with it:
 	for (var parameter in required) {
 		if (parameter in game){
 			console.log(parameter + " is defined.");
@@ -35,6 +32,17 @@ function setDefaults() {
 		else {
 			console.log("\"" + parameter + "\" is NOT defined, setting to "+ required[parameter]);
 			game[parameter] = required[parameter];
+		}
+	}
+
+	//setting each item state to "default":
+	for (var room in rooms) {
+		if ("items" in rooms[room]) {
+			for (item in rooms[room]["items"]) {
+				if ("status" in rooms[room]["items"][item] == false) {
+					rooms[room]["items"][item]["status"] = "default";
+				}
+			}
 		}
 	}
 }
@@ -195,7 +203,6 @@ function findSynonyms(command,category) {
 	}
 	//check the defaults:
 	if(game["allow default synonyms"]) {
-		console.log("Testing default synonyms");
 		for (object in defaultSynonyms[category]) {
 			if (defaultSynonyms[category][object].indexOf(command[searchPosition]) >= 0) {
 				if (searchPosition === 0) {
