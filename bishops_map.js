@@ -109,9 +109,11 @@ function checkBuiltIns(command) {
 			if (command[1] == "around") {
 				printer(current); //just reprint the current location
 				return false;
-			}
-			else if (command[1] in current['exits']) {
+			} else if (command[1] in current['exits']) {
 				message("You look to the " + command[1] + ": " + rooms[current["exits"][command[1]]]["look"]);
+				return false;
+			} else {
+				error("You can't look that way.");
 				return false;
 			}
 			break;
@@ -230,6 +232,12 @@ function findSynonyms(command,category) {
 function message(text) {
 	current["message"] = text;
 	printer(current);
+}
+function error(text) {
+	var toPrint = {};
+	toPrint["type"] = "error";
+	toPrint["text"] = text;
+	printer(toPrint);
 }
 
 function checkItems(command) {
