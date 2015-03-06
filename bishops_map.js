@@ -95,7 +95,7 @@ function checkBuiltIns(command) {
 	switch(command[0]) {
 		case "go":
 			if (current["exits"][command[1]] != undefined) {
-				nextMove(current["exits"][command[1]]);
+				nextMove(current["exits"][command[1]][0]);
 				return false;
 			}
 			break;
@@ -424,7 +424,15 @@ function describeRoom(target) {
 	if (game["print directions"]) {
 		newDescription += "<ul>";
 		for (var exit in target["exits"]) {
-			newDescription += "<li>To the " + exit + " is " + rooms[target["exits"][exit]]["name"] + ".";
+			newDescription += "<li>To the " + exit + " is ";
+			//if there's a description specified in the room:
+			if (target["exits"][exit].length > 1) {
+				newDescription += target["exits"][exit][1];
+			} else {
+				newDescription += rooms[target["exits"][exit][0]]["name"];
+			}
+
+			newDescription += ".";
 		}
 		newDescription += "</ul>";
 	}

@@ -3,6 +3,38 @@ Released n/a
 
 ### Breaking changes
 
+#### Specifying precise descriptions of exits
+Previously, exits were described using the "name" parameter of whatever room was in that direction -- "To the west is the living room," for example. Now, authors can specify descriptions for rooms based on where the player is coming from, by a modification made to the "exits" property of rooms. For example, if you wanted to specify how that living room was described:
+```json
+"lobby" : {
+    "name" : "lobby",
+    "exits" : {
+        "west" : ["living room","a big smelly living room, I think"]
+    }
+    ...
+}
+```
+This will simplify the description of things that have contextual differences, like "steps leading upward" and "steps leading down to the kitchen." As a consequence, **authors must change all "exits" properties** so that the destination associated with a direction is an array instead of a string. In the above example, this is how it would have looked before:
+```json
+"lobby" : {
+    "name" : "lobby",
+    "exits" : {
+        "west" : "living room"
+    }
+    ...
+}
+```
+But now, *even if you don't want a custom description*, you need to wrap that "living room" specification like this:
+```json
+"lobby" : {
+    "name" : "lobby",
+    "exits" : {
+        "west" : ["living room"]
+    }
+    ...
+}
+```
+
 ### New features
 
 * Authors no longer need to specify `"status" : "default"` when setting up new items in a room. It's now... the default. The same goes for setting `"type" : "room"` for rooms and `"type" : "menu"` for menus.
