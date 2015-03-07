@@ -124,7 +124,7 @@ function checkBuiltIns(command) {
 			break;
 		case "take":
 			//if the item exists, you can take it, and you can take it from the state that it's in
-			if (command[1] in current["items"] && "take" in current["items"][command[1]] && current["items"][command[1]]["status"] in current["items"][command[1]]["take"]) {
+			if ("items" in current && command[1] in current["items"] && "take" in current["items"][command[1]] && current["items"][command[1]]["status"] in current["items"][command[1]]["take"]) {
 				// we need to save the transition message before we add the item
 				// to the inventory because then we'll end up losing the message before
 				// it can be printed:
@@ -133,7 +133,7 @@ function checkBuiltIns(command) {
 				inventory_add(command[1], current["items"][command[1]], 1);
 				message(transMessage);
 				return false;
-			} else if (command[1] in current["items"] && "messages" in current["items"][command[1]]["states"][current["items"][command[1]]["status"]] && "take" in current["items"][command[1]]["states"][current["items"][command[1]]["status"]]["messages"]) {
+			} else if ("items" in current && command[1] in current["items"] && "messages" in current["items"][command[1]]["states"][current["items"][command[1]]["status"]] && "take" in current["items"][command[1]]["states"][current["items"][command[1]]["status"]]["messages"]) {
 					message(current["items"][command[1]]["states"][current["items"][command[1]]["status"]]["messages"]["take"]);
 					return false;
 			} else {
