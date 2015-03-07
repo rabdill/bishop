@@ -309,11 +309,7 @@ function commandInRoom(command) {
 
 	// otherwise, you're SOL:
 	if (searching) {
-		toPrint = {
-			"type" : "error",
-			"text" : "Error: Invalid or impossible command."
-		};
-		printer(toPrint);
+		error("Error: Invalid or impossible command.");
 	}
 }
 //  **** end of processing commands in rooms
@@ -347,7 +343,7 @@ function commandInMenu(command) {
 		}
 	}
 	else {
-		printer({"type" : "error", "text" : "Error: Choice out of bounds."});
+		error("Error: Choice out of bounds.");
 	}
 }
 
@@ -402,11 +398,7 @@ function processCommand(command) {
 			break;
 		case 3:
 			if (command[2] in player["carrying"] === false) {
-				toPrint = {
-					"type" : "error",
-					"text" : "No " + command[2] + " in your inventory."
-				};
-				printer(toPrint);
+				error("No " + command[2] + " in your inventory.");
 			} else {
 				if (current["type"] === "room") {
 					commandInRoom(command);
@@ -418,11 +410,7 @@ function processCommand(command) {
 			}
 			break;
 		default:
-			toPrint = {
-				"type" : "error",
-				"text" : "Command too long."
-			};
-			printer(toPrint);
+			error("Command too long.";
 			break;
 	}
 }
