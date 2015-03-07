@@ -6,7 +6,7 @@ function setDefaults() {
 		"allow speech to text" : false,
 		"print directions" : true,
 		"allow default synonyms" : true
-	}
+	};
 
 	defaultSynonyms = {
 		"actions" : {
@@ -24,7 +24,7 @@ function setDefaults() {
 			"south" : ["s"],
 			"west" : ["w"]
 		}
-	}
+	};
 	for (var parameter in required) {
 		if (parameter in game){
 			console.log(parameter + " is defined.");
@@ -37,19 +37,19 @@ function setDefaults() {
 
 	//setting each item state to "default", room types, etc:
 	for (var room in rooms) {
-		if ("type" in rooms[room] == false) {
+		if ("type" in rooms[room] === false) {
 			rooms[room]["type"] = "room";
 		}
 		if ("items" in rooms[room]) {
 			for (item in rooms[room]["items"]) {
-				if ("status" in rooms[room]["items"][item] == false) {
+				if ("status" in rooms[room]["items"][item] === false) {
 					rooms[room]["items"][item]["status"] = "default";
 				}
 			}
 		}
 	}
 	for (var menu in menus) {
-		if ("type" in menus[menu] == false) {
+		if ("type" in menus[menu] === false) {
 			menus[menu]["type"] = "menu";
 		}
 	}
@@ -100,13 +100,13 @@ function checkBuiltIns(command) {
 			}
 			break;
 		case "view":
-			if (command[1] == "inventory") {
+			if (command[1] === "inventory") {
 				print_inventory();
 				return false;
 			}
 			break;
 		case "look":
-			if (command[1] == "around") {
+			if (command[1] === "around") {
 				printer(current); //just reprint the current location
 				return false;
 			} else if (command[1] in current['exits']) {
@@ -118,10 +118,7 @@ function checkBuiltIns(command) {
 			}
 			break;
 		case "take":
-			if (command[1] in current["items"] &&
-				"take" in current["items"][command[1]] &&
-				current["items"][command[1]]["status"] in current["items"][command[1]]["take"])
-				{
+			if (command[1] in current["items"] && "take" in current["items"][command[1]] && current["items"][command[1]]["status"] in current["items"][command[1]]["take"]) {
 				// we need to save the transition message before we add the item
 				// to the inventory because then we'll end up losing the message before
 				// it can be printed:
@@ -153,7 +150,7 @@ function checkAction(command) {
 		// check if the verb can be applied to the specified object
 		if (command[1] in current["actions"][command[0]]) {
 			// implement any changes
-			processChanges(current["actions"][command[0]][command[1]])
+			processChanges(current["actions"][command[0]][command[1]]);
 
 			// print out a message, if there is one
 			if ("print" in current["actions"][command[0]][command[1]]) {
@@ -169,14 +166,21 @@ function checkAction(command) {
 		}
 		// check if the target of the action might be a synonym
 		// ** direct objects and items are stored IN THE SAME SYNONYM GROUP **
-		else if (findSynonyms(command, "items")) return false;
+		else {
+			if (findSynonyms(command, "items")) {
+				return false;
+			}
 		// (if findSynonyms returns true, that means it found a synonym
 		// and we can stop looking)
+		}
 	}
 
 	//check to see if the action verb is a synonym of a defined one:
-	else if (findSynonyms(command, "actions")) return false;
-
+	else {
+		if (findSynonyms(command, "actions")) {
+			return false;
+		}
+	}
 	// if we made it here, we have to keep looking:
 	return true;
 }
@@ -248,7 +252,7 @@ function checkItems(command) {
 			//if the item can be put into the proposed state from its current state:
 			if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
 				// if it meets any requirements:
-				if (("requires" in current["items"][command[1]]["states"][command[0]] == false) || current["items"][command[1]]["states"][command[0]]["requires"] == command[2]) {
+				if (("requires" in current["items"][command[1]]["states"][command[0]] === false) || current["items"][command[1]]["states"][command[0]]["requires"] === command[2]) {
 					// record what the transition message should be:
 					transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
 					// (this has to be saved here because the state of the item is about
@@ -256,7 +260,7 @@ function checkItems(command) {
 					//  the one in effect BEFORE the shift.)
 
 					// if it has any changes associated with it:
-					processChanges(current["items"][command[1]]["states"][command[0]])
+					processChanges(current["items"][command[1]]["states"][command[0]]);
 
 					// and switch to the new state:
 					current["items"][command[1]]["status"] = command[0];
@@ -271,7 +275,7 @@ function checkItems(command) {
 		// if the item state isn't found, check if it's a synonym of one
 		// note: **item states are recorded in the same synonym group
 		// as actions**
-		if (findSynonyms(command, "actions")) return false;
+		if (findSynonyms(command, "actions")) {return false;}
 		// check if the response is just a message:
 		if ("messages" in current["items"][command[1]] && command[0] in current["items"][command[1]]["messages"]) {
 			message(current["items"][command[1]]["messages"][command[0]]);
@@ -279,7 +283,7 @@ function checkItems(command) {
 		}
 	}
 	// if the player referenced an item by a synonym:
-	if (findSynonyms(command, "items")) return false;
+	if (findSynonyms(command, "items")) {return false;}
 
 	//if we have to keep looking:
 	return true;
@@ -295,10 +299,13 @@ function commandInRoom(command) {
 	searching = checkBuiltIns(command);
 
 	// check the room's possible actions:
-	if (searching) searching = checkAction(command);
-
+	if (searching) {
+		searching = checkAction(command);
+	}
 	// check the room's possible items:
-	if (searching) searching = checkItems(command);
+	if (searching) {
+		searching = checkItems(command);
+	}
 
 	// otherwise, you're SOL:
 	if (searching) {
@@ -316,7 +323,7 @@ function commandInMenu(command) {
 	command--;	//because the array starts at #0 but the option numbers start at 1
 	if (command < current["choices"].length) { //make sure it's an option
 		// if the player is supposed to move to a new location:
-		if (current["choices"][command]["response type"] == "move") {
+		if (current["choices"][command]["response type"] === "move") {
 			// if the destination's description has to be changed:
 			if ("description" in current["choices"][command]) {
 				if (current["choices"][command]["destination"] in rooms) {
@@ -339,7 +346,9 @@ function commandInMenu(command) {
 			}
 		}
 	}
-	else printer({"type" : "error", "text" : "Error: Choice out of bounds."});
+	else {
+		printer({"type" : "error", "text" : "Error: Choice out of bounds."});
+	}
 }
 
 function singletonCommand(command) {
@@ -361,11 +370,13 @@ function processCommand(command) {
 	// if nothing is passed to the function, just grab the typed command:
 	// will happen almost every time.
 	// (when will this NOT happen? i never noted.)
-	if (typeof command !== "string") command = document.getElementById("command").value;
-	
+	if (typeof command !== "string") {
+		command = document.getElementById("command").value;
+	}
+
 	command = stripArticles(command).split(" ");
 	// fix the array in case the command for some reason starts with a space:
-	if (command[0] == "") {
+	if (command[0] === "") {
 		var j;
 		for (j = 1; j < command.length; j++) {
 			command[j-1] = command[j];
@@ -374,30 +385,43 @@ function processCommand(command) {
 	
 	switch (command.length) {
 		case 1:
-			if (current["type"] == "menu") commandInMenu(command[0]);
-			else singletonCommand(command[0]);
+			if (current["type"] === "menu") {
+				commandInMenu(command[0]);
+			} else {
+				singletonCommand(command[0]);
+			}
 			break;
 		case 2:
-			if (current["type"] == "room") commandInRoom(command);
-			else if (current["type"] == "menu") commandInMenu(command);
+			if (current["type"] === "room") {
+				commandInRoom(command);
+			} else {
+				if (current["type"] === "menu") {
+					commandInMenu(command);
+				}
+			}
 			break;
 		case 3:
-			if (command[2] in player["carrying"] == false) {
+			if (command[2] in player["carrying"] === false) {
 				toPrint = {
 					"type" : "error",
 					"text" : "No " + command[2] + " in your inventory."
-				}
+				};
 				printer(toPrint);
 			} else {
-				if (current["type"] == "room") commandInRoom(command);
-				else if (current["type"] == "menu") commandInMenu(command);
+				if (current["type"] === "room") {
+					commandInRoom(command);
+				} else {
+					if (current["type"] === "menu") {
+						commandInMenu(command);
+					}
+				}
 			}
 			break;
 		default:
 			toPrint = {
 				"type" : "error",
 				"text" : "Command too long."
-			}
+			};
 			printer(toPrint);
 			break;
 	}
@@ -439,13 +463,14 @@ function describeRoom(target) {
 
 	if ("prompt" in target) {
 		printDescription({"newDescription" : newDescription, "newPrompt" : target["prompt"]});
+	} else {
+		printDescription({"newDescription" : newDescription});
 	}
-	else printDescription({"newDescription" : newDescription});
 }
 
 function describeMenu(target) {
 	newDescription = "";
-	if (target["type"] == "premessage") {
+	if (target["type"] === "premessage") {
 		newDescription = target["premessage"] + "<br><br>";
 		if (target["destination"] in rooms) {
 			target = rooms[target["destination"]];
@@ -456,7 +481,7 @@ function describeMenu(target) {
 	}
 
 	// if the player is being sent to a menu:
-	if (target["type"] == "menu") {
+	if (target["type"] === "menu") {
 		// then add whatever the menu's full description is now:
 		newDescription += target["description"];
 
@@ -471,14 +496,16 @@ function describeMenu(target) {
 		newDescription += "</ol>"; 
 	}
 	//if they're being sent to a room:
-	else if (target["type"] == "room") {
+	else if (target["type"] === "room") {
 		newDescription += target["entrance text"];
 	}
 
 	if ("prompt" in target) {
 		printDescription({"newDescription" : newDescription, "newPrompt" : target["prompt"]});
 	}
-	else printDescription({"newDescription" : newDescription});
+	else {
+		printDescription({"newDescription" : newDescription});
+	}
 }
 
 function printDescription(toPrint) {
@@ -519,13 +546,12 @@ function printer(target) {
 		case "error":
 			clearFields();
 			document.getElementById("error").innerHTML = target["text"];
-			if (game["allow text to speech"]) say(text);
+			if (game["allow text to speech"]) {
+				say(text);
+			}
 			break;
 		case "room":
 			describeRoom(target);
-			break;
-		case "premessage":
-			describeMenu(target);
 			break;
 		case "menu":
 			describeMenu(target);
@@ -557,10 +583,10 @@ function processChanges(thing) {
 			// determine if the new value
 			// is just a value, or if it's a reference
 			// to something elsewhere in the game:
-			if (typeof change[change.length-1] == 'object' && "reference" in change[change.length-1]) {
+			if (typeof change[change.length-1] === 'object' && "reference" in change[change.length-1]) {
 				// grab the array that's stored in the "reference" object:
 				result = change[change.length-1]["reference"];
-				if (result[0] == "rooms") {
+				if (result[0] === "rooms") {
 					switch(result.length) {
 						case 3:
 							finalValue = rooms[result[1]][result[2]];
@@ -588,7 +614,7 @@ function processChanges(thing) {
 							break;
 					}
 				}
-				else if (result[0] == "menus") {
+				else if (result[0] === "menus") {
 					switch(result.length) {
 						case 3:
 							finalValue = menus[result[1]][result[2]];
@@ -619,7 +645,7 @@ function processChanges(thing) {
 			} else {
 				finalValue = change[change.length-1];
 			}
-			if (change[0] == "rooms") {
+			if (change[0] === "rooms") {
 				switch(change.length) {
 					case 4:
 						rooms[change[1]][change[2]] = finalValue;
@@ -645,7 +671,7 @@ function processChanges(thing) {
 						break;
 				}
 			}
-			else if (change[0] == "menus") {
+			else if (change[0] === "menus") {
 				switch(change.length) {
 					case 4:
 						menus[change[1]][change[2]] = finalValue;
@@ -697,7 +723,7 @@ function inventory_add(name, item, qty) {
 
 	// and take it out of the room:
 	for (var roomItem in current["items"]) {
-		if (current["items"][roomItem]["id"] == item["id"]) {
+		if (current["items"][roomItem]["id"] === item["id"]) {
 			delete current["items"][roomItem];
 		}
 	}
@@ -736,5 +762,8 @@ function print_inventory() {
 
 // connect the code to the DOM, check if it's the code-testing page:
 	// if we aren't doing a run through the unit tests:
-if (document.getElementsByClassName("TESTRESULT").length === 0) window.addEventListener("load", initialize);
+if (document.getElementsByClassName("TESTRESULT").length === 0) {
+	window.addEventListener("load", initialize);
+}
+
 document.getElementById("sendCommand").addEventListener("click", processCommand);
