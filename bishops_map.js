@@ -217,16 +217,13 @@ function findSynonyms(command,category) {
 		//check the room:
 		for (object in current["synonyms"][category]) {
 			if (current["synonyms"][category][object].indexOf(command[searchPosition]) >= 0) {
-				if (searchPosition === 0) {
-					processCommand(object + " " + command[1]);
-				}
-				else {
-				   processCommand(command[0] + " " + object);
-				}
+				command[searchPosition] = object;
+				processCommand(command.join(" "));
 				return true;
 			}
 		}
 	}
+
 	//check the defaults:
 	if(game["allow default synonyms"]) {
 		for (object in defaultSynonyms[category]) {
@@ -294,7 +291,8 @@ function checkItems(command) {
 			return false;
 		}
 	}
-	// if the item isn't in the room, check to see if it's in the inventory:
+	// if the item isn't in the room, check to see
+	// if it's something we can examine in the inventory:
 	else if (command[0] === "examine" && command[1] in player["carrying"] && "messages" in player["carrying"][command[1]]["states"][player["carrying"][command[1]]["status"]] && "examine" in player["carrying"][command[1]]["states"][player["carrying"][command[1]]["status"]]["messages"]) {
 		message(player["carrying"][command[1]]["states"][player["carrying"][command[1]]["status"]]["messages"]["examine"]);
 		return false;
