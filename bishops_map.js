@@ -133,12 +133,11 @@ function checkBuiltIns(command) {
 				inventory_add(command[1], current["items"][command[1]], 1);
 				message(transMessage);
 				return false;
-			} else if ("take" in current["items"][command[1]]["messages"]) {
-					message(current["items"][command[1]]["messages"]["take"]);
+			} else if (command[1] in current["items"] && "messages" in current["items"][command[1]]["states"][current["items"][command[1]]["status"]] && "take" in current["items"][command[1]]["states"][current["items"][command[1]]["status"]]["messages"]) {
+					message(current["items"][command[1]]["states"][current["items"][command[1]]["status"]]["messages"]["take"]);
 					return false;
 			} else {
 				message("You can't take that.");
-				return false;
 			}
 			break;
 		case "drop":
@@ -290,8 +289,8 @@ function checkItems(command) {
 		// as actions**
 		if (findSynonyms(command, "actions")) {return false;}
 		// check if the response is just a message:
-		if ("messages" in current["items"][command[1]] && command[0] in current["items"][command[1]]["messages"]) {
-			message(current["items"][command[1]]["messages"][command[0]]);
+		if ("messages" in current["items"][command[1]]["states"][current["items"][command[1]]["status"]] && command[0] in current["items"][command[1]]["states"][current["items"][command[1]]["status"]]["messages"]) {
+			message(current["items"][command[1]]["states"][current["items"][command[1]]["status"]]["messages"][command[0]]);
 			return false;
 		}
 	}

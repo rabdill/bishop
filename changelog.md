@@ -2,6 +2,54 @@
 Released n/a
 
 ### Breaking changes
+#### Item messages now depend on the state it's in
+"messages" is no longer a top-level property of an item -- it's now a property that's listed alongside the potential states of the item, to allow for messages and descriptions to change when an item's state changes. `examine pumpkin` would elicit far different responses after you put it in the `smash` state, for example.
+
+Before:
+```json
+"town square" : {
+    ...
+    "items" : {
+        "pumpkin" : {
+            "messages" : {
+                "examine" : "It's big and round and beautiful!"
+            },
+            "states" : {
+                "default" : {
+                    "descriptor" : "There's a pumpkin here."
+                },
+                "smash" : {
+                    "descriptor" : "There's a smushed-up gloppy pumpkin thing on the ground."
+                }
+            }
+        }
+    }
+}
+```
+In the scenario above, if you `smash the pumpkin` and then `examine pumpkin`, the game would tell you that the smashed-up gloppy pumpkin thing was "big and round and beautiful!" The new way gets around that:
+```json
+"town square" : {
+    ...
+    "items" : {
+        "pumpkin" : {
+            "states" : {
+                "default" : {
+                    "descriptor" : "There's a pumpkin here.",
+                    "messages" : {
+                        "examine" : "It's big and round and beautiful!"
+                    }
+                },
+                "smash" : {
+                    "descriptor" : "There's a smushed-up gloppy pumpkin thing on the ground.",
+                    "messages" : {
+                        "examine" : "It's gross, there's just mush left now."
+                    },
+                }
+            }
+        }
+    }
+}
+```
 
 #### Specifying precise descriptions of exits
 Previously, exits were described using the "name" parameter of whatever room was in that direction -- "To the west is the living room," for example. Now, authors can specify descriptions for rooms based on where the player is coming from, by a modification made to the "exits" property of rooms. For example, if you wanted to specify how that living room was described:
