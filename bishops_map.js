@@ -123,6 +123,7 @@ function checkBuiltIns(command) {
 			}
 			break;
 		case "take":
+			//if the item exists, you can take it, and you can take it from the state that it's in
 			if (command[1] in current["items"] && "take" in current["items"][command[1]] && current["items"][command[1]]["status"] in current["items"][command[1]]["take"]) {
 				// we need to save the transition message before we add the item
 				// to the inventory because then we'll end up losing the message before
@@ -132,7 +133,14 @@ function checkBuiltIns(command) {
 				inventory_add(command[1], current["items"][command[1]], 1);
 				message(transMessage);
 				return false;
+			} else if ("take" in current["items"][command[1]]["messages"]) {
+					message(current["items"][command[1]]["messages"]["take"]);
+					return false;
+			} else {
+				message("You can't take that.");
+				return false;
 			}
+			break;
 		case "drop":
 			if (command[1] in player["carrying"]) {
 				inventory_remove(player["carrying"][command[1]]["name"], 1);
