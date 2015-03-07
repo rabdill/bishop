@@ -110,8 +110,13 @@ function checkBuiltIns(command) {
 				printer(current); //just reprint the current location
 				return false;
 			} else if (command[1] in current['exits']) {
-				message("You look to the " + command[1] + ": " + rooms[current["exits"][command[1]]]["look"]);
-				return false;
+				if ("look" in rooms[current['exits'][command[1]]]) {
+					message("You look to the " + command[1] + ": " + rooms[current["exits"][command[1]]]["look"]);
+					return false;
+				} else {
+					message("You don't see anything in particular.");
+					return false;
+				}
 			} else {
 				error("You can't look that way.");
 				return false;
@@ -410,7 +415,7 @@ function processCommand(command) {
 			}
 			break;
 		default:
-			error("Command too long.";
+			error("Command too long.");
 			break;
 	}
 }
