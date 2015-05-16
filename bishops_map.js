@@ -10,7 +10,7 @@ function setDefaults() {
 
 	defaultSynonyms = {
 		"actions" : {
-			"take" : ["get","steal"],
+			"take" : ["get","steal","t"],
 			"examine" : ["inspect","look","x"],
 			"look" : ["l"],
 			"smash" : ["break"],
