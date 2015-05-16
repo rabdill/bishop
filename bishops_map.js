@@ -128,8 +128,11 @@ function checkBuiltIns(command) {
 				// we need to save the transition message before we add the item
 				// to the inventory because then we'll end up losing the message before
 				// it can be printed:
-				var transMessage = current["items"][command[1]]["take"][current["items"][command[1]]["status"]];
+				var transMessage = current["items"][command[1]]["take"][current["items"][command[1]]["status"]]["message"];
 				
+				// process any changes that are triggered by the item getting taken
+				processChanges(current["items"][command[1]]["take"][current["items"][command[1]]["status"]])
+
 				inventory_add(command[1], current["items"][command[1]], 1);
 				message(transMessage);
 				return false;

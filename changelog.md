@@ -83,9 +83,52 @@ But now, *even if you don't want a custom description*, you need to wrap that "l
 }
 ```
 
+#### "take" properties for each status now contain an object
+Previously, the "take" property that was set for objects was structured this way:
+```
+"items" : {
+    "book" : {
+        [...]
+        "take" : {
+            "default" : "You put the key in your pocket."
+        }
+    }
+}
+```
+In this example, one of the book's properties was "take," which tells the engine that the item can be added the player's inventory. The "default" property inside of "take" signifies that the item can be taken when it's in the "default" state, and that "You put the key in your pocket." should be printed when it happens.
+
+Now, however, it will be specified this way:
+```
+"items" : {
+    "book" : {
+        [...]
+        "take" : {
+            "default" : {"message" : "You put the key in your pocket."}
+        }
+    }
+}
+```
+It adds another level of complexity, but it will allow more precise specification for things to happen when an item is taken. (See the entry in "New features" below.)
+
+
 ### New features
 
 * Authors no longer need to specify `"status" : "default"` when setting up new items in a room. It's now... the default. The same goes for setting `"type" : "room"` for rooms and `"type" : "menu"` for menus.
+
+* Changes can now be triggered by an item being taken, and are specified in the same way they are elsewhere:
+```
+"items" : {
+    "book" : {
+        [...]
+        "take" : {
+            "default" : {
+                "message" : "You put the key in your pocket.",
+                "changes" : ["room","foyer","items","book","states","default","messages","examine","There used to be a key hidden in here."]
+            }
+        }
+    }
+}
+```
 
 ### Project progress
 
