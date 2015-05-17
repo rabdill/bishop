@@ -264,7 +264,7 @@ function checkItems(command) {
 			//if the item can be put into the proposed state from its current state:
 			if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
 				// if it meets any requirements:
-				if (("requires" in current["items"][command[1]]["states"][command[0]] === false) || current["items"][command[1]]["states"][command[0]]["requires"] === command[2]) {
+				if (("requires" in current["items"][command[1]]["states"][command[0]] === false) || current["items"][command[1]]["states"][command[0]]["requires"]["item"] === command[2]) {
 					// record what the transition message should be:
 					transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
 					// (this has to be saved here because the state of the item is about
@@ -273,6 +273,19 @@ function checkItems(command) {
 
 					// if it has any changes associated with it:
 					processChanges(current["items"][command[1]]["states"][command[0]]);
+
+					// if a required item gets used up ('true') then remove it from player inventory:
+					if("consumed" in current["items"][command[1]]["states"][command[0]]["requires"] && current["items"][command[1]]["states"][command[0]]["requires"]["consumed"] === true) {
+						// check to see if a certain quantity should be spent:
+						if("quantity" in current["items"][command[1]]["states"][command[0]]["requires"]) {
+							qty = current["items"][command[1]]["states"][command[0]]["requires"]["quantity"];
+						}
+						else {
+							qty = 1;
+						}
+
+						inventory_remove(current["items"][command[1]]["states"][command[0]]["requires"]["item"], qty)
+					}
 
 					// and switch to the new state:
 					current["items"][command[1]]["status"] = command[0];
