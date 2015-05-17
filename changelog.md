@@ -108,14 +108,7 @@ Now, however, it will be specified this way:
     }
 }
 ```
-It adds another level of complexity, but it will allow more precise specification for things to happen when an item is taken. (See the entry in "New features" below.)
-
-
-### New features
-
-* Authors no longer need to specify `"status" : "default"` when setting up new items in a room. It's now... the default. The same goes for setting `"type" : "room"` for rooms and `"type" : "menu"` for menus.
-
-* Changes can now be triggered by an item being taken, and are specified in the same way they are elsewhere:
+It adds another level of complexity, but it will allow more precise specification for things to happen when an item is taken:
 ```
 "items" : {
     "book" : {
@@ -129,6 +122,62 @@ It adds another level of complexity, but it will allow more precise specificatio
     }
 }
 ```
+
+#### Using tools now extends to consumable items
+As it stood in v0.2, this is how you would require an item be used to move an item between states:
+```
+[...]
+"items" : {
+    "pile" : {
+        "name" : "pile of junk",
+        "id" : "living room pile",
+        "states" : {
+            [...]
+            "move" : {
+                "descriptor" : "Trash and drywall is strewn around in front of the doorway.",
+                "requires" : "shovel",
+                "from" : {
+                    "default" : "You slowly push your way through the junk, tossing the little stuff aside and shoving the big pieces with your foot. Soon, the doorway is opened up."
+                }
+            }
+        }
+    }
+}
+```
+
+Now, however, the "requires" property should be passed an object instead of an item name. This way, you can specify items be used that are then *also removed from the player's inventory*. Like this:
+```
+[...]
+"items" : {
+    "stairs" : {
+        "name" : "stairs",
+        "id" : "broken stairs",
+        "states" : {
+            "default" : {
+                "descriptor" : "",
+                "messages" : {
+                    "examine" : "They look stable, for the most part, but there's a hefty gap right in the middle that's going to keep you from climbing up... for now.",
+                    "repair" : "It doesn't look tricky to repair, if you had something to bridge the gap..."
+                }
+            },
+            "repair" : {
+                "descriptor" : "Some beautiful, repaired steps are right here man, oh yeah.",
+                "requires" : {
+                    "item" : "wood",
+                    "consumed" : true
+                },
+                "from" : {
+                    "default" : "You lean one end of the plywood on the step and let it fall over the gap. It covers the gap perfectly."
+                }
+            }
+        }
+    }
+}
+```
+
+### New features
+
+* Authors no longer need to specify `"status" : "default"` when setting up new items in a room. It's now... the default. The same goes for setting `"type" : "room"` for rooms and `"type" : "menu"` for menus.
 
 ### Project progress
 

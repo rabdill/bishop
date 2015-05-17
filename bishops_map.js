@@ -264,7 +264,7 @@ function checkItems(command) {
 			//if the item can be put into the proposed state from its current state:
 			if (current["items"][command[1]]["status"] in current["items"][command[1]]["states"][command[0]]["from"]) {
 				// if it meets any requirements:
-				if (("requires" in current["items"][command[1]]["states"][command[0]] === false) || current["items"][command[1]]["states"][command[0]]["requires"]["item"] === command[2]) {
+				if (checkRequirements(command)) {
 					// record what the transition message should be:
 					transMessage = current["items"][command[1]]["states"][command[0]]["from"][current["items"][command[1]]["status"]];
 					// (this has to be saved here because the state of the item is about
@@ -275,7 +275,7 @@ function checkItems(command) {
 					processChanges(current["items"][command[1]]["states"][command[0]]);
 
 					// if a required item gets used up ('true') then remove it from player inventory:
-					if("consumed" in current["items"][command[1]]["states"][command[0]]["requires"] && current["items"][command[1]]["states"][command[0]]["requires"]["consumed"] === true) {
+					if("requires" in current["items"][command[1]]["states"][command[0]] && "consumed" in current["items"][command[1]]["states"][command[0]]["requires"] && current["items"][command[1]]["states"][command[0]]["requires"]["consumed"] === true) {
 						// check to see if a certain quantity should be spent:
 						if("quantity" in current["items"][command[1]]["states"][command[0]]["requires"]) {
 							qty = current["items"][command[1]]["states"][command[0]]["requires"]["quantity"];
@@ -283,8 +283,7 @@ function checkItems(command) {
 						else {
 							qty = 1;
 						}
-
-						inventory_remove(current["items"][command[1]]["states"][command[0]]["requires"]["item"], qty)
+						inventory_remove(player["carrying"][command[2]]["name"], qty);
 					}
 
 					// and switch to the new state:
@@ -319,6 +318,31 @@ function checkItems(command) {
 	//if we have to keep looking:
 	return true;
 }
+
+// checks to make sure a player's command fulfills any inventory-based
+// requirements (a shovel for digging, a piece of wood for repairs, etc)
+function checkRequirements(command) {
+	// if there's no requirement
+	if ("requires" in current["items"][command[1]]["states"][command[0]] === false) {
+		return true;
+	}
+
+	// if the required item is specified
+		// (the processCommand function wouldn't have let the command through
+		//	if the player specified an item that they didn't have at least ONE of.)
+	if (current["items"][command[1]]["states"][command[0]]["requires"]["item"] === command[2]) {
+		// if you only need one
+		if ("quantity" in current["items"][command[1]]["states"][command[0]]["requires"] === false) {
+			return true;
+		}
+		// if you need more than one but have enough
+		if (current["items"][command[1]]["states"][command[0]]["requires"]["quantity"] < player["inventory"][command[2]]) {
+			return true;
+		}
+	}
+	return false;
+}
+
 
 function commandInRoom(command) {
 	var searching = true;
@@ -752,7 +776,9 @@ function inventory_remove(name, qty) {
 	console.log("Removing " + qty + " from inventory for " + name + ".");
 	player["inventory"][name] -= qty;
 
-	delete player["carrying"][name];
+	if (player["inventory"][name] < 1) {
+		delete player["carrying"][name];
+	}
 }
 
 function print_inventory() {
