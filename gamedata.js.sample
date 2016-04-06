@@ -29,14 +29,16 @@ nodes = [
 		"id" : "living room",
 		"name" : "what must be the living room",
 		"type" : "room",
-		"look" : "The town square, full of people and activities.",
+		"look" : "A dusty old room, garbage all over.",
 		"exits": {
 			"west"  : "foyer"
 		},
-		"changes" : [
-			function() {room("foyer").entrance = "You stand in the sad, rubble-strewn foyer of what must have at one time been a very nice house.";},
-			function() {room("living room").name = "the living room";},
-		],
+		"changes" : {
+			"onEnter" : [
+				function() {room("foyer").entrance = "You stand in the sad, rubble-strewn foyer of what must have at one time been a very nice house.";},
+				function() {room("living room").name = "the living room";},
+			]
+		},
 		"entrance" : "You're in the living room. There's debris in here from the shelling; it appears someone tried cleaning it up. They failed.",
 		"items" : {
 			"photo" : {

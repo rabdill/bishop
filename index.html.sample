@@ -1,0 +1,34 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script type="text/javascript" src="../bishops_map/gamedata.js.sample"></script>
+	<style>
+		#error {
+			color: red;
+		}
+	</style>
+	<title>Survival</title>
+</head>
+<body>
+	<h3>Bishop's Map</h3>
+	<h1 id="gameName">Your Custom Game</h1>
+	<div>
+		<p id="message"></p>
+		<p id="error"></p>
+
+		<p id="description">This is sample text. If you see this, something went wrong with loading your game.</p>
+	</div>
+	<div>
+		<form id="commandEntry" action="#">
+			<div>
+				<span id="prompt">What to do?</span>
+				<input type="text" id="command">
+				<input type="submit" id="sendCommand"><br><br>
+			</div>
+		</form>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.8.2/lodash.js"></script>
+	<script src="../bishops_map/bishops_map_new.js"></script>
+
+</body>
+</html>

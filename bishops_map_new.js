@@ -1,26 +1,48 @@
 function goTo(target) {
-	console.log("GOING TO", target);
-	console.log(nodes);
 	var targetIndex = _.findIndex(nodes, {"id": target});
-	console.log("targetIndex=", targetIndex);
 	if(targetIndex === -1) throw "goTo function invoked with non-existent node.";
 
 	currentLocation = target;
-	if(nodes[targetIndex].type === "room") processChanges(nodes[targetIndex]);
+
+	// process any changes that happen on entering the room
+	if(nodes[targetIndex].changes) {
+		_(nodes[targetIndex].changes.onEnter).forEach(function(f) {
+			f();
+		});
+		nodes[targetIndex].changes.onEnter = [];
+	}
+
 	current = nodes[targetIndex];
-	document.getElementById('description').innerHTML = current.entrance
+	writeRoom();
 };
 
-function processChanges(node) {
-	_(node.changes).forEach(function(f) {
-		console.log("CHANGING", f);
-		f();
-	});
+function room(id) {
+	return nodes[_.findIndex(nodes, {"id": id})];
 };
+
+function writeRoom() {
+	newDescription = current.entrance;
+	newDescription += "<ul>";
+	for (var exit in current.exits) {
+		newDescription += "<li>To the " + exit + " is ";
+		newDescription += room(current.exits[exit]).name;
+		newDescription += ".";
+	}
+	newDescription += "</ul>";
+
+	document.getElementById('description').innerHTML = newDescription;
+}
 
 function initialize() {
 	document.getElementById("gameName").innerHTML = game.settings.title;
 	goTo(currentLocation);
+};
+
+function checkBuiltins(c) {
+	// checks the standard commands to see if there's anything that can be done
+	if(c[0] === "go") {
+		if(current.exits[c[1]]) goTo(current.exits[c[1]]);
+	}
 };
 
 function processCommand(command) {
@@ -34,10 +56,7 @@ function processCommand(command) {
 	var articles = ["the", "a", "an", "to", "at", "on", "with"];
 	command = _.difference(command, articles);
 
-	console.log("COMMAND", command);
-	if(command[0] === "go") {
-		if(current.exits[command[1]]) goTo(current.exits[command[1]]);
-	}
+	checkBuiltins(command);
 };
 
 // load everything up:
