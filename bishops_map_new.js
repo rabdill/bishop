@@ -13,14 +13,17 @@ function goTo(target) {
 	}
 
 	current = nodes[targetIndex];
-	writeRoom();
+	printRoom();
 };
 
 function room(id) {
+// turns a room ID into a room
 	return nodes[_.findIndex(nodes, {"id": id})];
 };
 
-function writeRoom() {
+function printRoom() {
+	printMessage();
+	printError();
 	newDescription = current.entrance;
 	newDescription += "<ul>";
 	for (var exit in current.exits) {
@@ -33,15 +36,59 @@ function writeRoom() {
 	document.getElementById('description').innerHTML = newDescription;
 }
 
+function printMessage(message) {
+	document.getElementById('message').innerHTML = message;
+	document.getElementById('error').innerHTML = "";
+}
+
+function printError(message) {
+	if(!message) message = "";
+	document.getElementById('error').innerHTML = message;
+	document.getElementById('message').innerHTML = "";
+}
+
 function initialize() {
 	document.getElementById("gameName").innerHTML = game.settings.title;
 	goTo(currentLocation);
 };
 
+function look(roomId) {
+	// prints out a description of the room
+	// IDEA: Print different descriptions based on where they're looking from?
+	printMessage(room(roomId).look || "You don't see anything in particular.");
+}
+
 function checkBuiltins(c) {
+	// returns whether it found a match or not.
+	var verb = c[0];
+	var noun = c[1];
 	// checks the standard commands to see if there's anything that can be done
-	if(c[0] === "go") {
-		if(current.exits[c[1]]) goTo(current.exits[c[1]]);
+	switch(verb) {
+		case "go":
+			if(current.exits[noun]) {
+				goTo(current.exits[noun]);
+				return true;
+			}
+			else {
+				printError("You can't go that way.");
+				return true;
+			}
+		case "look":
+			if(current.exits[noun]) {
+				look(current.exits[noun]);
+				return true;
+			}
+			else if(noun === "around") {
+				printRoom();
+				return true;
+			}
+			else {
+				printError("You can't look that way.");
+				return true;
+			}
+		default:
+			return false;
+
 	}
 };
 
@@ -56,7 +103,11 @@ function processCommand(command) {
 	var articles = ["the", "a", "an", "to", "at", "on", "with"];
 	command = _.difference(command, articles);
 
-	checkBuiltins(command);
+	// check built-ins AFTER checking commands specified in the room itself;
+	//	that will let designers override them.
+	if(!checkBuiltins(command)) {
+		printError('Sorry, unrecognized command.');
+	}
 };
 
 // load everything up:
