@@ -23,9 +23,13 @@ function room(id) {
 };
 
 function printRoom() {
-	printMessage();
-	printError();
+	clearMessage();
+	clearError();
 	newDescription = current.entrance;
+	newDescription += "<div>";
+	for (var i=0, item; item = (current.items || [])[i]; i++) {
+		newDescription += item.states[item.state || 'default'].descriptor + "<br>";
+	}
 	newDescription += "<ul>";
 	for (var exit in current.exits) {
 		newDescription += "<li>To the " + exit + " is ";
@@ -38,19 +42,26 @@ function printRoom() {
 }
 
 function printMessage(message) {
+	printRoom();	// has to happen first so it doesn't wipe out the message
+	console.log("PRINTING", message);
 	document.getElementById('message').innerHTML = message;
-	document.getElementById('error').innerHTML = "";
 }
+function clearMessage() {
+	document.getElementById('message').innerHTML = "";
+};
 
 function printError(message) {
-	if(!message) message = "";
+	printRoom();
 	document.getElementById('error').innerHTML = message;
-	document.getElementById('message').innerHTML = "";
 }
+function clearError() {
+	document.getElementById('error').innerHTML = "";
+};
 
 function initialize() {
 	document.getElementById("gameName").innerHTML = game.settings.title;
 	goTo(currentLocation);
+	startAutomation();
 };
 
 function look(roomId) {
@@ -94,21 +105,22 @@ function checkBuiltins(c) {
 };
 
 function checkRoomCommands(c) {
-	console.log("Checking...");
 	var verb = c[0];
 	var noun = c[1];
 
 	for(var i=0, item; item = (current.items || [])[i]; i++) {
+		if(!item.state) item.state = 'default';
 		if(_(item.nouns).includes(noun)) {
 			if(item.states[verb]) {
-				transition = item.states[verb].transition(item.state || 'default');
+				transition = item.states[verb].transition(item.state);
 				if(transition) {
-					console.log("It worked!");
-					printMessage(transition);
 					item.state = verb;
+					printMessage(transition);
 					return true;
 				}
 			}
+			if(item.states[item.state])
+			break;	// regardless, we can bail on the loop once we find the item
 		}
 	}
 	return false;
@@ -118,6 +130,7 @@ function processCommand(command) {
 	// if called by the listener, "command" will be a mouse event:
 	if (typeof command !== "string") {
 		command = document.getElementById("command").value;
+		document.getElementById("command").value = "";	// clear it out of the text box
 	}
 	// trim is used here because array gets blank elements if there are extra spaces
 	command = _.trim(command).split(" ");

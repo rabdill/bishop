@@ -5,58 +5,58 @@ function room(id) {
 currentLocation="foyer";
 
 game = {
-	"settings" : {
-		"title" : "Survival",
+	settings : {
+		title : "Survival",
 		"home base" : "Sturdy Abandoned House"
 	}
 }
 
 nodes = [
 	{
-		"id" : "foyer",
-		"name" : "the ruined foyer",
-		"type" : "room",
+		id : "foyer",
+		name : "the ruined foyer",
+		type : "room",
 		"exits": {
 			"east": "living room"
 		},
-		"entrance" : "You stand in the sad, rubble-strewn foyer of what must have at one time been a very nice house. You'd never been invited inside.<p>\"This,\" you think, almost hopefully, \"will have to do.\"",
-		"title" : "@home base@",
-		"actions" : {
+		entrance : "You stand in the sad, rubble-strewn foyer of what must have at one time been a very nice house. You'd never been invited inside.<p>\"This,\" you think, almost hopefully, \"will have to do.\"",
+		title : "@home base@",
+		actions : {
 
 		}
 	},
 	{
-		"id" : "living room",
-		"title" : "@home base@",
-		"name" : "what must be the living room",
-		"type" : "room",
-		"look" : "A dusty old room, garbage all over.",
+		id : "living room",
+		title : "@home base@",
+		name : "what must be the living room",
+		type : "room",
+		look : "A dusty old room, garbage all over.",
 		"exits": {
 			"west"  : "foyer"
 		},
-		"changes" : {
-			"onEnter" : [
+		changes : {
+			onEnter : [
 				function() {room("foyer").entrance = "You stand in the sad, rubble-strewn foyer of what must have at one time been a very nice house.";},
 				function() {room("living room").name = "the living room";},
 			]
 		},
-		"entrance" : "You're in the living room. There's debris in here from the shelling; it appears someone tried cleaning it up. They failed.",
-		"items" : [
+		entrance : "You're in the living room. There's debris in here from the shelling; it appears someone tried cleaning it up. They failed.",
+		items : [
 			{
-				"nouns" : ['photo', 'frame', 'picture', 'photograph'],
-				"name" : "photograph of neighbor's family",
-				"id" : "neighbor photo",
-				"states" : {
-					"default" : {
-						"descriptor" : "A photo sits in a dingy frame on a nearby table.",
-						"responses" : {
-							"take" : "You won't need that for anything.",
-							"examine" : "You wipe some dirt off the broken glass and peer into the familiar faces of the family that lived next to you for years. They're gone now, to who knows where..."
+				nouns : ['photo', 'frame', 'picture', 'photograph'],
+				name : "photograph of neighbor's family",
+				id : "neighbor photo",
+				states : {
+					default : {
+						descriptor : "A photo sits in a dingy frame on a nearby table.",
+						responses : {
+							take : "You won't need that for anything.",
+							examine : "You wipe some dirt off the broken glass and peer into the familiar faces of the family that lived next to you for years. They're gone now, to who knows where..."
 						},
 					},
-					"smash" : {
-						"descriptor" : "The shattered remains of a picture frame are on the floor here.",
-						"transition" : function(curState) {
+					smash : {
+						descriptor : "The shattered remains of a picture frame are on the floor here.",
+						transition : function(curState) {
 							switch(curState) {
 								case 'default':
 									return "You bash the frame against the table; its glass breaks into even more pieces and falls to the floor. You snap the frame in half and drop that nearby."
@@ -68,42 +68,39 @@ nodes = [
 				}
 			},
 			{
-				"nouns" : ['shovel'],
-				"name" : "shovel",
-				"id" : "living room shovel",
-				"take" : {
-					"default" : "You take the shovel. It's lighter than you expected it to be, and easy to carry."
+				nouns : ['shovel'],
+				name : "shovel",
+				id : "living room shovel",
+				take : {
+					default : "You take the shovel. It's lighter than you expected it to be, and easy to carry."
 				},
-				"states" : {
-					"default" : {
-						"descriptor" : "A shovel leans against the couch.",
-						"responses" : {
-							"examine" : "A medium-sized shovel, light enough to carry around but heavy enough to complete most shovel-tasks."
+				states : {
+					default : {
+						descriptor : "A shovel leans against the couch.",
+						responses : {
+							examine : "A medium-sized shovel, light enough to carry around but heavy enough to complete most shovel-tasks."
 						}
 					}
 				}
 			},
 			{
-				"nouns" : ["pile", "rubble", "trash"],
-				"name" : "pile of junk",
-				"id" : "living room pile",
-				"states" : {
-					"default" : {
-						"descriptor" : "To the north, a huge pile of rubble blocks what looks like it might be a doorway.",
-						"responses" : {
-							"examine" : "It's a big mound of material from broken wall, caved-in ceiling and simple household trash. Some of it fell here, but much looks to have been piled on purpose.",
-							"move" : "It'd take you ages to move it by hand. If only you had a tool..."
+				nouns : ["pile", "rubble", "trash"],
+				name : "pile of junk",
+				id : "living room pile",
+				states : {
+					default : {
+						descriptor : "To the north, a huge pile of rubble blocks what looks like it might be a doorway.",
+						responses : {
+							examine : "It's a big mound of material from broken wall, caved-in ceiling and simple household trash. Some of it fell here, but much looks to have been piled on purpose.",
+							move : "It'd take you ages to move it by hand. If only you had a tool..."
 						}
 					},
-					"move" : {
-						"descriptor" : "Trash and drywall is strewn around in front of the doorway.",
-						"requires" : {
-							"item" : "shovel"
-						},
-						"transition" : function(curState) {
+					move : {
+						descriptor : "Trash and drywall is strewn around in front of the north doorway.",
+						transition : function(curState) {
 							switch(curState) {
 								case "default":
-									rooms['living room'].exits.north = "dining room";
+									room('living room').exits.north = "dining room";
 									return "You slowly push your way through the junk, tossing the little stuff aside and shoving the big pieces with your foot. Soon, the doorway is opened up."
 								default:
 									return false;
@@ -113,5 +110,15 @@ nodes = [
 				}
 			}
 		]
-	}
+	},
+	{
+		id : "dining room",
+		name : "the dining room",
+		type : "room",
+		"exits": {
+			"south": "living room"
+		},
+		entrance : "You're in the dining room. Faded floral wallpaper dangles from the walls -- except for the left wall, which has a boarded-up door.",
+		title : "@home base@"
+	},
 ];

@@ -1,7 +1,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<script type="text/javascript" src="../bishops_map/gamedata.js.sample"></script>
+	<script type="text/javascript" src="gamedata.js.sample"></script>
 	<style>
 		#error {
 			color: red;
@@ -13,6 +13,7 @@
 	<h3>Bishop's Map</h3>
 	<h1 id="gameName">Your Custom Game</h1>
 	<div>
+		<p id="message"></p>
 		<p id="description">This is sample text. If you see this, something went wrong with loading your game.</p>
 	</div>
 	<div>
@@ -25,11 +26,10 @@
 		</form>
 	</div>
 	<div>
-		<p id="message"></p>
 		<p id="error"></p>
 	</div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.8.2/lodash.js"></script>
-	<script src="../bishops_map/bishops_map_new.js"></script>
-
+	<script type="text/javascript" src="automation.js.sample"></script>
+	<script src="bishops_map_new.js"></script>
 </body>
 </html>
