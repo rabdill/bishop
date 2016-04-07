@@ -1,4 +1,5 @@
 function goTo(target) {
+	// move to a certain location in the game
 	var targetIndex = _.findIndex(nodes, {"id": target});
 	if(targetIndex === -1) throw "goTo function invoked with non-existent node.";
 
@@ -17,7 +18,7 @@ function goTo(target) {
 };
 
 function room(id) {
-// turns a room ID into a room
+	// turns a room ID into a room
 	return nodes[_.findIndex(nodes, {"id": id})];
 };
 
@@ -92,6 +93,27 @@ function checkBuiltins(c) {
 	}
 };
 
+function checkRoomCommands(c) {
+	console.log("Checking...");
+	var verb = c[0];
+	var noun = c[1];
+
+	for(var i=0, item; item = (current.items || [])[i]; i++) {
+		if(_(item.nouns).includes(noun)) {
+			if(item.states[verb]) {
+				transition = item.states[verb].transition(item.state || 'default');
+				if(transition) {
+					console.log("It worked!");
+					printMessage(transition);
+					item.state = verb;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+};
+
 function processCommand(command) {
 	// if called by the listener, "command" will be a mouse event:
 	if (typeof command !== "string") {
@@ -103,9 +125,7 @@ function processCommand(command) {
 	var articles = ["the", "a", "an", "to", "at", "on", "with"];
 	command = _.difference(command, articles);
 
-	// check built-ins AFTER checking commands specified in the room itself;
-	//	that will let designers override them.
-	if(!checkBuiltins(command)) {
+	if(!checkRoomCommands(command) && !checkBuiltins(command)) {
 		printError('Sorry, unrecognized command.');
 	}
 };
