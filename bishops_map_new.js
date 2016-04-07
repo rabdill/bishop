@@ -43,7 +43,6 @@ function printRoom() {
 
 function printMessage(message) {
 	printRoom();	// has to happen first so it doesn't wipe out the message
-	console.log("PRINTING", message);
 	document.getElementById('message').innerHTML = message;
 }
 function clearMessage() {
@@ -85,6 +84,7 @@ function checkBuiltins(c) {
 				printError("You can't go that way.");
 				return true;
 			}
+			break;
 		case "look":
 			if(current.exits[noun]) {
 				look(current.exits[noun]);
@@ -98,10 +98,29 @@ function checkBuiltins(c) {
 				printError("You can't look that way.");
 				return true;
 			}
-		default:
-			return false;
-
+			break;
+		case "view":
+			if(noun === "inventory") {
+				printInventory();
+				return true;
+			}
+			break;
 	}
+	return false;
+
+};
+
+function addToInventory(item) {
+	player.inventory.push(item);
+};
+
+function printInventory() {
+	var inv = "You open your pack:<ul>";
+	for(var i=0, item; item = player.inventory[i]; i++) {
+		inv += "<li>" + item.name;
+	}
+	inv += "</ul>";
+	printMessage(inv);
 };
 
 function checkRoomCommands(c) {
@@ -111,6 +130,19 @@ function checkRoomCommands(c) {
 	for(var i=0, item; item = (current.items || [])[i]; i++) {
 		if(!item.state) item.state = 'default';
 		if(_(item.nouns).includes(noun)) {
+			if(verb === "take") {
+				if((item.take || {})[item.state]) { // if "take" is specified in the item
+					addToInventory(item);
+					current.items.splice(i, 1);	// remove it from the room
+					console.log("after", current.items);
+					printMessage(item.take[item.state]);
+					return true;
+				}
+				else {
+					return false;	// if the item exists but you can't take it
+				}
+			}
+
 			if(item.states[verb]) {
 				transition = item.states[verb].transition(item.state);
 				if(transition) {
@@ -119,7 +151,6 @@ function checkRoomCommands(c) {
 					return true;
 				}
 			}
-			if(item.states[item.state])
 			break;	// regardless, we can bail on the loop once we find the item
 		}
 	}

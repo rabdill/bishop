@@ -11,6 +11,10 @@ game = {
 	}
 }
 
+player = {
+	inventory: []
+};
+
 nodes = [
 	{
 		id : "foyer",

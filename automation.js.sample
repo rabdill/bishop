@@ -6,7 +6,8 @@ function startAutomation() {
 	moveLocation=undefined;
 	commands = [
 	// Enter the test commands to be entered sequentially here:
-		"go east"
+		"go east",
+		"take shovel"
 	];
 
 	if (debugMode) {
