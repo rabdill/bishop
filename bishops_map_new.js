@@ -123,6 +123,14 @@ function printInventory() {
 	printMessage(inv);
 };
 
+function parseSynonyms(item, verb) {
+	// if the verb doesn't need to be converted, or there aren't synonyms:
+	if(!item.synonyms || item.synonyms[verb]) return verb;
+	for(state in item.synonyms) {
+		if(_(item.synonyms[state]).includes(verb)) return state;
+	}
+};
+
 function checkRoomCommands(c) {
 	var verb = c[0];
 	var noun = c[1] || false;
@@ -131,11 +139,11 @@ function checkRoomCommands(c) {
 	for(var i=0, item; item = (current.items || [])[i]; i++) {
 		if(!item.state) item.state = 'default';
 		if(_(item.nouns).includes(noun)) {
+			verb = parseSynonyms(item, verb);
 			if(verb === "take") {
 				if((item.take || {})[item.state]) { // if "take" is specified in the item
 					addToInventory(item);
 					current.items.splice(i, 1);	// remove it from the room
-					console.log("after", current.items);
 					printMessage(item.take[item.state]);
 					return true;
 				}
