@@ -150,7 +150,16 @@ function checkRoomCommands(c) {
 					printMessage(transition);
 					return true;
 				}
+				else {	// if the transition function rejects the request to transition
+					return false;
+				}
 			}
+
+			if(item.states[item.state].responses[verb]) { // if the verb has a response
+				printMessage(item.states[item.state].responses[verb]);
+				return true;
+			}
+
 			break;	// regardless, we can bail on the loop once we find the item
 		}
 	}
