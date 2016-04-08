@@ -125,7 +125,8 @@ function printInventory() {
 
 function checkRoomCommands(c) {
 	var verb = c[0];
-	var noun = c[1];
+	var noun = c[1] || false;
+	var indirect = c[2] || false
 
 	for(var i=0, item; item = (current.items || [])[i]; i++) {
 		if(!item.state) item.state = 'default';
@@ -144,6 +145,14 @@ function checkRoomCommands(c) {
 			}
 
 			if(item.states[verb]) {
+				if(item.states[verb].requires) {	// if it has requirements
+					var passes = item.states[verb].requires();
+					if(typeof passes === 'string') { // rejected with message
+						printMessage(passes);
+						return true;	// it's settled; no need to keep searching
+					}
+				}
+
 				transition = item.states[verb].transition(item.state);
 				if(transition) {
 					item.state = verb;

@@ -69,6 +69,9 @@ nodes = [
 							}
 						}
 					}
+				},
+				synonyms : {
+					smash : ['break', 'crush', 'destroy']
 				}
 			},
 			{
@@ -96,11 +99,18 @@ nodes = [
 						descriptor : "To the north, a huge pile of rubble blocks what looks like it might be a doorway.",
 						responses : {
 							examine : "It's a big mound of material from broken wall, caved-in ceiling and simple household trash. Some of it fell here, but much looks to have been piled on purpose.",
-							move : "It'd take you ages to move it by hand. If only you had a tool..."
 						}
 					},
 					move : {
 						descriptor : "Trash and drywall is strewn around in front of the north doorway.",
+						requires : function() {
+							if(_(player.inventory).find({"name" : "shovel"})) {
+								return true;
+							}
+							else {
+								return "It'd take you ages to move it by hand. If only you had a tool...";
+							}
+						},
 						transition : function(curState) {
 							switch(curState) {
 								case "default":
