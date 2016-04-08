@@ -2,6 +2,13 @@ function room(id) {
 	return nodes[_.findIndex(nodes, {"id": id})];
 };
 
+function invCheck(item) {
+	return _(player.inventory).findIndex({"name" : "shovel"}) > -1;
+}
+function invRemove(item) {
+	player.inventory.splice(_(player.inventory).findIndex({"name" : item}), 1);
+};
+
 currentLocation="foyer";
 
 game = {
@@ -103,8 +110,8 @@ nodes = [
 					},
 					move : {
 						descriptor : "Trash and drywall is strewn around in front of the north doorway.",
-						requires : function() {
-							if(_(player.inventory).find({"name" : "shovel"})) {
+						requires : function(command) {
+							if(invCheck("shovel") && command[2] === "shovel") {
 								return true;
 							}
 							else {
