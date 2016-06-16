@@ -127,8 +127,9 @@ function parseSynonyms(item, verb) {
 	// if the verb doesn't need to be converted, or there aren't synonyms:
 	if(!item.synonyms || item.synonyms[verb]) return verb;
 	for(state in item.synonyms) {
-		if(_(item.synonyms[state]).includes(verb)) return state;
+		if(_.includes(item.synonyms[state], verb)) return state;
 	}
+	return verb;
 };
 
 function checkRoomCommands(c) {
@@ -136,7 +137,7 @@ function checkRoomCommands(c) {
 	var noun = c[1] || false;
 
 	for(var i=0, item; item = (current.items || [])[i]; i++) {
-		if(!item.state) item.state = 'default';
+		if(!item.state) item.state = 'default';	// if item has no state, drop it into "default"
 		if(_(item.nouns).includes(noun)) {
 			verb = parseSynonyms(item, verb);
 			if(verb === "take") {
@@ -146,13 +147,10 @@ function checkRoomCommands(c) {
 					printMessage(item.take[item.state]);
 					return true;
 				}
-				else {
-					return false;	// if the item exists but you can't take it
-				}
 			}
 
 			if(item.states[verb]) {
-				if(item.states[verb].requires) {	// if it has requirements
+				if(item.states[verb].requires) {	// if it has requirements (NOTE: requires() is a FUNCTION)
 					var passes = item.states[verb].requires(c);
 					if(typeof passes === 'string') { // rejected with message
 						printMessage(passes);
@@ -170,7 +168,6 @@ function checkRoomCommands(c) {
 					return false;
 				}
 			}
-
 			if(item.states[item.state].responses[verb]) { // if the verb has a response
 				printMessage(item.states[item.state].responses[verb]);
 				return true;
