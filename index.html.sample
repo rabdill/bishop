@@ -10,7 +10,7 @@
 	<title>Survival</title>
 </head>
 <body>
-	<h3>Bishop's Map</h3>
+	<h3>Bishop</h3>
 	<h1 id="gameName">Your Custom Game</h1>
 	<div>
 		<p id="message"></p>
@@ -30,6 +30,6 @@
 	</div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.8.2/lodash.js"></script>
 	<script type="text/javascript" src="automation.js.sample"></script>
-	<script src="bishops_map.js"></script>
+	<script src="bishop.js"></script>
 </body>
 </html>
