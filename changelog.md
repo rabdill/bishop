@@ -283,6 +283,6 @@ Released: 15 Feb 2015
 * Basic change-processing has been implemented, so that menu selections, taking actions, acting on an item, or entering rooms can trigger changes to any value stored elsewhere in the game.
 * Basic speech synthesis and speech-to-text capabilities have been added, allowing Google Chrome users the ability to issue commands with their voice and hear descriptions of the rooms read aloud.
 * Authors can "fast-forward" through a long series of test commands using *testing.js*
-* Rooms can be given "headlines" to be displayed at the top of the 
+* Rooms can be given "headlines" to be displayed at the top of the
 * Error messages are displayed in a separate field from messages and descriptions.
 * Transactional messages ("You pick up the gourd.") are displayed in the same text area in which rooms are described.

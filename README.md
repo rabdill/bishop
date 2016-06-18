@@ -1,16 +1,16 @@
 ## The project
-Bishop's Map is a Javascript-based interactive fiction engine designed for allowing text adventure games to be played in a browser. The engine itself is entirely client-based, which means the work is performed entirely by the player's web browser and server-based code isn't necessary for successful operation.
+Bishop (formerly "Bishop's Map") is a Javascript-based interactive fiction engine designed for allowing text adventure games to be played in a browser. The engine itself is entirely client-based, which means the work is performed entirely by the player's web browser and server-based code isn't necessary for successful operation.
 
-**Bishop's Map is not production-ready.** It is still very much a work in progress, and even a cursory peek at [the project's Issues page](https://github.com/rabdill/bishops_map/issues?q=is%3Aopen+is%3Aissue) will show you how far we still have to go. Check out the changelog for info on how things are going and what works where, but there are still gaps in the engine's capabilities.
+**Bishop is not production-ready.** It is still very much a work in progress, and even a cursory peek at [the project's Issues page](https://github.com/rabdill/bishops_map/issues?q=is%3Aopen+is%3Aissue) will show you how far we still have to go. Check out the changelog for info on how things are going and what works where, but there are still gaps in the engine's capabilities.
 
 In addition, *you should expect multiple breaking changes between now and the 1.0 release.* The changelog *should* make ample notes of what is changing and what upgrade dangers might arise, but the project's versioning won't be [semantically meaningful](http://semver.org/) until after 1.0.
 
 ## Implementation
-Authors define the entirety of their game logic in a file called gamedata.js. For documentation on syntax and game logic, check out [the Bishop's Map wiki](https://github.com/rabdill/bishops_map/wiki). Once the game has been designed, all a player needs to do is open an HTML file that links together the Bishop's Map code with the game data.
+Authors define the entirety of their game logic in a file called gamedata.js. For documentation on syntax and game logic, check out [the Bishop wiki](https://github.com/rabdill/bishops_map/wiki). Once the game has been designed, all a player needs to do is open an HTML file that links together the Bishop code with the game data.
 
 When building the gameplay page, the included "index.html.sample" should be helpful in determining basic requirements, but they are here as well:
-* You need a page called "index.html" to host your game. All out-of-the-box functionality of Bishop's Map can run on a single HTML page. There is a sample of one of these in the "extras" directory.
-* You may need to include as many as five Bishop's Map Javascript files for the game to operate properly:
+* You need a page called "index.html" to host your game. All out-of-the-box functionality of Bishop can run on a single HTML page. There is a sample of one of these in the "extras" directory.
+* You may need to include as many as five Bishop Javascript files for the game to operate properly:
   * "gamedata.js" and "bishops_map.js" are mandatory, and should be loaded in that order.
   * Including "bishops_map.js.min" instead of "bishops_map.js" should work the same way, but reduce the size of the file loaded by the client by about half.
   * Include "automation.js" after the other two if you are still in a testing phase. Including the file does not mean the tests will be fired every time the game is loaded (you need to set `debugMode = true` for that), but it keeps you from needing to remember to include it whenever you want to run a check.
@@ -29,21 +29,21 @@ When building the gameplay page, the included "index.html.sample" should be help
   * A `<button>` tag with an id of "talking," to allow the player to tell the text-to-speech feature to stop reading things out loud. It should be labeled something like "Stop talking."
 
 ## Serving the game
-Because there is no server-side code, a site using only Bishop's Map (plus any other client-side libraries) only needs to be put somewhere from which players can retrieve the files.
+Because there is no server-side code, a site using only Bishop (plus any other client-side libraries) only needs to be put somewhere from which players can retrieve the files.
 
 ### As a website
 To run your game as a conventional website, you could easily use a traditional web server running something like Apache or Nginx, or simply put the files in a file-hosting service like Amazon S3. [Github Pages](https://pages.github.com/) is another option that should be totally free.
 
 ### As offline files
-Distributing the files to players in other ways will give them the same access they would get if they were playing your game from your website. You can e-mail the files to players if you want, or send them a link to Dropbox or Google Drive. Transferring the files to a player's computer will work any way you want to move them, and as long as the player doesn't mess with the relative location of the files, it should work fine -- the files need to stay in the directories in which you sent them, but the player can put those files anywhere on their computer. Bishop's Map games require no outside dependencies -- just the Javascript files and whatever your index.html file includes.
+Distributing the files to players in other ways will give them the same access they would get if they were playing your game from your website. You can e-mail the files to players if you want, or send them a link to Dropbox or Google Drive. Transferring the files to a player's computer will work any way you want to move them, and as long as the player doesn't mess with the relative location of the files, it should work fine -- the files need to stay in the directories in which you sent them, but the player can put those files anywhere on their computer. Bishop games require no outside dependencies -- just the Javascript files and whatever your index.html file includes.
 
 Once a player has the files, all they need to do is open the "index.html" file in a browser and start playing. Most operating systems will open *.html files with the default browser, but players can also open files by opening the browser and selecting something like "Open..." from the "File" menu.
 
 Though this method is more complicated, it has the added bonus of making your game available offline, so players don't need an internet connection to play. The only exception to this is any functionality you add that relies on third-party libraries that you do not include in the game directory: Google fonts, for example, or jQuery. *The talking/listening features also require an internet connection.*
 
 ### As a Chrome app
-Bishop's Map comes pre-packaged with all the necessary files to allow the "index.html" file to be loaded as a Chrome application, allowing the game to appear in a player's "Apps" page in Chrome, or be loaded as a standalone app outside of a browser. All of the required files mentioned in the [full instructions from Google](https://developer.chrome.com/apps/first_app) are included in the "extras" directory, but should be moved into the base directory (with bishops_map.js and index.html) if you're planning on using them. This is the short version of the config, for once the files are in place:
+Bishop comes pre-packaged with all the necessary files to allow the "index.html" file to be loaded as a Chrome application, allowing the game to appear in a player's "Apps" page in Chrome, or be loaded as a standalone app outside of a browser. All of the required files mentioned in the [full instructions from Google](https://developer.chrome.com/apps/first_app) are included in the "extras" directory, but should be moved into the base directory (with bishops_map.js and index.html) if you're planning on using them. This is the short version of the config, for once the files are in place:
 
 1. At chrome://flags, make sure "Experimental Extension APIs" is enabled.
 1. At chrome://extensions, select "Load unpacked extension" and select the Bishops Map directory.
-1. At chrome://apps, select your new Bishop's Map application!
+1. At chrome://apps, select your new Bishop application!
